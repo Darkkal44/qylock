@@ -2,7 +2,7 @@
 
 <p align="center">
 <pre align="center">
-<a href="#setup">sᴇᴛᴜᴘ​​</a>  •  <a href="#themes">​ᴛʜᴇᴍᴇs​</a>  •  <a href="#gallery">​ɢᴀʟʟᴇʀʏ</a>  •  <a href="#credits">​ᴄʀᴇᴅɪᴛs</a>
+<a href="#setup">sᴇᴛᴜᴘ​​</a>  •  <a href="#themes">​ᴛʜᴇᴍᴇs​</a>  •  <a href="#themes">​ɢᴀʟʟᴇʀʏ</a>  •  <a href="#credits">​ᴄʀᴇᴅɪᴛs</a>
 </pre>
 </p>
 
@@ -82,32 +82,79 @@ chmod +x setup.sh
 
 <div align="center">
   <h2 id="themes"> ◈ ᴛʜᴇ ᴄᴏʟʟᴇᴄᴛɪᴏɴ ◈ </h2>
-  <p>Explore the diverse styles available in this repository.</p>
 </div>
-
-| Theme | Description |
-| :--- | :--- |
-| **NieR: Automata** | A faithful UI recreation of the game NieR: Automata. |
-| **Cozytile** | A theme for my rice cozytile.|
-| **Terraria** | A UI recreation of the game Terraria.|
-| **Cyberpunk** | A UI recreation of the game Cyberpunk 2077.|
-| **TUI** | A minimal, terminal-inspired aesthetic for the command-line lovers. |
-| **Minecraft** | A UI recreation of the game Minecraft.|
-| **Windows 7** | A pixel-perfect recreation of windows 7 lockscreen.|
-| **Paper** | Clean, flat, and modern material design. |
-| **Enfield** | Sophisticated and elegant typography-focused theme. |
-| **Porsche** | Sleek, high-performance aesthetics for automotive fans. |
-| **Sword** | Sharp, minimal, and striking theme. |
 
 <br>
 
----
+### ◈ NieR: Automata
 
 <div align="center">
-  <h2 id="gallery"> ✦ ꜱɴᴀᴘꜱʜᴏᴛꜱ ✦ </h2>
-  <p><i>Under work..</i></p>
+  <video src="./Assets/nier_automata.mp4" width="100%" controls></video>
 </div>
 
+<br>
+
+### ◈ Terraria
+
+<div align="center">
+  <video src="./Assets/terraria.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ Enfield
+
+<div align="center">
+  <video src="./Assets/enfield.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ Sword
+
+<div align="center">
+  <video src="./Assets/sword.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ Paper
+
+<div align="center">
+  <video src="./Assets/paper.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ Windows 7
+
+<div align="center">
+  <video src="./Assets/win7.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ Cyberpunk
+
+<div align="center">
+  <video src="./Assets/cyberpunk.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ TUI
+
+<div align="center">
+  <video src="./Assets/tui.mp4" width="100%" controls></video>
+</div>
+
+<br>
+
+### ◈ Porsche
+
+<div align="center">
+  <video src="./Assets/porsche.mp4" width="100%" controls></video>
+</div>
 
 <br>
 
