@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -37,7 +38,14 @@ Rectangle {
     property string currentDate: Qt.formatDate(new Date(), "yyyy.MM.dd")
 
     TextConstants { id: textConstants }
-    FontLoader    { id: nierFont; source: "FOT-Rodin Pro DB.otf" }
+    
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: nierFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // Shared font name string — accessible from everywhere in this file
     readonly property string fontName: nierFont.name

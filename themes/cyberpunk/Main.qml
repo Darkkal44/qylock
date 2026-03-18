@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -19,7 +20,7 @@ Rectangle {
     readonly property color errorColor: "#f83641" // Dark Red
     readonly property color highlightColor: Qt.rgba(0, 0.94, 1.0, 0.2)
     
-    readonly property string fontName: "Play"
+    readonly property string fontName: mainFont.name
 
     // States
     property real glitchX: 0
@@ -32,7 +33,13 @@ Rectangle {
     TextConstants { id: textConstants }
 
     // Font Loader
-    FontLoader { id: mainFont; source: "Play-Regular.ttf" }
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: mainFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // Session Helper
     ListView {

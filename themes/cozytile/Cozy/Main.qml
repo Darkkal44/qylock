@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -18,7 +19,13 @@ Rectangle {
     readonly property color accent:     "#CAA9E0" // Lavender
     readonly property color panelBg:    "#dd1e1e2e"
 
-    FontLoader { id: orbitron; source: "fonts/Orbitron.ttf" }
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: orbitron; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // ── Helpers ──────────────────────────────────────────────────────
     ListView { id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex; visible: false; delegate: Item { property string sName: model.name || "" } }

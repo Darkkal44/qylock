@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -15,6 +16,15 @@ Rectangle {
                                ? sessionModel.lastIndex : 0
     property real fadeIn: 0
     property int currentUserIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
+
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: customFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
+    readonly property string customFontName: fontFolder.count > 0 ? customFont.name : "Segoe UI, Ubuntu, sans-serif"
 
     TextConstants { id: textConstants }
 
@@ -203,7 +213,7 @@ Rectangle {
             text: (userList.currentItem && userList.currentItem.uName)
                   ? userList.currentItem.uName
                   : (userModel.lastUser || "User")
-            font.family: "Segoe UI, Ubuntu, sans-serif"
+            font.family: root.customFontName
             font.pixelSize: 26 * s
             font.weight: Font.Normal
             color: "white"
@@ -218,7 +228,7 @@ Rectangle {
             id: statusLabel
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Locked"
-            font.family: "Segoe UI, Ubuntu, sans-serif"
+            font.family: root.customFontName
             font.pixelSize: 14 * s
             color: "#c8dce8"
             style: Text.Raised
@@ -281,7 +291,7 @@ Rectangle {
                     anchors.left: parent.left
                     anchors.leftMargin: 9 * s
                     text: "Password"
-                    font.family: "Segoe UI, Ubuntu, sans-serif"
+                    font.family: root.customFontName
                     font.pixelSize: 14 * s
                     color: "#80404050"
                     visible: inputFocus.text === "" && !inputFocus.activeFocus
@@ -294,7 +304,7 @@ Rectangle {
                     anchors.leftMargin: 9 * s
                     anchors.rightMargin: 6 * s
                     verticalAlignment: TextInput.AlignVCenter
-                    font.family: "Segoe UI, Ubuntu, sans-serif"
+                    font.family: root.customFontName
                     font.pixelSize: 14 * s
                     color: "#101820"
                     echoMode: TextInput.Password
@@ -380,7 +390,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             text: ""
             visible: false
-            font.family: "Segoe UI, Ubuntu, sans-serif"
+            font.family: root.customFontName
             font.pixelSize: 12 * s
             color: "#ffddaa"
             style: Text.Raised
@@ -445,7 +455,7 @@ Rectangle {
                 id: switchUserText
                 anchors.centerIn: parent
                 text: "Switch User"
-                font.family: "Segoe UI, Ubuntu, sans-serif"
+                font.family: root.customFontName
                 font.pixelSize: 13 * s
                 color: "white"
                 style: Text.Raised
@@ -501,7 +511,7 @@ Rectangle {
 
             Text {
                 text: "Session:"
-                font.family: "Segoe UI, Ubuntu, sans-serif"
+                font.family: root.customFontName
                 font.pixelSize: 12 * s
                 color: "#c0d8e8"
                 anchors.verticalCenter: parent.verticalCenter
@@ -534,7 +544,7 @@ Rectangle {
                     anchors.centerIn: parent
                     text: (sessionHelper.currentItem && sessionHelper.currentItem.sName)
                           ? sessionHelper.currentItem.sName : "Session"
-                    font.family: "Segoe UI, Ubuntu, sans-serif"
+                    font.family: root.customFontName
                     font.pixelSize: 12 * s
                     color: "white"
                 }
@@ -613,7 +623,7 @@ Rectangle {
             id: pwText
             anchors.centerIn: parent
             text: parent.label
-            font.family: "Segoe UI, Ubuntu, sans-serif"
+            font.family: root.customFontName
             font.pixelSize: 13 * s
             color: "white"
         }

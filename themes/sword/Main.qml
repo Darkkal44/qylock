@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -17,7 +18,13 @@ Rectangle {
     TextConstants { id: textConstants }
 
     // Font
-    FontLoader { id: shurikenFont; source: "The Last Shuriken.ttf" }
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: shurikenFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // Session
     ListView {

@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -66,11 +67,17 @@ Rectangle {
     readonly property color highlightInner: "#fff200"
     readonly property color highlightBg: "#435293"
 
-    readonly property string fontName: "Andy Bold"
+    readonly property string fontName: mainFont.name
 
     TextConstants { id: textConstants }
 
-    FontLoader { id: mainFont; source: "Andy Bold.ttf" }
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: mainFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     ListView {
         id: sessionNameHelper

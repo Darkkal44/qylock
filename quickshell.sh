@@ -101,6 +101,16 @@ else
     fi
 fi
 
+# Check for fonts in the selected theme
+FONT_COUNT=$(ls -1 "$THEMES_DIR/$THEME_NAME/font" 2>/dev/null | grep -E "\.(ttf|otf)$" | wc -l)
+if [ "$FONT_COUNT" -eq 0 ]; then
+    echo -e "${C_YELLOW}${C_BOLD} ╭─   MISSING FONT DETECTED${C_RESET}"
+    echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}This theme looks better with its specific font!${C_RESET}"
+    echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}Please put the .ttf/.otf file in:${C_RESET}"
+    echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_ACCENT}$THEMES_DIR/$THEME_NAME/font/${C_RESET}"
+    echo -e "${C_YELLOW}${C_BOLD} ╰─ ${C_DIM}Refer to README.md for font suggestions.${C_RESET}\n"
+fi
+
 sed -i "s/export QS_THEME=.*$/export QS_THEME=\"\${1:-$THEME_NAME}\"/" "$TARGET_DIR/lock.sh"
 success "Theme '$THEME_NAME' set as lockscreen default!"
 

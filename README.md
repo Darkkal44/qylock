@@ -57,6 +57,22 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
+### 󱔗 ꜰᴏɴᴛ ʀᴇǫᴜɪʀᴇᴍᴇɴᴛꜱ
+Some themes in this collection use premium or trademarked fonts that cannot be redistributed in this repository. If you choose one of these themes, you will need to manually download the font and place it in the theme's `font` subfolder.
+
+| Theme | Recommended Font | File Name (approx) |
+| :--- | :--- | :--- |
+| **NieR: Automata** | FOT-Rodin Pro DB | `FOT-Rodin Pro DB.otf` |
+| **Terraria** | Andy Bold | `Andy Bold.ttf` |
+| **Genshin Impact** | HYWenHei-85W | `zhcn.ttf` |
+| **Sword** | The Last Shuriken | `The Last Shuriken.ttf` |
+| **Minecraft** | Minecraft Regular | `minecraft.ttf` |
+
+**Instructions:**
+1. Navigate to the theme folder: `themes/<theme_name>/font/`
+2. Place your `.ttf` or `.otf` file inside that `font` folder.
+3. The theme will automatically detect and load the font on the next start!
+
 <br>
 
 ---

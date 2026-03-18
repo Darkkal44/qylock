@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -22,8 +23,16 @@ Rectangle {
     readonly property color mainColor: "#4b4637"
     readonly property color accentColor: "#bab5a1"
     readonly property color bgLight: "#dad4bb"
-    readonly property string fontName: "Advent Pro"
-    readonly property string mono: "JetBrains Mono"
+
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: customFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
+    readonly property string fontName: fontFolder.count > 0 ? customFont.name : "Advent Pro"
+    readonly property string mono: fontFolder.count > 0 ? customFont.name : "JetBrains Mono"
 
     // States
     property real bootProgress: 0

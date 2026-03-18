@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 Rectangle {
@@ -25,7 +26,13 @@ Rectangle {
     TextConstants { id: textConstants }
 
     // ── Font ─────────────────────────────────────────────────────────
-    FontLoader { id: tektur; source: "Tektur-VariableFont_wdth,wght.ttf" }
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: tektur; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // ── Helpers ───────────────────────────────────────────────────────
     ListView {

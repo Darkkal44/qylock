@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
+import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
 // TUI Theme
@@ -25,7 +26,14 @@ Rectangle {
     readonly property color amber:       "#8be9fd"
     readonly property color red:         "#ff4444"
     readonly property color gray:        "#442233"
-    FontLoader { id: inconsolata; source: "Inconsolata-VariableFont_wdth,wght.ttf" }
+
+    FolderListModel {
+        id: fontFolder
+        folder: "font"
+        nameFilters: ["*.ttf", "*.otf"]
+    }
+
+    FontLoader { id: inconsolata; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
     readonly property string mono:       inconsolata.name
     readonly property color phosphor:   "#ff4488"
 
