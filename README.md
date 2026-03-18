@@ -45,7 +45,7 @@ A simple collection of all the lockscreen themes I've made. It comes with a them
 
 **1. Install Dependencies:**
 Make sure you have these packages installed via your system's package manager (names might differ slightly on your distro):
-- `sddm`, `qt5-graphicaleffects`, `qt5-multimedia`, `qt5-quickcontrols`, `qt5-quickcontrols2`, `qt5-svg`, `qt6-multimedia-ffmpeg` (or `qt6-multimedia-gstreamer`)
+- `sddm`, `qt5-graphicaleffects`, `qt5-multimedia`, `qt5-quickcontrols`, `qt5-quickcontrols2`, `qt5-svg`, `qt6-multimedia-ffmpeg`, `qt6-multimedia-gstreamer`
 
 **2. Use the Setup Script:**
 Simply run the interactive script to select and apply your themes. As long as you have the dependencies, this will handle the rest.
@@ -86,7 +86,7 @@ If you're here to use these as lockscreen themes, then you can use QUICKSHELL to
 **1. Install Target Dependencies:**
 You will need Quickshell and the Qt6 multimedia tools to render the assets.
 *   Arch Linux (AUR): `quickshell` or `quickshell-git`
-*   Required Qt6 dependencies: `qt6-declarative`, `qt6-5compat`, `qt6-multimedia`, `qt6-multimedia-ffmpeg` (or `qt6-multimedia-gstreamer`)
+*   Required Qt6 dependencies: `qt6-declarative`, `qt6-5compat`, `qt6-multimedia`, `qt6-multimedia-ffmpeg` ,`qt6-multimedia-gstreamer`
 
 **2. Run the Interactive Installer:**
 Execute the `quickshell.sh` script to set up your target lockscreen theme and create the needed directories in your local environment.
