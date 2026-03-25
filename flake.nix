@@ -64,6 +64,15 @@
               sed -i 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' {} +
           '';
 
+        # SDDM patched to add sddm-greeter symlink so Qt6-only NixOS builds
+        # pass the theme validation check (which looks for sddm-greeter by name).
+        sddmPatched = pkgs.runCommand "sddm-greeter-compat" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
+          mkdir -p $out/bin
+          ln -s ${pkgs.kdePackages.sddm}/bin/sddm $out/bin/sddm
+          ln -s ${pkgs.kdePackages.sddm}/bin/sddm-greeter-qt6 $out/bin/sddm-greeter-qt6
+          ln -s ${pkgs.kdePackages.sddm}/bin/sddm-greeter-qt6 $out/bin/sddm-greeter
+        '';
+
       };
     in
     {
