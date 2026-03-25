@@ -122,7 +122,7 @@ Add qylock as a flake input, import the module, and set your theme:
 {
   inputs = {
     nixpkgs.url     = "github:NixOS/nixpkgs/nixos-unstable";
-    qylock.url      = "github:yourusername/qylock";
+    qylock.url      = "github:LordHerdier/qylock-nix";
   };
 
   outputs = { nixpkgs, qylock, ... }: {
