@@ -43,7 +43,6 @@ in
     }
 
     (lib.mkIf (cfg.sddmTheme != null) {
-      services.displayManager.sddm.enable = true;
       services.displayManager.sddm.theme =
         lib.last (lib.splitString "/" cfg.sddmTheme);
 
