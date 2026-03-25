@@ -1,0 +1,5 @@
+[SddmGreeterTheme]
+Name=paper
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-API=2.0

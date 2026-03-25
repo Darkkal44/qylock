@@ -1,0 +1,5 @@
+[SddmGreeterTheme]
+Name=ninja_gaiden
+MainScript=Main.qml
+ConfigFile=theme.conf
+Theme-API=2.0
