@@ -2,7 +2,7 @@
 
 <p align="center">
 <pre align="center">
-<a href="#sddm">sᴅᴅᴍ​​</a>  •  <a href="#quickshell">​ǫᴜɪᴄᴋsʜᴇʟʟ​</a>  •  <a href="#gallery">​ɢᴀʟʟᴇʀʏ</a>  •  <a href="#credits">​ᴄʀᴇᴅɪᴛs</a>
+<a href="#sddm">sᴅᴅᴍ​​</a>  •  <a href="#quickshell">​ǫᴜɪᴄᴋsʜᴇʟʟ​</a>  •  <a href="#nix">​ɴɪx​</a>  •  <a href="#gallery">​ɢᴀʟʟᴇʀʏ</a>  •  <a href="#credits">​ᴄʀᴇᴅɪᴛs</a>
 </pre>
 </p>
 
@@ -109,14 +109,120 @@ Once completed, simply bind a keyboard shortcut in your Window Manager's configu
   <h2 id="nix">  ɴɪx / ɴɪxᴏꜱ  </h2>
 </div>
 
-A `flake.nix` dev shell is included for Nix users. It provides everything needed to test themes locally without installing anything system-wide.
+qylock ships a Nix flake with a **NixOS module**, a **Home Manager module**, and a **dev shell**. No manual file copying required — just import and configure.
 
-**Enter the dev shell:**
+<br>
+
+### 󱔗 ɴɪxᴏꜱ ᴍᴏᴅᴜʟᴇ
+
+Add qylock as a flake input, import the module, and set your theme:
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url     = "github:NixOS/nixpkgs/nixos-unstable";
+    qylock.url      = "github:yourusername/qylock";
+  };
+
+  outputs = { nixpkgs, qylock, ... }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        qylock.nixosModules.default
+        {
+          programs.qylock = {
+            enable    = true;
+            theme     = "terraria";   # Quickshell lockscreen theme
+            sddmTheme = "cyberpunk";  # optional: also configure SDDM
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+This installs a `qylock-lock` command. Bind it to a key in your compositor config to lock the screen.
+
+**Hyprland example (`hyprland.conf`):**
+```ini
+bind = SUPER, L, exec, qylock-lock
+```
+
+**`sddmTheme`** is optional. When set, it installs the SDDM theme package and sets `services.displayManager.sddm.theme` automatically.
+
+<br>
+
+### 󱔗 ʜᴏᴍᴇ ᴍᴀɴᴀɢᴇʀ ᴍᴏᴅᴜʟᴇ
+
+```nix
+# flake.nix
+{
+  inputs = {
+    nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
+    home-manager.url = "github:nix-community/home-manager";
+    qylock.url       = "github:yourusername/qylock";
+  };
+
+  outputs = { nixpkgs, home-manager, qylock, ... }: {
+    homeConfigurations.charlotte = home-manager.lib.homeManagerConfiguration {
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      modules = [
+        qylock.homeManagerModules.default
+        {
+          programs.qylock = {
+            enable = true;
+            theme  = "tui/Crimson";
+          };
+        }
+      ];
+    };
+  };
+}
+```
+
+<br>
+
+### 󱔗 ᴀᴠᴀɪʟᴀʙʟᴇ ᴛʜᴇᴍᴇꜱ
+
+| `theme` value | Notes |
+| :--- | :--- |
+| `Genshin` | Time-based day/night cycle (4 videos) |
+| `terraria` | 5 biome backgrounds |
+| `cyberpunk` | Glitch effects |
+| `nier-automata` | Scanner beam & tech overlay |
+| `enfield` | Video background |
+| `sword` | Video background |
+| `porsche` | Video background |
+| `ninja_gaiden` | Static |
+| `paper` | Minimal static |
+| `minecraft` | Static |
+| `windows_7` | Static |
+| `cozytile/Carbon` | — |
+| `cozytile/Cozy` | — |
+| `cozytile/Everforest` | — |
+| `cozytile/Natura` | — |
+| `cozytile/Sakura` | — |
+| `tui/Amber` | Terminal UI |
+| `tui/Amethyst` | Terminal UI |
+| `tui/Crimson` | Terminal UI |
+| `tui/Emerald` | Terminal UI |
+| `tui/Indigo` | Terminal UI |
+
+The same values work for both `theme` (Quickshell lockscreen) and `sddmTheme` (SDDM login screen).
+
+<br>
+
+### 󱔗 ᴅᴇᴠ ꜱʜᴇʟʟ
+
+A dev shell is included for testing themes locally without touching your system:
+
 ```sh
 nix develop
 ```
 
-**Test a theme:**
+**Test an SDDM theme:**
 ```sh
 sddm-greeter-qt6 --test-mode --theme $PWD/themes/<name>
 ```
@@ -127,13 +233,9 @@ quickshell -p $PWD/quickshell-lockscreen
 ```
 
 > [!NOTE]
-> The nixpkgs SDDM package (`kdePackages.sddm`) is Qt6-based. The themes were originally written for Qt5 — the following compatibility fixes are applied automatically via the dev shell:
+> The nixpkgs SDDM package (`kdePackages.sddm`) is Qt6-based. The following compatibility fixes are applied automatically:
 > - `QtGraphicalEffects 1.15` imports are shimmed via `kdePackages.qt5compat` (`Qt5Compat.GraphicalEffects`)
-> - The `QtGraphicalEffects` shims in `quickshell-lockscreen/imports/` must be regular files, not symlinks to `/usr/lib` (they are committed as proper files in this fork)
-> - Video themes (`enfield`, `porsche`, `sword`, `Genshin`) use the Qt6 `MediaPlayer` + `VideoOutput` API instead of the removed Qt5 `Video` convenience type
-
-> [!IMPORTANT]
-> To install SDDM themes system-wide on NixOS, use the `services.displayManager.sddm.theme` option or copy themes to `/usr/share/sddm/themes/` — the `sddm.sh` script will work inside `nix develop` for local testing but requires `sudo` for system installation.
+> - Video themes use the Qt6 `MediaPlayer` + `VideoOutput` API via shims in `quickshell-lockscreen/imports/`
 
 <br>
 

@@ -1,5 +1,5 @@
 {
-  description = "qylock — SDDM theme collection dev shell";
+  description = "qylock — SDDM theme collection";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -12,7 +12,78 @@
         name = system;
         value = f nixpkgs.legacyPackages.${system};
       }) systems);
-    in {
+
+      # Builds the Quickshell lockscreen shell directory for a given pkgs.
+      # The resulting store path contains the QML entry point, shims, and a
+      # themes_link/ symlink that resolves into the flake source.
+      mkQylockPkgs = pkgs: rec {
+        qylockShell = pkgs.runCommand "qylock-shell" { } ''
+          mkdir -p $out
+          cp ${self}/quickshell-lockscreen/lock_shell.qml $out/lock_shell.qml
+          cp -r --no-preserve=mode,ownership \
+            ${self}/quickshell-lockscreen/shim $out/shim
+          cp -r --no-preserve=mode,ownership \
+            ${self}/quickshell-lockscreen/imports $out/imports
+          ln -s ${self}/themes $out/themes_link
+        '';
+
+        # Produces a `qylock-lock` script with the given theme baked in.
+        mkLockScript = theme: pkgs.writeShellScriptBin "qylock-lock" ''
+          # QML_IMPORT_PATH: real Qt6 modules first, then the compatibility shims
+          export QML_IMPORT_PATH="${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml:${qylockShell}/imports''${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
+          export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
+          export QML_XHR_ALLOW_FILE_READ=1
+          export QS_THEME="${theme}"
+          exec ${pkgs.quickshell}/bin/quickshell -p ${qylockShell}/lock_shell.qml "$@"
+        '';
+
+        # Produces an SDDM theme package for the given theme path (e.g. "cyberpunk"
+        # or "cozytile/Cozy"). The package installs the theme under
+        # $out/share/sddm/themes/<last-component>.
+        mkSddmThemePkg = themePath:
+          let
+            safeName = builtins.replaceStrings [ "/" ] [ "-" ] themePath;
+          in
+          pkgs.runCommand "qylock-sddm-${safeName}" { } ''
+            mkdir -p $out/share/sddm/themes
+            cp -r --no-preserve=mode,ownership \
+              ${self}/themes/${themePath} $out/share/sddm/themes/
+          '';
+      };
+    in
+    {
+      # ── packages ─────────────────────────────────────────────────────────────
+      # `packages.<system>.default`  — qylock-lock script (Genshin theme)
+      # `packages.<system>.shell`    — raw Quickshell lockscreen directory
+      packages = forEachSystem (pkgs:
+        let q = mkQylockPkgs pkgs; in {
+          default = q.mkLockScript "Genshin";
+          shell = q.qylockShell;
+        }
+      );
+
+      # ── NixOS module ─────────────────────────────────────────────────────────
+      # Usage:
+      #   inputs.qylock.nixosModules.default
+      #
+      #   programs.qylock = {
+      #     enable = true;
+      #     theme  = "terraria";        # quickshell lockscreen theme
+      #     sddmTheme = "cyberpunk";    # optional: also configure SDDM
+      #   };
+      nixosModules.default = import ./modules/nixos.nix { inherit self mkQylockPkgs; };
+
+      # ── Home Manager module ───────────────────────────────────────────────────
+      # Usage:
+      #   inputs.qylock.homeManagerModules.default
+      #
+      #   programs.qylock = {
+      #     enable = true;
+      #     theme  = "terraria";
+      #   };
+      homeManagerModules.default = import ./modules/home-manager.nix { inherit self mkQylockPkgs; };
+
+      # ── dev shell ─────────────────────────────────────────────────────────────
       devShells = forEachSystem (pkgs: {
         default = pkgs.mkShell {
           packages = with pkgs; [
