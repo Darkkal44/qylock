@@ -66,12 +66,20 @@
 
         # SDDM patched to add sddm-greeter symlink so Qt6-only NixOS builds
         # pass the theme validation check (which looks for sddm-greeter by name).
-        sddmPatched = pkgs.runCommand "sddm-greeter-compat" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
-          mkdir -p $out/bin
-          ln -s ${pkgs.kdePackages.sddm}/bin/sddm $out/bin/sddm
-          ln -s ${pkgs.kdePackages.sddm}/bin/sddm-greeter-qt6 $out/bin/sddm-greeter-qt6
-          ln -s ${pkgs.kdePackages.sddm}/bin/sddm-greeter-qt6 $out/bin/sddm-greeter
-        '';
+        sddmPatched = pkgs.symlinkJoin {
+          name = "sddm-greeter-compat";
+          paths = [ pkgs.kdePackages.sddm ];
+          postBuild = ''
+            if [ -f $out/bin/sddm-greeter-qt6 ] && [ ! -f $out/bin/sddm-greeter ]; then
+              ln -s $out/bin/sddm-greeter-qt6 $out/bin/sddm-greeter
+            fi
+          '';
+          # Preserve passthru so nixpkgs sddm.nix can call .override on us
+          passthru = pkgs.kdePackages.sddm.passthru // {
+            override = pkgs.kdePackages.sddm.override;
+            overrideAttrs = pkgs.kdePackages.sddm.overrideAttrs;
+          };
+        };
 
       };
     in
