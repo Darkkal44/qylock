@@ -162,7 +162,7 @@ bind = SUPER, L, exec, qylock-lock
   inputs = {
     nixpkgs.url      = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager.url = "github:nix-community/home-manager";
-    qylock.url       = "github:yourusername/qylock";
+    qylock.url       = "github:LordHerdier/qylock-nix";
   };
 
   outputs = { nixpkgs, home-manager, qylock, ... }: {
