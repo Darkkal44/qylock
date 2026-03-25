@@ -436,9 +436,25 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     
                     transformOrigin: Item.Center
+                    SequentialAnimation on scale {
+                        loops: Animation.Infinite
+                        NumberAnimation { from: 1.0; to: 1.04; duration: 3200; easing.type: Easing.InOutQuad }
+                        NumberAnimation { from: 1.04; to: 1.0; duration: 3200; easing.type: Easing.InOutQuad }
+                    }
+                    SequentialAnimation on rotation {
+                        loops: Animation.Infinite
+                        NumberAnimation { from: -1.5; to: 1.5; duration: 3500; easing.type: Easing.InOutSine }
+                        NumberAnimation { from: 1.5; to: -1.5; duration: 3500; easing.type: Easing.InOutSine }
+                    }
 
-                    // Simple shadow without layer mapping for better compatibility
-                    visible: true
+                    // Subtle shadow to add depth while keeping it 'light'
+                    DropShadow {
+                        anchors.fill: parent
+                        transparentBorder: true
+                        horizontalOffset: 2; verticalOffset: 2
+                        radius: 5 * s; samples: 10; color: Qt.rgba(0,0,0,0.6)
+                        source: logoImage
+                    }
                 }
             }
 
@@ -493,7 +509,11 @@ Rectangle {
                                 focus: true
 
                                 delegate: Item {
+                                    id: delegateRoot
                                     width: userList.width; height: 110 * s
+                                    property alias delegateAvatar: avatarItem
+                                    
+                                    function jump() { avatarJump.restart() }
                                     
                                     Rectangle {
                                         anchors.fill: parent; color: root.outlineOuter; radius: 10 * s
@@ -528,7 +548,20 @@ Rectangle {
                                                         anchors.fill: parent; anchors.margins: 2 * s; color: root.itemOutlineInner; radius: 4 * s
                                                         Rectangle {
                                                             anchors.fill: parent; anchors.margins: 2 * s; color: "#11162e"; radius: 2 * s; clip: true
-                                                            Image { anchors.fill: parent; source: "avatar.png"; fillMode: Image.PreserveAspectCrop }
+                                                            Item {
+                                                                id: avatarItem
+                                                                anchors.fill: parent
+                                                                function jump() { avatarJump.restart() }
+                                                                Image {
+                                                                    anchors.fill: parent; source: "avatar.png"; fillMode: Image.PreserveAspectCrop
+                                                                    scale: avatarJump.running ? 1.25 : 1.0
+                                                                    Behavior on scale { NumberAnimation { duration: 60 } }
+                                                                }
+                                                                SequentialAnimation {
+                                                                    id: avatarJump
+                                                                    PauseAnimation { duration: 100 }
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -694,6 +727,13 @@ Rectangle {
                                         font.family: mainFont.name; font.pixelSize: 20 * s; color: "#ffffff"
                                         echoMode: TextInput.Password; focus: true; passwordCharacter: "*"
                                         clip: true
+
+                                        onTextChanged: {
+                                            if (text.length > 0) {
+                                                if (userList.currentItem && userList.currentItem.delegateAvatar)
+                                                    userList.currentItem.delegateAvatar.jump()
+                                            }
+                                        }
 
                                         Text {
                                             text: "Enter Passphrase... "
