@@ -53,10 +53,12 @@ in
 
         services.displayManager.sddm.package = q.sddmPatched;
 
-        # QtGraphicalEffects 1.15 (used by all qylock SDDM themes) is a Qt5 shim
-        # that lives in qt5compat under Qt6. Without this, SDDM's QML engine can't
-        # resolve the import and silently falls back to the default theme.
-        services.displayManager.sddm.extraPackages = [ pkgs.kdePackages.qt5compat ];
+        # qt5compat: provides Qt5Compat.GraphicalEffects (rewritten from QtGraphicalEffects 1.15)
+        # qtmultimedia: provides QtMultimedia for the Video.qml shim dropped into each theme
+        services.displayManager.sddm.extraPackages = [
+          pkgs.kdePackages.qt5compat
+          pkgs.qt6.qtmultimedia
+        ];
 
         environment.systemPackages = [ (q.mkSddmThemePkg cfg.sddmTheme) ];
       })

@@ -50,18 +50,27 @@
         # Produces an SDDM theme package for the given theme path (e.g. "cyberpunk"
         # or "cozytile/Cozy"). The package installs the theme under
         # $out/share/sddm/themes/<last-component>.
-        # Patches QtGraphicalEffects import for Qt6
+        # Patches Qt5 imports for Qt6 and drops a Video.qml compat shim into
+        # the theme root so upstream themes using `Video {}` work without
+        # modification (SDDM has no custom QML_IMPORT_PATH, so we can't inject
+        # shims via the module search path — a local component file works instead).
         mkSddmThemePkg =
           themePath:
           let
             safeName = builtins.replaceStrings [ "/" ] [ "-" ] themePath;
+            themeLeaf = builtins.baseNameOf themePath;
           in
           pkgs.runCommand "qylock-sddm-${safeName}" { } ''
             mkdir -p $out/share/sddm/themes
             cp -r --no-preserve=mode,ownership \
               ${self}/themes/${themePath} $out/share/sddm/themes/
             find $out/share/sddm/themes -name "*.qml" -exec \
-              sed -i 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' {} +
+              sed -i \
+                -e 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' \
+                -e 's/import QtMultimedia 5\.15/import QtMultimedia/g' \
+              {} +
+            cp ${self}/quickshell-lockscreen/imports/QtMultimedia/Video.qml \
+              $out/share/sddm/themes/${themeLeaf}/Video.qml
           '';
 
         # SDDM patched to add sddm-greeter symlink so Qt6-only NixOS builds
