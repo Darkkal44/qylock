@@ -1,5 +1,0 @@
-[SddmGreeterTheme]
-Name=Amber
-MainScript=Main.qml
-ConfigFile=theme.conf
-Theme-API=2.0
