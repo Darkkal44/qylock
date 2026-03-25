@@ -1,7 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Window 2.15
 import QtGraphicalEffects 1.15
-import QtMultimedia
+import QtMultimedia 5.15
 import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
@@ -59,19 +59,14 @@ Rectangle {
         anchors.fill: parent
         clip: true
 
-        MediaPlayer {
+        Video {
             id: bgVideoPlayer
+            anchors.fill: parent
             source: root.bgVideo
-            videoOutput: bgVideoOutput
+            fillMode: VideoOutput.PreserveAspectCrop
             loops: MediaPlayer.Infinite
             autoPlay: true
-            audioOutput: AudioOutput { muted: true }
-        }
-
-        VideoOutput {
-            id: bgVideoOutput
-            anchors.fill: parent
-            fillMode: VideoOutput.PreserveAspectCrop
+            muted: true
         }
 
         Rectangle {
