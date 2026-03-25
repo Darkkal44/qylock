@@ -11,7 +11,6 @@ Rectangle {
     height: Screen.height
     color: "#1B8FBF"
 
-    // Properties
     property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0)
                                ? sessionModel.lastIndex : 0
     property real fadeIn: 0
@@ -28,7 +27,6 @@ Rectangle {
 
     TextConstants { id: textConstants }
 
-    // Boot
     Component.onCompleted: bootAnim.start()
     NumberAnimation {
         id: bootAnim
@@ -37,7 +35,6 @@ Rectangle {
         easing.type: Easing.OutCubic
     }
 
-    // Connections
     Connections {
         target: sddm
         function onLoginSucceeded() {
@@ -55,7 +52,6 @@ Rectangle {
         }
     }
 
-    // Session Helper
     ListView {
         id: sessionHelper
         model: sessionModel
@@ -64,7 +60,6 @@ Rectangle {
         delegate: Item { property string sName: model.name || "" }
     }
 
-    // User Helper
     ListView {
         id: userList
         model: userModel
@@ -73,7 +68,6 @@ Rectangle {
         delegate: Item { property string uName: model.name || model.realName || "" }
     }
 
-    // Background
     Image {
         id: bg
         anchors.fill: parent
@@ -82,7 +76,6 @@ Rectangle {
         opacity: root.fadeIn
     }
 
-    // Vignette
     RadialGradient {
         anchors.fill: parent
         opacity: 0.35 * root.fadeIn
@@ -92,7 +85,6 @@ Rectangle {
         }
     }
 
-    // Login
     Column {
         id: loginPanel
         anchors.centerIn: parent
@@ -100,7 +92,6 @@ Rectangle {
         spacing: 0 * s
         opacity: root.fadeIn
 
-        // Shake
         SequentialAnimation {
             id: shakeAnim
             NumberAnimation { target: loginPanel; property: "x"
@@ -115,98 +106,84 @@ Rectangle {
                               to: loginPanel.x;       duration: 50 }
         }
 
-        // Profile
         Item {
             id: pfpFrame
-            width: 148 * s; height: 148 * s
+            width: 132 * s; height: 132 * s
             anchors.horizontalCenter: parent.horizontalCenter
 
-            // Outer glass border glow
             Rectangle {
                 anchors.fill: parent
                 radius: 18 * s
                 color: "transparent"
-                border.color: "#80c8e8f8"
-                border.width: 3 * s
+                border.color: "#99d0e8f8"
+                border.width: 2 * s
 
                 layer.enabled: true
                 layer.effect: DropShadow {
                     transparentBorder: true
-                    horizontalOffset: 0
-                    verticalOffset: 4
-                    radius: 18 * s
-                    samples: 32
-                    color: "#60000000"
+                    horizontalOffset: 0; verticalOffset: 2
+                    radius: 16 * s; samples: 24; color: "#70000000"
                 }
             }
 
-            // Glass frame body — multi-stop gradient to mimic Aero glass
             Rectangle {
                 id: glassFrame
                 anchors.fill: parent
-                anchors.margins: 3 * s
-                radius: 15 * s
-
+                anchors.margins: 2 * s
+                radius: 16 * s
                 gradient: Gradient {
-                    GradientStop { position: 0.00; color: "#cce8f8ff" }
-                    GradientStop { position: 0.12; color: "#88b8ddf0" }
-                    GradientStop { position: 0.45; color: "#556090b8" }
-                    GradientStop { position: 0.88; color: "#883a7aaa" }
-                    GradientStop { position: 1.00; color: "#cc5090c0" }
+                    GradientStop { position: 0.00; color: "#e0f8ffff" }
+                    GradientStop { position: 0.20; color: "#99b8ddf0" }
+                    GradientStop { position: 0.50; color: "#446090b8" }
+                    GradientStop { position: 0.85; color: "#993a7aaa" }
+                    GradientStop { position: 1.00; color: "#e05090c0" }
                 }
 
-                // Inner highlight shine at top
                 Rectangle {
-                    x: 6 * s; y: 4 * s
-                    width: parent.width - 12
-                    height: parent.height * 0.35
-                    radius: 10 * s
+                    anchors.fill: parent
+                    anchors.margins: 5 * s
+                    radius: 12 * s
+                    color: "transparent"
+                    border.color: "#40000000"
+                    border.width: 1 * s
+                    z: 10
+                }
+
+                Canvas {
+                    id: pfpCanvas
+                    anchors.fill: parent
+                    anchors.margins: 5 * s
+                    z: 5
+                    antialiasing: true
+
+                    property var pfpSource: Image { id: pfpImg; source: "pfp.png"; visible: false; onStatusChanged: if (status == Image.Ready) pfpCanvas.requestPaint() }
+
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.beginPath();
+                        ctx.roundedRect(0, 0, width, height, 8 * s, 8 * s);
+                        ctx.clip();
+                        ctx.drawImage(pfpImg, 0, 0, width, height);
+                    }
+                }
+
+                Rectangle {
+                    anchors.top: parent.top; anchors.topMargin: 2 * s
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width - 12 * s; height: parent.height * 0.45
+                    radius: 12 * s
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#60ffffff" }
+                        GradientStop { position: 0.0; color: "#70ffffff" }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
-                    z: 2
-                }
-
-                // Actual profile image clipped inside
-                Image {
-                    id: pfpImage
-                    anchors.fill: parent
-                    anchors.margins: 4 * s
-                    source: "pfp.png"
-                    fillMode: Image.PreserveAspectCrop
-                    smooth: true
-
-                    layer.enabled: true
-                    layer.effect: OpacityMask {
-                        maskSource: Rectangle {
-                            width: pfpImage.width; height: pfpImage.height
-                            radius: 12 * s
-                        }
-                    }
-                }
-            }
-
-            // Reflection
-            Rectangle {
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.bottom: parent.bottom
-                anchors.bottomMargin: 3 * s
-                width: parent.width * 0.6
-                height: 3 * s
-                radius: 2 * s
-                gradient: Gradient {
-                    orientation: Gradient.Horizontal
-                    GradientStop { position: 0.0; color: "transparent" }
-                    GradientStop { position: 0.5; color: "#80a0d4f0" }
-                    GradientStop { position: 1.0; color: "transparent" }
+                    z: 15
                 }
             }
         }
 
         Item { width: 1 * s; height: 18 * s }
 
-        // Username
         Text {
             id: userNameText
             anchors.horizontalCenter: parent.horizontalCenter
@@ -223,7 +200,6 @@ Rectangle {
 
         Item { width: 1 * s; height: 4 * s }
 
-        // Status
         Text {
             id: statusLabel
             anchors.horizontalCenter: parent.horizontalCenter
@@ -237,154 +213,146 @@ Rectangle {
 
         Item { width: 1 * s; height: 14 * s }
 
-        // Password Row
-        // Container width: 318 * s (242 box + 38 padding each side to keep box centered)
         Item {
             id: passwordRow
             anchors.horizontalCenter: parent.horizontalCenter
-            width: 318 * s
-            height: 30 * s
+            width: inputBox.width 
+            height: 28 * s
 
-            // Password input box — white translucent Aero style
             Rectangle {
                 id: inputBox
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 242 * s; height: 30 * s
-                color: "transparent"
+                anchors.centerIn: parent
+                width: 240 * s; height: 28 * s
+                radius: 2 * s
+                color: "#f8fdff"
+                border.color: inputFocus.activeFocus ? "#3c7fb1" : "#40708898"
+                border.width: 1 * s
 
-                // Outer border (blue glass tone)
                 Rectangle {
-                    anchors.fill: parent
-                    radius: 3 * s
-                    color: "transparent"
-                    border.color: inputFocus.activeFocus ? "#80a0d0ff" : "#50607890"
-                    border.width: 1 * s
+                    anchors.fill: parent; anchors.margins: 1 * s; radius: 1 * s; color: "transparent"
+                    border.color: "#15000000"; border.width: 1 * s
                 }
 
-                // Fill
-                Rectangle {
-                    anchors.fill: parent
-                    anchors.margins: 1 * s
-                    radius: 2 * s
-                    gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#e5f8ffff" }
-                        GradientStop { position: 0.4; color: "#d0e8f8ff" }
-                        GradientStop { position: 1.0; color: "#c8daeeff" }
-                    }
-                }
-
-                // Inner top highlight line
-                Rectangle {
-                    anchors.top: parent.top
-                    anchors.topMargin: 1 * s
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    anchors.margins: 2 * s
-                    height: 1 * s
-                    color: "#40ffffff"
-                    radius: 1 * s
-                }
-
-                // Placeholder text
                 Text {
-                    anchors.verticalCenter: parent.verticalCenter
-                    anchors.left: parent.left
-                    anchors.leftMargin: 9 * s
+                    anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 6 * s
                     text: "Password"
-                    font.family: root.customFontName
-                    font.pixelSize: 14 * s
-                    color: "#80404050"
+                    font.family: root.customFontName; font.pixelSize: 13 * s; color: "#80404050"
                     visible: inputFocus.text === "" && !inputFocus.activeFocus
                 }
 
-                // Actual password input
+                Row {
+                    id: dotRow
+                    anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 6 * s
+                    spacing: 4 * s
+                    Repeater {
+                        model: 32 
+                        Rectangle {
+                            width: 7 * s; height: 7 * s; radius: 3.5 * s; color: "#101820"
+                            opacity: index < inputFocus.text.length ? 1 : 0
+                            scale: index < inputFocus.text.length ? 1 : 0
+                            
+                            onOpacityChanged: {
+                                if (opacity > 0 && index == inputFocus.text.length - 1) {
+                                    scaleFixedAnim.start();
+                                }
+                            }
+
+                            NumberAnimation on scale { id: scaleFixedAnim; from: 0; to: 1; duration: 150; easing.type: Easing.OutBack }
+                            Behavior on opacity { NumberAnimation { duration: 100 } }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    id: customCursor
+                    width: 1 * s; height: 16 * s; color: "#101820"
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: 6 * s + (inputFocus.cursorPosition * (7 * s + 4 * s))
+                    visible: inputFocus.activeFocus && cursorFlash.flashVisible
+                    Timer {
+                        id: cursorFlash
+                        property bool flashVisible: true
+                        interval: 500; running: inputFocus.activeFocus; repeat: true
+                        onTriggered: flashVisible = !flashVisible
+                        onRunningChanged: if (!running) flashVisible = true
+                    }
+                }
+
                 TextInput {
                     id: inputFocus
-                    anchors.fill: parent
-                    anchors.leftMargin: 9 * s
-                    anchors.rightMargin: 6 * s
+                    anchors.fill: parent; anchors.leftMargin: 6 * s; anchors.rightMargin: 6 * s
                     verticalAlignment: TextInput.AlignVCenter
-                    font.family: root.customFontName
-                    font.pixelSize: 14 * s
-                    color: "#101820"
-                    echoMode: TextInput.Password
-                    passwordCharacter: "●"
-                    focus: true
-                    clip: true
-
+                    font.family: root.customFontName; font.pixelSize: 13 * s; color: "transparent"
+                    echoMode: TextInput.Normal 
+                    focus: true; clip: true
+                    selectionColor: "#3399ff"
+                    
                     Keys.onReturnPressed: doLogin()
                     Keys.onEnterPressed:  doLogin()
                 }
             }
 
-            // Arrow submit button — circular, matches Aero glass palette of Switch User
             Item {
                 id: arrowBtn
-                anchors.left: inputBox.right
-                anchors.leftMargin: 8 * s
+                anchors.left: inputBox.right; anchors.leftMargin: 8 * s
                 anchors.verticalCenter: parent.verticalCenter
-                width: 30 * s; height: 30 * s
+                width: 28 * s; height: 28 * s
 
-                // Outer ring border
                 Rectangle {
-                    anchors.fill: parent
-                    radius: 15 * s
+                    anchors.fill: parent; radius: 14 * s
                     color: "transparent"
-                    border.color: arrowMouse.containsMouse ? "#90b4d0f0" : "#6090aac8"
+                    border.color: arrowMouse.containsMouse ? "#80b0ccee" : "#40708898"
                     border.width: 1 * s
                 }
 
-                // Glass fill — lighter Aero glass matching Switch User / power buttons
                 Rectangle {
-                    anchors.fill: parent; anchors.margins: 1 * s
-                    radius: 14 * s
+                    anchors.fill: parent; anchors.margins: 1 * s; radius: 13 * s
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: arrowMouse.containsMouse ? "#99c8e0ff" : "#88b0ccec" }
-                        GradientStop { position: 0.5; color: arrowMouse.containsMouse ? "#775888c0" : "#605070b0" }
-                        GradientStop { position: 1.0; color: arrowMouse.containsMouse ? "#886898cc" : "#706090c0" }
+                        GradientStop { position: 0.0; color: arrowMouse.containsMouse ? "#88c8e0ff" : "#60a0c4e8" }
+                        GradientStop { position: 0.5; color: arrowMouse.containsMouse ? "#666090b4" : "#404870a0" }
+                        GradientStop { position: 1.0; color: arrowMouse.containsMouse ? "#886090b8" : "#505888b0" }
                     }
                 }
 
-                // Top shine
                 Rectangle {
-                    x: 4 * s; y: 3 * s
-                    width: parent.width - 8; height: 10 * s
-                    radius: 7 * s
+                    anchors.top: parent.top; anchors.topMargin: 2 * s
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width - 8 * s; height: 11 * s; radius: 7 * s
                     gradient: Gradient {
-                        GradientStop { position: 0.0; color: "#55ffffff" }
+                        GradientStop { position: 0.0; color: "#45ffffff" }
                         GradientStop { position: 1.0; color: "transparent" }
                     }
+                    z: 2
                 }
-
-                // Glyph
-                Text {
-                    anchors.centerIn: parent
-                    anchors.horizontalCenterOffset: 1 * s
-                    text: "\u2192"
-                    font.pixelSize: 15 * s
-                    font.bold: true
-                    color: "white"
-                    style: Text.Raised
-                    styleColor: "#40000000"
+                
+                Canvas {
+                    anchors.fill: parent; anchors.margins: 6 * s
+                    z: 5
+                    onPaint: {
+                        var ctx = getContext("2d");
+                        ctx.reset();
+                        ctx.strokeStyle = "white"; ctx.lineWidth = 2.2 * s;
+                        ctx.lineCap = "round"; ctx.lineJoin = "round";
+                        ctx.beginPath();
+                        ctx.moveTo(2, height/2); ctx.lineTo(width-2, height/2);
+                        ctx.moveTo(width-6, height/2-4); ctx.lineTo(width-2, height/2); ctx.lineTo(width-6, height/2+4);
+                        ctx.stroke();
+                    }
                 }
 
                 MouseArea {
                     id: arrowMouse
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    cursorShape: Qt.PointingHandCursor
+                    anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                     onClicked: doLogin()
                 }
 
-                // Scale on hover
-                scale: arrowMouse.containsMouse ? 1.10 : 1.0
-                Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+                scale: arrowMouse.pressed ? 0.92 : (arrowMouse.containsMouse ? 1.08 : 1.0)
+                Behavior on scale { NumberAnimation { duration: 100 } }
             }
         }
 
         Item { width: 1 * s; height: 8 * s }
 
-        // Message
         Text {
             id: errorMsg
             anchors.horizontalCenter: parent.horizontalCenter
@@ -402,14 +370,12 @@ Rectangle {
 
         Item { width: 1 * s; height: 20 * s }
 
-        // Switch User
         Item {
             id: switchUserBtn
             anchors.horizontalCenter: parent.horizontalCenter
             width: switchUserText.implicitWidth + 36
             height: 26 * s
 
-            // Outer border
             Rectangle {
                 anchors.fill: parent
                 radius: 3 * s
@@ -418,7 +384,6 @@ Rectangle {
                 border.width: 1 * s
             }
 
-            // Aero glass fill
             Rectangle {
                 anchors.fill: parent
                 anchors.margins: 1 * s
@@ -439,7 +404,6 @@ Rectangle {
                 }
             }
 
-            // Shine
             Rectangle {
                 anchors.top: parent.top; anchors.topMargin: 1 * s
                 anchors.left: parent.left; anchors.right: parent.right
@@ -468,15 +432,13 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    // Cycle to next user via tracked property (lastIndex is read-only)
                     if (userModel.rowCount() > 0)
                         root.currentUserIndex = (root.currentUserIndex + 1) % userModel.rowCount()
                 }
             }
         }
-    } // loginPanel
+    } 
 
-    // Bottom Bar
     Item {
         id: bottomBar
         anchors.bottom: parent.bottom
@@ -485,7 +447,6 @@ Rectangle {
         height: 52 * s
         opacity: root.fadeIn
 
-        // Glass bar background
         Rectangle {
             anchors.fill: parent
             gradient: Gradient {
@@ -494,7 +455,6 @@ Rectangle {
             }
         }
 
-        // Separator line
         Rectangle {
             anchors.top: parent.top
             anchors.left: parent.left; anchors.right: parent.right
@@ -502,7 +462,6 @@ Rectangle {
             color: "#30a0c8e0"
         }
 
-        // Left: Session selector
         Row {
             anchors.left: parent.left
             anchors.leftMargin: 20 * s
@@ -517,7 +476,6 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
             }
 
-            // Session pill button
             Item {
                 id: sessionPill
                 width: sessionPillText.implicitWidth + 24
@@ -561,7 +519,6 @@ Rectangle {
             }
         }
 
-        // Right: Power buttons
         Row {
             anchors.right: parent.right
             anchors.rightMargin: 20 * s
@@ -577,9 +534,8 @@ Rectangle {
                 onClicked: sddm.powerOff()
             }
         }
-    } // bottomBar
+    } 
 
-    // Logic
     function doLogin() {
         errorMsg.visible = false
         var uname = (userList.currentItem && userList.currentItem.uName)
@@ -587,7 +543,6 @@ Rectangle {
         sddm.login(uname, inputFocus.text, root.sessionIndex)
     }
 
-    // Win7PowerBtn
     component Win7PowerBtn: Item {
         property string label: ""
         signal clicked()
@@ -609,13 +564,12 @@ Rectangle {
                 GradientStop { position: 1.0; color: pwMouse.containsMouse ? "#883060a8" : "#602858a0" }
             }
         }
-        // Top shine
         Rectangle {
             anchors.top: parent.top; anchors.topMargin: 1 * s
             anchors.left: parent.left; anchors.right: parent.right
             anchors.margins: 2 * s; height: 9 * s; radius: 3 * s
             gradient: Gradient {
-                GradientStop { position: 0.0; color: "#35ffffff" }
+                GradientStop { position: 0.0; color: "#40ffffff" }
                 GradientStop { position: 1.0; color: "transparent" }
             }
         }
