@@ -47,6 +47,8 @@ A simple collection of all the lockscreen themes I've made. It comes with a them
 Make sure you have these packages installed via your system's package manager (names might differ slightly on your distro):
 - `sddm`, `qt5-graphicaleffects`, `qt5-multimedia`, `qt5-quickcontrols`, `qt5-quickcontrols2`, `qt5-svg`
 
+**NixOS / Nix users:** A `flake.nix` dev shell is included. Run `nix develop` to get all dependencies (SDDM, Qt6, qt5compat shims, Quickshell, fzf) in one step. See the [Nix section](#nix) below.
+
 **2. Use the Setup Script:**
 Simply run the interactive script to select and apply your themes. As long as you have the dependencies, this will handle the rest.
 > [!IMPORTANT]
@@ -98,6 +100,40 @@ chmod +x quickshell.sh
 
 **3. Configure your Window Manager:**
 Once completed, simply bind a keyboard shortcut in your Window Manager's configuration file (e.g., Qtile, Hyprland, Sway or i3) to trigger `~/.local/share/quickshell-lockscreen/lock.sh`.
+
+<br>
+
+---
+
+<div align="center">
+  <h2 id="nix">  ɴɪx / ɴɪxᴏꜱ  </h2>
+</div>
+
+A `flake.nix` dev shell is included for Nix users. It provides everything needed to test themes locally without installing anything system-wide.
+
+**Enter the dev shell:**
+```sh
+nix develop
+```
+
+**Test a theme:**
+```sh
+sddm-greeter-qt6 --test-mode --theme $PWD/themes/<name>
+```
+
+**Run the Quickshell lockscreen:**
+```sh
+quickshell -p $PWD/quickshell-lockscreen
+```
+
+> [!NOTE]
+> The nixpkgs SDDM package (`kdePackages.sddm`) is Qt6-based. The themes were originally written for Qt5 — the following compatibility fixes are applied automatically via the dev shell:
+> - `QtGraphicalEffects 1.15` imports are shimmed via `kdePackages.qt5compat` (`Qt5Compat.GraphicalEffects`)
+> - The `QtGraphicalEffects` shims in `quickshell-lockscreen/imports/` must be regular files, not symlinks to `/usr/lib` (they are committed as proper files in this fork)
+> - Video themes (`enfield`, `porsche`, `sword`, `Genshin`) use the Qt6 `MediaPlayer` + `VideoOutput` API instead of the removed Qt5 `Video` convenience type
+
+> [!IMPORTANT]
+> To install SDDM themes system-wide on NixOS, use the `services.displayManager.sddm.theme` option or copy themes to `/usr/share/sddm/themes/` — the `sddm.sh` script will work inside `nix develop` for local testing but requires `sudo` for system installation.
 
 <br>
 

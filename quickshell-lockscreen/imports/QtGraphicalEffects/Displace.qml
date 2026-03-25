@@ -1,1 +1,2 @@
-/usr/lib/qt6/qml/Qt5Compat/GraphicalEffects/Displace.qml
+import Qt5Compat.GraphicalEffects as T
+T.Displace {}

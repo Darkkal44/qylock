@@ -1,1 +1,2 @@
-/usr/lib/qt6/qml/Qt5Compat/GraphicalEffects/MaskedBlur.qml
+import Qt5Compat.GraphicalEffects as T
+T.MaskedBlur {}
