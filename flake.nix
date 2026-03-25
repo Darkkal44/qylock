@@ -66,7 +66,7 @@
 
         # SDDM patched to add sddm-greeter symlink so Qt6-only NixOS builds
         sddmPatched = pkgs.kdePackages.sddm.overrideAttrs (old: {
-          postInstall = (old.postInstall or "") + ''
+          buildCommand = old.buildCommand + ''
             ln -s $out/bin/sddm-greeter-qt6 $out/bin/sddm-greeter
           '';
         });
