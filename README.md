@@ -115,42 +115,60 @@ qylock ships a Nix flake with a **NixOS module**, a **Home Manager module**, and
 
 ### 󱔗 ɴɪxᴏꜱ ᴍᴏᴅᴜʟᴇ
 
-Add qylock as a flake input, import the module, and set your theme:
+**Step 1 — add the flake input:**
 
 ```nix
 # flake.nix
 {
   inputs = {
-    nixpkgs.url     = "github:NixOS/nixpkgs/nixos-unstable";
-    qylock.url      = "github:LordHerdier/qylock-nix";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    qylock.url  = "github:LordHerdier/qylock-nix";
   };
 
-  outputs = { nixpkgs, qylock, ... }: {
+  outputs = inputs@{ nixpkgs, qylock, ... }: {
     nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         qylock.nixosModules.default
-        {
-          programs.qylock = {
-            enable    = true;
-            theme     = "terraria";   # Quickshell lockscreen theme
-            sddmTheme = "cyberpunk";  # optional: also configure SDDM
-          };
-        }
+        ./modules/features/qylock.nix  # your config (see step 2)
+        # ... your other modules
       ];
     };
   };
 }
 ```
 
-This installs a `qylock-lock` command. Bind it to a key in your compositor config to lock the screen.
+**Step 2 — configure qylock in a module:**
 
-**Hyprland example (`hyprland.conf`):**
+```nix
+# modules/features/qylock.nix
+{ ... }:
+{
+  programs.qylock = {
+    enable    = true;
+    theme     = "paper";     # Quickshell lockscreen theme
+    sddmTheme = "paper";     # optional: also sets services.displayManager.sddm.theme
+  };
+}
+```
+
+**Step 3 — enable SDDM with Wayland support** (required for Wayland compositors like Hyprland):
+
+```nix
+services.displayManager.sddm = {
+  enable         = true;
+  wayland.enable = true;
+};
+```
+
+**Step 4 — bind the lock command in your compositor:**
+
 ```ini
+# hyprland.conf
 bind = SUPER, L, exec, qylock-lock
 ```
 
-**`sddmTheme`** is optional. When set, it installs the SDDM theme package and sets `services.displayManager.sddm.theme` automatically.
+`qylock-lock` is installed automatically by the module. **`sddmTheme`** is optional — when set it installs the SDDM theme package and configures `services.displayManager.sddm.theme` for you.
 
 <br>
 
