@@ -79,14 +79,26 @@
         # Patches applied (via sed, in-place on the copied theme):
         #   • QtGraphicalEffects 1.15  → Qt5Compat.GraphicalEffects
         #   • QtMultimedia 5.15        → QtMultimedia  (Qt6 bare import)
-        #   • loops: MediaPlayer.Infinite → loops: -1  (constant not available when
-        #     MediaPlayer is a local shim component rather than a real QML module)
-        #   • Connections { onFoo: }   → Connections { function onFoo() {} }
-        #     (Qt6 deprecation that becomes a hard error in strict mode)
+        #   • loops: MediaPlayer.Infinite → loops: -1
+        #       MediaPlayer.Infinite is an enum on the real Qt module type; local
+        #       shim components don't expose type-level enums, so we inline the
+        #       value (-1 is Qt's universal "loop forever" sentinel).
+        #   • VideoOutput.PreserveAspectCrop/Fit/Stretch → integer literals
+        #       Same reason: VideoOutput.qml is a local shim, not a real module,
+        #       so type-level enum references like VideoOutput.PreserveAspectCrop
+        #       would be unresolved.  2/1/0 match Qt6's VideoOutput enum values.
+        #   • Video { → QylockVideo {
+        #       The bare name "Video" is exported by the real QtMultimedia module,
+        #       which takes precedence over a local Video.qml shim when
+        #       `import QtMultimedia` is in scope.  Renaming to QylockVideo ensures
+        #       our shim (copied as QylockVideo.qml) is always used.
+        #   • Connections { onFoo: } → Connections { function onFoo() {} }
+        #       Qt6 deprecation; becomes a hard error in strict mode.
         #
         # Shims copied into the theme root:
-        #   Video.qml        — wraps Qt6 MediaPlayer + VideoOutput for themes that
-        #                       use the Video {} convenience element
+        #   QylockVideo.qml  — wraps Qt6 MediaPlayer + VideoOutput for themes using
+        #                       the Video {} convenience element (renamed to avoid
+        #                       shadowing by the real QtMultimedia Video type)
         #   MediaPlayer.qml  — thin shim so themes referencing MediaPlayer directly
         #                       resolve the type without an explicit module import
         #   VideoOutput.qml  — same for VideoOutput
@@ -106,11 +118,15 @@
                 -e 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' \
                 -e 's/import QtMultimedia 5\.15/import QtMultimedia/g' \
                 -e 's/loops: MediaPlayer\.Infinite/loops: -1/g' \
+                -e 's/VideoOutput\.PreserveAspectCrop/2/g' \
+                -e 's/VideoOutput\.PreserveAspectFit/1/g' \
+                -e 's/VideoOutput\.Stretch/0/g' \
+                -e 's/\bVideo {/QylockVideo {/g' \
                 -e 's/onLoginFailed:/function onLoginFailed()/g' \
               {} +
 
             cp ${self}/quickshell-lockscreen/imports/QtMultimedia/Video.qml \
-              $out/share/sddm/themes/${themeLeaf}/Video.qml
+              $out/share/sddm/themes/${themeLeaf}/QylockVideo.qml
             cp ${self}/quickshell-lockscreen/imports/QtMultimedia/MediaPlayerShim.qml \
               $out/share/sddm/themes/${themeLeaf}/MediaPlayer.qml
             cp ${self}/quickshell-lockscreen/imports/QtMultimedia/VideoOutputShim.qml \
@@ -132,8 +148,8 @@
     in
     {
       # ── packages ──────────────────────────────────────────────────────────────
-      # packages.<system>.default  — qylock-lock script (Genshin theme baked in)
-      # packages.<system>.shell    — raw Quickshell lockscreen store path
+      # packages.<s>.default  — qylock-lock script (Genshin theme baked in)
+      # packages.<s>.shell    — raw Quickshell lockscreen store path
       packages = forEachSystem (
         pkgs:
         let
@@ -168,13 +184,13 @@
       devShells = forEachSystem (pkgs: {
         default = pkgs.mkShell {
           packages = with pkgs; [
-            kdePackages.sddm # sddm-greeter-qt6 test binary
-            kdePackages.qt5compat # Qt5Compat.GraphicalEffects compat layer
-            qt6.qtmultimedia # QtMultimedia (required by video themes)
-            qt6.qtdeclarative # QtQuick / QML engine
-            qt6.qttools # qmllint, qmlformat
-            quickshell # Quickshell lockscreen runner
-            fzf # used by sddm.sh / quickshell.sh installers
+            kdePackages.sddm       # sddm-greeter-qt6 test binary
+            kdePackages.qt5compat  # Qt5Compat.GraphicalEffects compat layer
+            qt6.qtmultimedia       # QtMultimedia (required by video themes)
+            qt6.qtdeclarative      # QtQuick / QML engine
+            qt6.qttools            # qmllint, qmlformat
+            quickshell             # Quickshell lockscreen runner
+            fzf                    # used by sddm.sh / quickshell.sh installers
           ];
 
           shellHook = ''
@@ -208,12 +224,16 @@
                 -e 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' \
                 -e 's/import QtMultimedia 5\.15/import QtMultimedia/g' \
                 -e 's/loops: MediaPlayer\.Infinite/loops: -1/g' \
+                -e 's/VideoOutput\.PreserveAspectCrop/2/g' \
+                -e 's/VideoOutput\.PreserveAspectFit/1/g' \
+                -e 's/VideoOutput\.Stretch/0/g' \
+                -e 's/\bVideo {/QylockVideo {/g' \
                 -e 's/onLoginFailed:/function onLoginFailed()/g' \
               {} +
 
               echo "  Copying QtMultimedia shims..."
               cp quickshell-lockscreen/imports/QtMultimedia/Video.qml \
-                "$tmp/$leaf/Video.qml"
+                "$tmp/$leaf/QylockVideo.qml"
               cp quickshell-lockscreen/imports/QtMultimedia/MediaPlayerShim.qml \
                 "$tmp/$leaf/MediaPlayer.qml"
               cp quickshell-lockscreen/imports/QtMultimedia/VideoOutputShim.qml \
@@ -232,7 +252,7 @@
             echo "    testTheme cozytile/Cozy"
             echo ""
             echo "  Test an unpatched theme directly (source tree):"
-            echo "    sddm-greeter-qt6 --test-mode --theme \$PWD/themes/<name>"
+            echo "    sddm-greeter-qt6 --test-mode --theme \$PWD/themes/<n>"
             echo ""
             echo "  Run the Quickshell lockscreen:"
             echo "    quickshell -p \$PWD/quickshell-lockscreen"

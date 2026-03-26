@@ -7,13 +7,12 @@ Item {
     property bool autoPlay: false
     property int loops: 1
     property bool muted: false
-    property int fillMode: VideoOutput.PreserveAspectFit
+    property int fillMode: 2
 
     MediaPlayer {
         id: _player
         source: root.source
         loops: root.loops
-        autoPlay: root.autoPlay
         videoOutput: _output
         audioOutput: _audio
     }
@@ -27,5 +26,10 @@ Item {
         id: _output
         anchors.fill: parent
         fillMode: root.fillMode
+    }
+
+    Component.onCompleted: {
+        if (root.autoPlay)
+            _player.play()
     }
 }
