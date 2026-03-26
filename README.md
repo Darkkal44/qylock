@@ -14,7 +14,7 @@
   <a href="https://www.qt.io"><img src="https://img.shields.io/badge/QT_QML-000000?style=for-the-badge&logo=qt&logoColor=white" align="left"/></a>
   
   <div align="right">
-    <a href="upi://pay?pa=abhaydevka169@okicici&pn=Kaizky" title="UPI ID: abhaydevka169@okicici"><img src="https://img.shields.io/badge/UPI-000000?style=for-the-badge&logo=googlepay&logoColor=white"/></a>
+    <a href="upi://pay?pa=abhaydevka169@okicici&pn=Kaizky" title="Support via UPI"><img src="https://img.shields.io/badge/abhaydevka169%40okicici-000000?style=for-the-badge&logo=googlepay&logoColor=white"/></a>
     <a href="https://ko-fi.com/kaizky1"><img src="https://img.shields.io/badge/KO--FI-000000?style=for-the-badge&logo=ko-fi&logoColor=white"/></a>
   </div>
 </div>
