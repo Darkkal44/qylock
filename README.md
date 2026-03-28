@@ -1,274 +1,247 @@
-
-
 <p align="center">
-<pre align="center">
-<a href="#sddm">sᴅᴅᴍ​​</a>  •  <a href="#quickshell">​ǫᴜɪᴄᴋsʜᴇʟʟ​</a>  •  <a href="#gallery">​ɢᴀʟʟᴇʀʏ</a>  •  <a href="#credits">​ᴄʀᴇᴅɪᴛs</a>
-</pre>
+  <img src="./Assets/title.png" alt="qylock" width="100%"/>
 </p>
 
-<img id="header" align="center" src="./Assets/title.png" alt="SDDM Themes" width="100%" style="border-radius: 10px; margin-top: 20px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"/>
+<br>
 
+<p align="center">
+  <a href="#-sddm-setup">SDDM</a> &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="#-quickshell-setup">Quickshell</a> &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="#-gallery">Gallery</a> &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="#-credits">Credits</a>
+</p>
 
-<div align="left">
-  <a href="https://github.com/sddm/sddm"><img src="https://img.shields.io/badge/SDDM-000000?style=for-the-badge&logo=linux&logoColor=white" align="left"/></a>
-  <a href="https://www.qt.io"><img src="https://img.shields.io/badge/QT_QML-000000?style=for-the-badge&logo=qt&logoColor=white" align="left"/></a>
-  
-  <div align="right">
-    <a href="upi://pay?pa=abhaydevka169@okicici&pn=Kaizky" title="Support via UPI"><img src="https://img.shields.io/badge/abhaydevka169%40okicici-000000?style=for-the-badge&logo=googlepay&logoColor=white"/></a>
-    <a href="https://ko-fi.com/kaizky1"><img src="https://img.shields.io/badge/KO--FI-000000?style=for-the-badge&logo=ko-fi&logoColor=white"/></a>
-  </div>
-</div>
+<p align="center">
+  <a href="https://github.com/sddm/sddm">
+    <img src="https://img.shields.io/badge/SDDM-black?style=flat-square&logo=linux&logoColor=white" alt="SDDM"/>
+  </a>
+  &nbsp;
+  <a href="https://github.com/outfoxxed/quickshell">
+    <img src="https://img.shields.io/badge/Quickshell-black?style=flat-square&logo=qtile&logoColor=white" alt="Quickshell"/>
+  </a>
+  &nbsp;
+  <a href="https://github.com/Darkkal44/qylock/stargazers">
+    <img src="https://img.shields.io/github/stars/Darkkal44/qylock?style=flat-square&color=black&labelColor=black&logo=star&logoColor=white" alt="Stars"/>
+  </a>
+  &nbsp;
+  <a href="https://ko-fi.com/darkkal">
+    <img src="https://img.shields.io/badge/Ko--fi-black?style=flat-square&logo=ko-fi&logoColor=white" alt="Ko-fi"/>
+  </a>
+</p>
+
+<br>
+
+<p align="center">
+  A curated collection of pixel-perfect lockscreen themes for SDDM and Quickshell.<br>
+  Switch themes instantly with an interactive script — no manual file moving required.
+</p>
+
+<br>
 
 ---
 
 <br>
 
-###  ᴏᴠᴇʀᴠɪᴇᴡ
-A simple collection of all the lockscreen themes I've made. It comes with a theme changer script so you don't have to worry about moving files manually. 
+## ⚡ SDDM Setup
 
-<br>
+### Dependencies
 
----
+| | Packages |
+|:--|:--|
+| **Core** | `sddm` &nbsp; `qt5-graphicaleffects` &nbsp; `qt5-quickcontrols2` &nbsp; `qt5-svg` |
+| **Video · Qt5** | `qt5-multimedia` |
+| **Video · Qt6** | `qt6-multimedia-ffmpeg` |
+| **Optional** | `fzf` |
 
-<div align="center">
-  <h2 id="sddm">  ꜱᴅᴅᴍ ꜱᴇᴛᴜᴘ  </h2>
-</div>
-
-### ⚡ ɪɴꜱᴛᴀʟʟᴀᴛɪᴏɴ ᴀɴᴅ ᴜꜱᴀɢᴇ
-
-**1. Install Dependencies:**
-*   **Core SDDM:** `sddm`, `qt5-graphicaleffects`, `qt5-quickcontrols2`, `qt5-svg`
-*   **Video Support:** `qt5-multimedia` (for Qt5) OR `qt6-multimedia-ffmpeg` (for Qt6)
-*   **Optional:** `fzf` (for the interactive script)
-
-**2. Use the Setup Script:**
-Simply run the interactive script to select and apply your themes. As long as you have the dependencies, this will handle the rest.
-> [!IMPORTANT]
-> The `sddm.sh` script works best with `fzf` installed, but will fallback to a simple list if needed.
+### Install
 
 ```sh
-chmod +x sddm.sh
-./sddm.sh
+chmod +x sddm.sh && ./sddm.sh
 ```
 
-### 󱔗 ꜰᴏɴᴛ ʀᴇǫᴜɪʀᴇᴍᴇɴᴛꜱ
-Some themes in this collection use premium or trademarked fonts that cannot be redistributed in this repository. If you choose one of these themes, you will need to manually download the font and place it in the theme's `font` subfolder.
+> [!NOTE]
+> The script uses `fzf` for an interactive theme picker. Falls back to a numbered list if not installed.
 
-| Theme | Recommended Font | File Name (approx) |
-| :--- | :--- | :--- |
-| **NieR: Automata** | FOT-Rodin Pro DB | `FOT-Rodin Pro DB.otf` |
-| **Terraria** | Andy Bold | `Andy Bold.ttf` |
-| **Genshin Impact** | HYWenHei-85W | `zhcn.ttf` |
-| **Sword** | The Last Shuriken | `The Last Shuriken.ttf` |
-| **Minecraft** | Minecraft Regular | `minecraft.ttf` |
+<br>
 
+### Font Requirements
 
-**Instructions:**
-1. Navigate to the theme folder: `themes/<theme_name>/font/`
-2. Place your `.ttf` or `.otf` file inside that `font` folder.
-3. The theme will automatically detect and load the font on the next start!
+Some themes rely on fonts that cannot be bundled here. Download the font and drop it into `themes/<theme_name>/font/` — it loads automatically.
+
+| Theme | Font | Filename |
+|:--|:--|:--|
+| NieR: Automata | FOT-Rodin Pro DB | `FOT-Rodin Pro DB.otf` |
+| Terraria | Andy Bold | `Andy Bold.ttf` |
+| Genshin Impact | HYWenHei-85W | `zhcn.ttf` |
+| Sword | The Last Shuriken | `The Last Shuriken.ttf` |
+| Minecraft | Minecraft Regular | `minecraft.ttf` |
 
 <br>
 
 ---
 
-<div align="center">
-  <h2 id="quickshell">  ʟᴏᴄᴋꜱᴄʀᴇᴇɴ ꜱᴇᴛᴜᴘ (ǫᴜɪᴄᴋꜱʜᴇʟʟ)  </h2>
-</div>
+<br>
 
-If you're here to use these as lockscreen themes, then you can use QUICKSHELL to do so.
+## 🔒 Quickshell Setup
 
-**1. Install Target Dependencies:**
-*   **Core:** `quickshell` (or `quickshell-git`), `qt6-declarative`, `qt6-5compat`
-*   **Video Support:** `qt6-multimedia`, `qt6-multimedia-ffmpeg` (or `qt6-multimedia-gstreamer`)
-*   **Optional:** `fzf` (for the interactive script)
+### Dependencies
 
-**2. Run the Interactive Installer:**
-Execute the `quickshell.sh` script to set up your target lockscreen theme and create the needed directories in your local environment.
+| | Packages |
+|:--|:--|
+| **Core** | `quickshell` &nbsp; `qt6-declarative` &nbsp; `qt6-5compat` |
+| **Video** | `qt6-multimedia` &nbsp; `qt6-multimedia-ffmpeg` |
+| **Optional** | `fzf` |
+
+### Install
+
 ```sh
-chmod +x quickshell.sh
-./quickshell.sh
+chmod +x quickshell.sh && ./quickshell.sh
 ```
 
-**3. Configure your Window Manager:**
-Once completed, simply bind a keyboard shortcut in your Window Manager's configuration file (e.g., Qtile, Hyprland, Sway or i3) to trigger `~/.local/share/quickshell-lockscreen/lock.sh`.
+### Bind a Shortcut
+
+Point your WM keybind to:
+
+```sh
+~/.local/share/quickshell-lockscreen/lock.sh
+```
+
+Compatible with **Hyprland**, **Qtile**, **Sway**, **i3**, and more.
 
 <br>
 
 ---
 
-<div align="center">
-  <h2 id="gallery"> ◈ ᴛʜᴇ ᴄᴏʟʟᴇᴄᴛɪᴏɴ ◈ </h2>
-</div>
+<br>
+
+## 🎨 Gallery
 
 <br>
 
-### ◈ NieR: Automata
-
-<div align="center">
-  <img src="./Assets/nier_automata.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Terraria
-
-<div align="center">
-  <img src="./Assets/terraria.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Enfield
-
-<div align="center">
-  <img src="./Assets/enfield.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Sword
-
-<div align="center">
-  <img src="./Assets/sword.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Paper
-
-<div align="center">
-  <img src="./Assets/paper.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Windows 7
-
-<div align="center">
-  <img src="./Assets/win7.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Cyberpunk
-
-<div align="center">
-  <img src="./Assets/cyberpunk.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ TUI
-
-<div align="center">
-  <img src="./Assets/tui.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Porsche
-
-<div align="center">
-  <img src="./Assets/porsche.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Genshin Impact
-
-<div align="center">
-  <img src="./Assets/genshin.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Ninja Gaiden
-
-<div align="center">
-  <img src="./Assets/ninja_gaiden.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Coffee
-
-<div align="center">
-  <img src="./Assets/pixel-coffee.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Dusk City
-
-<div align="center">
-  <img src="./Assets/pixel-dusk-city.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Emerald
-
-<div align="center">
-  <img src="./Assets/pixel-emerald.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Hollow Knight
-
-<div align="center">
-  <img src="./Assets/pixel-hollowknight.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Munchax
-
-<div align="center">
-  <img src="./Assets/pixel-munchax.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Night City
-
-<div align="center">
-  <img src="./Assets/pixel-night-city.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Rainy Room
-
-<div align="center">
-  <img src="./Assets/pixel-rainyroom.gif" width="100%"/>
-</div>
-
-<br>
-
-### ◈ Pixel - Skyscrapers
-
-<div align="center">
-  <img src="./Assets/pixel-skyscrapers.gif" width="100%"/>
-</div>
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <b>Pixel · Coffee</b><br><br>
+      <img src="./Assets/pixel_coffee.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Pixel · Dusk City</b><br><br>
+      <img src="./Assets/pixel_dusk_city.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Pixel · Emerald</b><br><br>
+      <img src="./Assets/pixel_emerald.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Pixel · Hollow Knight</b><br><br>
+      <img src="./Assets/pixel_hollowknight.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Pixel · Munchax</b><br><br>
+      <img src="./Assets/pixel_munchax.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Pixel · Night City</b><br><br>
+      <img src="./Assets/pixel_night_city.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Pixel · Rainy Room</b><br><br>
+      <img src="./Assets/pixel_rainyroom.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Pixel · Skyscrapers</b><br><br>
+      <img src="./Assets/pixel_skyscrapers.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>NieR: Automata</b><br><br>
+      <img src="./Assets/nier_automata.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Terraria</b><br><br>
+      <img src="./Assets/terraria.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Enfield</b><br><br>
+      <img src="./Assets/enfield.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Sword</b><br><br>
+      <img src="./Assets/sword.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Paper</b><br><br>
+      <img src="./Assets/paper.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Windows 7</b><br><br>
+      <img src="./Assets/win7.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Cyberpunk</b><br><br>
+      <img src="./Assets/cyberpunk.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>TUI</b><br><br>
+      <img src="./Assets/tui.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <b>Porsche</b><br><br>
+      <img src="./Assets/porsche.gif" width="100%"/>
+    </td>
+    <td align="center" width="50%">
+      <b>Genshin Impact</b><br><br>
+      <img src="./Assets/genshin.gif" width="100%"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" colspan="2">
+      <b>Ninja Gaiden</b><br><br>
+      <img src="./Assets/ninja_gaiden.gif" width="50%"/>
+    </td>
+  </tr>
+</table>
 
 <br>
 
 ---
 
-<div align="center">
-  <h2 id="credits">  ᴄʀᴇᴅɪᴛꜱ ᴀɴᴅ ɢʀᴀᴛɪᴛᴜᴅᴇ  </h2>
-</div>
+<br>
 
-* **Pumphium** -  A huge thanks to this lil guy for helping me with the theme suggestions and debugging with me.
-* **Qt/QML Community** — For the powerful framework that makes these themes possible.
-* **Unixporn** — For the aesthetic inspiration and feedback.
+## 🤝 Credits
+
+| | |
+|:--|:--|
+| ☕ **[max](https://ko-fi.com/B0B1UPVVB)** | Genuinely blown away — thank you! |
+| **Pumphium** | Theme suggestions, testing, and late-night debugging. |
+| **Qt / QML Community** | The framework powering every theme in this collection. |
+| **Unixporn** | Endless aesthetic inspiration and community feedback. |
+
+<br>
 
 ---
 
-<div align="center">
-  <br>
-  <p><i>Make your login your own. Stay ricey.</i></p>
-</div>
+<br>
 
+<p align="center">
+  <i>Make your login your own.</i>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="https://ko-fi.com/darkkal">☕ Buy me a coffee</a>
+</p>
+
+<br>
