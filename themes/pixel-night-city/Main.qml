@@ -1,6 +1,7 @@
-import QtQuick 2.15
-import QtQuick.Window 2.15
-import QtGraphicalEffects 1.15
+import QtQuick
+import QtQuick.Window
+import QtQuick.Controls
+import Qt5Compat.GraphicalEffects
 import SddmComponents 2.0
 
 // Night City
@@ -23,9 +24,18 @@ Rectangle {
     ListView { id: userHelper; model: userModel; currentIndex: root.userIndex; visible: false; delegate: Item { property string uName: model.realName || model.name || ""; property string uLogin: model.name || "" } }
 
     Component.onCompleted: fadeAnim.start()
+
+    Component.onDestruction: {
+        videoLoader.source = ""
+    }
+
     NumberAnimation { id: fadeAnim; target: root; property: "ui"; from: 0; to: 1; duration: 1500; easing.type: Easing.OutSine }
 
-    Loader { anchors.fill: parent; source: "BackgroundVideo.qml" }
+    Loader { 
+        id: videoLoader
+        anchors.fill: parent
+        source: "BackgroundVideo.qml" 
+    }
 
     // Dark Overlay
     Rectangle { anchors.fill: parent; color: "black"; opacity: 0.3 }
@@ -101,7 +111,7 @@ Rectangle {
             
             Text {
                 id: mT; text: Qt.formatTime(new Date(), "mm")
-                color: root.signTeal; font.family: pf.name; font.pixelSize: 100 * s; font.letterSpacing: -5 * s
+                color: "white"; font.family: pf.name; font.pixelSize: 100 * s; font.letterSpacing: -5 * s
                 Timer { interval: 1000; running: true; repeat: true; onTriggered: mT.text = Qt.formatTime(new Date(), "mm") }
                 layer.enabled: true; layer.effect: DropShadow { color: "#80000000"; radius: 6; samples: 8; horizontalOffset: 2 * s; verticalOffset: 2 * s }
             }
@@ -159,5 +169,12 @@ Rectangle {
         target: sddm
         function onLoginFailed() { err.text = "PERMISSION DENIED"; pwd.text = ""; pwd.focus = true }
     }
-    function doLogin() { var u = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : userModel.lastUser; sddm.login(u, pwd.text, root.sessionIndex) }
+
+    function doLogin() { 
+        var u = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : userModel.lastUser; 
+        
+        videoLoader.source = ""; 
+        pwd.focus = false;
+        sddm.login(u, pwd.text, root.sessionIndex); 
+    }
 }
