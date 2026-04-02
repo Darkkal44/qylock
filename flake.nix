@@ -72,7 +72,8 @@
             # Real Qt6 modules first so shims don't shadow them (e.g. QtMultimedia).
             # qt5compat provides Qt5Compat.GraphicalEffects; our shims re-expose it
             # as the legacy QtGraphicalEffects 1.15 import name.
-            export QML_IMPORT_PATH="${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml:${qylockShell}/imports''${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
+            # Shims first — see comment in devShell for rationale.
+            export QML_IMPORT_PATH="${qylockShell}/imports:${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml''${QML_IMPORT_PATH:+:$QML_IMPORT_PATH}"
             export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
             export QML_XHR_ALLOW_FILE_READ=1
             export QS_THEME="${theme}"
@@ -217,7 +218,12 @@
             # Real Qt6 modules come first so the shims don't shadow them.
             # qt5compat provides Qt5Compat.GraphicalEffects; the local imports/
             # directory re-exposes it under the legacy QtGraphicalEffects 1.15 name.
-            export QML_IMPORT_PATH="${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml:$PWD/quickshell-lockscreen/imports:$QML_IMPORT_PATH"
+            # Shims come FIRST so our Video.qml (which uses Quickshell.shellDir for
+            # explicit path resolution) takes priority over Qt6's real Video.qml.
+            # The shim files internally use `import QtMultimedia 6.0 as Native`;
+            # since the shim module is registered at version 5.15, a 6.0 request
+            # falls through to the real Qt6 module — no circular dependency.
+            export QML_IMPORT_PATH="$PWD/quickshell-lockscreen/imports:${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml:$QML_IMPORT_PATH"
             export QML_XHR_ALLOW_FILE_READ=1
 
             # ── testTheme <theme-path> [font-file ...] ──────────────────────
