@@ -218,9 +218,13 @@ Point your Window Manager keybind (e.g., in Hyprland, Qtile, Sway, or i3) direct
       </td>
     </tr>
     <tr>
-      <td align="center" colspan="2" style="padding: 15px; border: none;">
+      <td align="center" width="50%" style="padding: 15px; border: none;">
+        <b>Wuthering Waves</b><br><br>
+        <img src="./Assets/wuwa.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+      </td>
+      <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Ninja Gaiden</b><br><br>
-        <img src="./Assets/ninja_gaiden.gif" width="50%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+        <img src="./Assets/ninja_gaiden.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
     </tr>
   </table>
