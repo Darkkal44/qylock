@@ -204,6 +204,7 @@
             # qt5compat provides Qt5Compat.GraphicalEffects; the local imports/
             # directory re-exposes it under the legacy QtGraphicalEffects 1.15 name.
             export QML_IMPORT_PATH="${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml:$PWD/quickshell-lockscreen/imports:$QML_IMPORT_PATH"
+            export QML_XHR_ALLOW_FILE_READ=1
 
             # ── testTheme <theme-path> ──────────────────────────────────────
             # Applies the same Qt5→Qt6 patches and shim copies that mkSddmThemePkg
