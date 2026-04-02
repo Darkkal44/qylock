@@ -43,7 +43,21 @@
             ${self}/quickshell-lockscreen/shim $out/shim
           cp -r --no-preserve=mode,ownership \
             ${self}/quickshell-lockscreen/imports $out/imports
-          ln -s ${self}/themes $out/themes_link
+
+          # Copy themes and apply Qt5→Qt6 patches.  The Video→QylockVideo rename is
+          # intentionally omitted: Video.qml in the imports shim handles Video {} in
+          # the Quickshell context without needing a rename.
+          cp -r --no-preserve=mode,ownership ${self}/themes $out/themes_link
+          find $out/themes_link -name "*.qml" -exec \
+            sed -i \
+              -e 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' \
+              -e 's/import QtMultimedia 5\.15/import QtMultimedia/g' \
+              -e 's/loops: MediaPlayer\.Infinite/loops: -1/g' \
+              -e 's/VideoOutput\.PreserveAspectCrop/2/g' \
+              -e 's/VideoOutput\.PreserveAspectFit/1/g' \
+              -e 's/VideoOutput\.Stretch/0/g' \
+              -e 's/onLoginFailed:/function onLoginFailed()/g' \
+            {} +
         '';
 
         # ── qylock-lock script ────────────────────────────────────────────────
@@ -206,16 +220,6 @@
             export QML_IMPORT_PATH="${pkgs.qt6.qtmultimedia}/lib/qt-6/qml:${pkgs.kdePackages.qt5compat}/lib/qt-6/qml:$PWD/quickshell-lockscreen/imports:$QML_IMPORT_PATH"
             export QML_XHR_ALLOW_FILE_READ=1
 
-            # ── testTheme <theme-path> ──────────────────────────────────────
-            # Applies the same Qt5→Qt6 patches and shim copies that mkSddmThemePkg
-            # performs at build time, but targets a disposable temp directory so the
-            # source tree is never touched.  This lets you test the exact post-patch
-            # state without running a full `nix build`.
-            #
-            # Usage:
-            #   testTheme Genshin
-            #   testTheme cozytile/Cozy
-            #   testTheme tui/Amber
             # ── testTheme <theme-path> [font-file ...] ──────────────────────
             # Applies the same Qt5→Qt6 patches and shim copies that mkSddmThemePkg
             # performs at build time, but targets a disposable temp directory so the
@@ -275,6 +279,50 @@
               rm -rf "$tmp"
             }
 
+            # ── testLockscreen [theme-path] ──────────────────────────────────
+            # Applies the same Qt5→Qt6 patches that qylockShell performs at build
+            # time into a temp directory, symlinks it as themes_link, then launches
+            # the Quickshell lockscreen against it.  Cleans up on exit.
+            #
+            # Usage:
+            #   testLockscreen
+            #   testLockscreen Genshin
+            #   testLockscreen tui/Crimson
+            testLockscreen() {
+              local theme="''${1:-Genshin}"
+              local tmp
+              tmp=$(mktemp -d --suffix=-qylock-qs-test)
+
+              echo "  Patching themes → $tmp/themes_link ..."
+              cp -r "$PWD/themes" "$tmp/themes_link"
+              find "$tmp/themes_link" -name "*.qml" -exec sed -i \
+                -e 's/import QtGraphicalEffects 1\.15/import Qt5Compat.GraphicalEffects/g' \
+                -e 's/import QtMultimedia 5\.15/import QtMultimedia/g' \
+                -e 's/loops: MediaPlayer\.Infinite/loops: -1/g' \
+                -e 's/VideoOutput\.PreserveAspectCrop/2/g' \
+                -e 's/VideoOutput\.PreserveAspectFit/1/g' \
+                -e 's/VideoOutput\.Stretch/0/g' \
+                -e 's/onLoginFailed:/function onLoginFailed()/g' \
+              {} +
+
+              # Point the lockscreen at the patched themes via a temp symlink.
+              local link="$PWD/quickshell-lockscreen/themes_link"
+              local prev_link
+              [[ -L "$link" ]] && prev_link=$(readlink "$link")
+              ln -sfn "$tmp/themes_link" "$link"
+
+              echo "  Launching Quickshell lockscreen (QS_THEME=$theme)..."
+              QS_THEME="$theme" quickshell -p "$PWD/quickshell-lockscreen/lock_shell.qml"
+
+              # Restore previous symlink (or remove if there wasn't one).
+              if [[ -n "''${prev_link:-}" ]]; then
+                ln -sfn "$prev_link" "$link"
+              else
+                rm -f "$link"
+              fi
+              rm -rf "$tmp"
+            }
+
             echo "qylock dev shell"
             echo ""
             echo "  Test a patched SDDM theme (mirrors the Nix build):"
@@ -282,11 +330,12 @@
             echo "    testTheme Genshin ~/fonts/zhcn.ttf"
             echo "    testTheme cozytile/Cozy"
             echo ""
+            echo "  Test the Quickshell lockscreen (mirrors the Nix build):"
+            echo "    testLockscreen Genshin"
+            echo "    testLockscreen tui/Crimson"
+            echo ""
             echo "  Test an unpatched theme directly (source tree):"
             echo "    sddm-greeter-qt6 --test-mode --theme \$PWD/themes/<n>"
-            echo ""
-            echo "  Run the Quickshell lockscreen:"
-            echo "    quickshell -p \$PWD/quickshell-lockscreen"
             echo ""
           '';
         };
