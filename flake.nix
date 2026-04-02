@@ -125,7 +125,7 @@
                 -e 's/onLoginFailed:/function onLoginFailed()/g' \
               {} +
 
-            cp ${self}/quickshell-lockscreen/imports/QtMultimedia/Video.qml \
+            cp ${self}/quickshell-lockscreen/imports/QtMultimedia/VideoSddm.qml \
               $out/share/sddm/themes/${themeLeaf}/QylockVideo.qml
             cp ${self}/quickshell-lockscreen/imports/QtMultimedia/MediaPlayerShim.qml \
               $out/share/sddm/themes/${themeLeaf}/MediaPlayer.qml
@@ -253,7 +253,7 @@
               {} +
 
               echo "  Copying QtMultimedia shims..."
-              cp quickshell-lockscreen/imports/QtMultimedia/Video.qml \
+              cp quickshell-lockscreen/imports/QtMultimedia/VideoSddm.qml \
                 "$tmp/$leaf/QylockVideo.qml"
               cp quickshell-lockscreen/imports/QtMultimedia/MediaPlayerShim.qml \
                 "$tmp/$leaf/MediaPlayer.qml"
