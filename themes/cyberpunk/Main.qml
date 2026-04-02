@@ -35,7 +35,7 @@ Rectangle {
     // Font Loader
     FolderListModel {
         id: fontFolder
-        folder: "font"
+        folder: Qt.resolvedUrl("font")
         nameFilters: ["*.ttf", "*.otf"]
     }
 

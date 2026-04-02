@@ -11,7 +11,7 @@ Rectangle {
     height: Screen.height
     color: "#0d1018"
 
-    // ── Properties ────────────────────────────────────────────────────
+    // Theme Props
     property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0)
                                ? sessionModel.lastIndex : 0
     property real ui: 0
@@ -25,16 +25,16 @@ Rectangle {
 
     TextConstants { id: textConstants }
 
-    // ── Font ─────────────────────────────────────────────────────────
+    // Font Config
     FolderListModel {
         id: fontFolder
-        folder: "font"
+        folder: Qt.resolvedUrl("font")
         nameFilters: ["*.ttf", "*.otf"]
     }
 
     FontLoader { id: orbitron; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
-    // ── Session Helper ───────────────────────────────────────────────
+    // Session Helper
     ListView {
         id: sessionHelper
         model: sessionModel
@@ -43,7 +43,7 @@ Rectangle {
         delegate: Item { property string sName: model.name || "" }
     }
 
-    // ── User Helper ──────────────────────────────────────────────────
+    // User Helper
     ListView {
         id: userHelper
         model: userModel
@@ -52,7 +52,7 @@ Rectangle {
         delegate: Item { property string uName: model.realName || model.name || "" }
     }
 
-    // ── Boot Fade-in ──────────────────────────────────────────────────
+    // Boot Anim
     Component.onCompleted: fadeAnim.start()
     NumberAnimation {
         id: fadeAnim
@@ -61,9 +61,7 @@ Rectangle {
         easing.type: Easing.OutCubic
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    //  BACKGROUND
-    // ══════════════════════════════════════════════════════════════════
+    // Theme Base
 
     // Gradient
     Rectangle {
@@ -81,7 +79,7 @@ Rectangle {
         source: "BackgroundVideo.qml"
     }
 
-    // ── Atmospheric overlays ──────────────────────────────────────────
+    // View FX
 
     // Vignette
     RadialGradient {
@@ -113,9 +111,7 @@ Rectangle {
         opacity: 0.5
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    // PETALS
-    // ══════════════════════════════════════════════════════════════════
+    // Petal FX
     Repeater {
         model: 18
         delegate: Item {
@@ -172,9 +168,7 @@ Rectangle {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    //  Clock
-    // ══════════════════════════════════════════════════════════════════
+    // Clock Module
     Column {
         anchors.left: parent.left
         anchors.top: parent.top
@@ -224,9 +218,7 @@ Rectangle {
         }
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    //  Login Panel
-    // ══════════════════════════════════════════════════════════════════
+    // Login Module
     Column {
         id: loginPanel
         anchors.bottom: parent.bottom
@@ -236,7 +228,7 @@ Rectangle {
         spacing: 0 * s
         opacity: root.ui
 
-        // ── Username ──────────────────────────────────────────────────
+        // User Section
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: (userHelper.currentItem && userHelper.currentItem.uName)
@@ -262,7 +254,7 @@ Rectangle {
 
         Item { width: 1 * s; height: 22 * s }
 
-        // ── Password field container ───────────────────────────────────
+        // Password Section
         Item {
             width: parent.width
             height: 48 * s
@@ -388,9 +380,7 @@ Rectangle {
         NumberAnimation { target: loginPanel; property: "x"; to: loginPanel.x;      duration: 50 }
     }
 
-    // ══════════════════════════════════════════════════════════════════
-    //  BOTTOM BAR — Session & Power
-    // ══════════════════════════════════════════════════════════════════
+    // Bottom Bar
     Rectangle {
         anchors.bottom: parent.bottom
         anchors.bottomMargin: 40 * s

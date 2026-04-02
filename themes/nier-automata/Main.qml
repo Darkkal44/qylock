@@ -41,7 +41,7 @@ Rectangle {
     
     FolderListModel {
         id: fontFolder
-        folder: "font"
+        folder: Qt.resolvedUrl("font")
         nameFilters: ["*.ttf", "*.otf"]
     }
 
@@ -446,13 +446,15 @@ Rectangle {
                         anchors.fill: parent
                         color: rowItem.sel ? root.nierSelected
                              : rowItem.hovered ? "#312f29" : "transparent"
+                        border.color: rowItem.hovered ? root.nierBorder : "transparent"
+                        border.width: rowItem.hovered ? 1 : 0
                         Behavior on color { ColorAnimation { duration: 90 } }
 
                         // Left accent bar
                         Rectangle {
                             width: 3 * s; height: parent.height
                             color: root.nierAccent
-                            opacity: rowItem.sel ? 1 : 0
+                            opacity: rowItem.sel ? 1 : rowItem.hovered ? 0.35 : 0
                             Behavior on opacity { NumberAnimation { duration: 120 } }
                         }
 
@@ -460,7 +462,7 @@ Rectangle {
                         Text {
                             text: "⊙"
                             font.family: root.fontName; font.pixelSize: 11 * s
-                            color: rowItem.sel ? root.nierAccent : root.nierBorder
+                            color: rowItem.sel || rowItem.hovered ? root.nierAccent : root.nierBorder
                             anchors.verticalCenter: parent.verticalCenter
                             x: 14 * s
                         }
@@ -470,7 +472,7 @@ Rectangle {
                             text: model.realName || model.name
                             font.family: root.fontName; font.pixelSize: 14 * s
                             font.letterSpacing: 0.8
-                            color: rowItem.sel ? root.nierAccent : root.nierText
+                            color: rowItem.sel || rowItem.hovered ? root.nierAccent : root.nierText
                             anchors.verticalCenter: parent.verticalCenter
                             anchors.left: parent.left; anchors.leftMargin: 36 * s
                             Behavior on color { ColorAnimation { duration: 90 } }

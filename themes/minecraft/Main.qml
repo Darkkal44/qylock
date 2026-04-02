@@ -4,9 +4,7 @@ import QtGraphicalEffects 1.15
 import Qt.labs.folderlistmodel 2.15
 import SddmComponents 2.0
 
-// ═══════════════════════════════════════════════════════════════════════════
-//  Minecraft Theme
-// ═══════════════════════════════════════════════════════════════════════════
+// Minecraft theme
 Rectangle {
     readonly property real s: Screen.height / 768
     id: root
@@ -50,7 +48,7 @@ Rectangle {
     // Font
     FolderListModel {
         id: fontFolder
-        folder: "font"
+        folder: Qt.resolvedUrl("font")
         nameFilters: ["*.ttf", "*.otf"]
     }
 
@@ -107,9 +105,7 @@ Rectangle {
         delegate: Item { property string sessionName: model.name || "" }
     }
 
-    // ═══════════════════════════════════════════════════════════════════════
-//  MAIN CONTENT
-// ═══════════════════════════════════════════════════════════════════════
+    // UI Stack
     Column {
         id: uiStack
         width: 360 * s
@@ -133,11 +129,7 @@ Rectangle {
             }
         }
 
-        // CLOCK
-        Column {
-            width: parent.width
-            spacing: 6 * s
-            bottomPadding: 32
+            // Header Area
 
             Item {
                 width: parent.width; height: 100 * s
@@ -225,11 +217,7 @@ Rectangle {
             }
         }
 
-        // USERNAME
-        Column {
-            width: parent.width
-            spacing: 6 * s
-            bottomPadding: 16
+            // User Area
 
             McText {
                 label: "Username"
@@ -262,11 +250,7 @@ Rectangle {
             }
         }
 
-        // PASSWORD
-        Column {
-            width: parent.width
-            spacing: 6 * s
-            bottomPadding: 16
+            // Password Area
 
             McText {
                 label: "Password"
@@ -334,7 +318,7 @@ Rectangle {
 
         Item { width: 1 * s; height: 12 * s }
 
-        // SESSION SELECTOR
+        // Selection Area
         Item {
             id: sessionSelector
             width: parent.width
@@ -465,7 +449,7 @@ Rectangle {
 
         Item { width: 1 * s; height: 12 * s }
 
-        // POWER
+        // Power Area
         Row {
             width: parent.width
             spacing: 10 * s
@@ -492,9 +476,7 @@ Rectangle {
     }   // end Column
 
 
-    // ═══════════════════════════════════════════════════════════════════════
-    //  REUSABLE COMPONENTS
-    // ═══════════════════════════════════════════════════════════════════════
+    // Shared Components
 
     // McText
     component McText: Item {

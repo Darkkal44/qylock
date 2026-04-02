@@ -61,9 +61,6 @@ ShellRoot {
                     console.error("FAILED to load theme:", source)
                 }
             }
-            Keys.onPressed: (event) => {
-                if (item) item.forceActiveFocus()
-            }
         }
     }
 
