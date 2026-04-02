@@ -179,7 +179,7 @@ testLockscreen Genshin
 
 The nixpkgs SDDM package (`kdePackages.sddm`) is Qt6-based, but qylock's themes target Qt5 APIs. The following compatibility fixes are applied automatically at build time — no changes to upstream theme files are required:
 
-- **QtGraphicalEffects** — shimmed via `kdePackages.qt5compat` (`Qt5Compat.GraphicalEffects`)
+- **QtGraphicalEffects** — shimmed via `kdePackages.qt5compat` (`Qt5Compat.GraphicalEffects`); each effect is a proper QML wrapper rather than a symlink, since Nix's read-only store makes symlink-based approaches unworkable
 - **Video** — Qt5's `Video {}` component is shimmed using Qt6's `MediaPlayer + AudioOutput + VideoOutput` composition
 - **Enum values** — `MediaPlayer.Infinite`, `VideoOutput.PreserveAspectCrop`, etc. are inlined to their numeric equivalents
 - **Signal syntax** — `onLoginFailed:` is rewritten to `function onLoginFailed()` per Qt6 deprecation
