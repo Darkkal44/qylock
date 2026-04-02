@@ -103,7 +103,7 @@
         #                       resolve the type without an explicit module import
         #   VideoOutput.qml  — same for VideoOutput
         mkSddmThemePkg =
-          themePath:
+          themePath: extraFonts:
           let
             safeName = builtins.replaceStrings [ "/" ] [ "-" ] themePath;
             themeLeaf = builtins.baseNameOf themePath;
@@ -131,6 +131,12 @@
               $out/share/sddm/themes/${themeLeaf}/MediaPlayer.qml
             cp ${self}/quickshell-lockscreen/imports/QtMultimedia/VideoOutputShim.qml \
               $out/share/sddm/themes/${themeLeaf}/VideoOutput.qml
+
+            ${pkgs.lib.concatMapStrings (font: ''
+              mkdir -p "$out/share/sddm/themes/${themeLeaf}/font"
+              fontName=$(basename "${font}" | sed 's/^[a-z0-9]\{32\}-//')
+              cp "${font}" "$out/share/sddm/themes/${themeLeaf}/font/$fontName"
+            '') extraFonts}
           '';
 
         # ── Patched SDDM package ──────────────────────────────────────────────
@@ -209,8 +215,23 @@
             #   testTheme Genshin
             #   testTheme cozytile/Cozy
             #   testTheme tui/Amber
+            # ── testTheme <theme-path> [font-file ...] ──────────────────────
+            # Applies the same Qt5→Qt6 patches and shim copies that mkSddmThemePkg
+            # performs at build time, but targets a disposable temp directory so the
+            # source tree is never touched.  This lets you test the exact post-patch
+            # state without running a full `nix build`.
+            #
+            # Optional extra arguments are font files to drop into the theme's
+            # font/ directory, mirroring the sddmThemeFonts Nix option.
+            #
+            # Usage:
+            #   testTheme Genshin
+            #   testTheme Genshin ~/fonts/zhcn.ttf
+            #   testTheme cozytile/Cozy
+            #   testTheme tui/Amber
             testTheme() {
-              local theme="''${1:?Usage: testTheme <theme-path>}"
+              local theme="''${1:?Usage: testTheme <theme-path> [font-file ...]}"
+              shift
               local leaf
               leaf=$(basename "$theme")
               local tmp
@@ -239,6 +260,14 @@
               cp quickshell-lockscreen/imports/QtMultimedia/VideoOutputShim.qml \
                 "$tmp/$leaf/VideoOutput.qml"
 
+              if [[ $# -gt 0 ]]; then
+                echo "  Copying fonts..."
+                mkdir -p "$tmp/$leaf/font"
+                for font in "$@"; do
+                  cp "$font" "$tmp/$leaf/font/$(basename "$font")"
+                done
+              fi
+
               echo "  Launching sddm-greeter-qt6 --test-mode..."
               sddm-greeter-qt6 --test-mode --theme "$tmp/$leaf"
 
@@ -249,6 +278,7 @@
             echo ""
             echo "  Test a patched SDDM theme (mirrors the Nix build):"
             echo "    testTheme Genshin"
+            echo "    testTheme Genshin ~/fonts/zhcn.ttf"
             echo "    testTheme cozytile/Cozy"
             echo ""
             echo "  Test an unpatched theme directly (source tree):"

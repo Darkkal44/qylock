@@ -148,9 +148,33 @@ qylock ships a Nix flake with a **NixOS module**, a **Home Manager module**, and
     enable    = true;
     theme     = "paper";     # Quickshell lockscreen theme
     sddmTheme = "paper";     # optional: also sets services.displayManager.sddm.theme
+
+    # Optional: fonts for themes that require licensed fonts not in the repo.
+    # Drop the font file(s) in your config directory and reference them here.
+    # sddmThemeFonts = [ ./fonts/zhcn.ttf ];
   };
 }
 ```
+
+> [!NOTE]
+> Some SDDM themes require fonts that cannot be redistributed. For those themes, download the font manually and reference it via `sddmThemeFonts` — the file will be copied into the theme's `font/` directory at build time.
+>
+> | Theme | Font file |
+> | :--- | :--- |
+> | `Genshin` | `zhcn.ttf` (HYWenHei-85W) |
+> | `terraria` | `Andy Bold.ttf` |
+> | `nier-automata` | `FOT-Rodin Pro DB.otf` |
+> | `sword` | `The Last Shuriken.ttf` |
+> | `minecraft` | `minecraft.ttf` |
+>
+> Example:
+> ```nix
+> programs.qylock = {
+>   enable        = true;
+>   sddmTheme     = "Genshin";
+>   sddmThemeFonts = [ ./fonts/zhcn.ttf ];
+> };
+> ```
 
 **Step 3 — enable SDDM with Wayland support** (required for Wayland compositors like Hyprland):
 
@@ -242,7 +266,11 @@ nix develop
 
 **Test an SDDM theme:**
 ```sh
-sddm-greeter-qt6 --test-mode --theme $PWD/themes/<name>
+# Without a font (theme has bundled assets):
+testTheme paper
+
+# With a font file (for themes requiring licensed fonts):
+testTheme Genshin ~/fonts/zhcn.ttf
 ```
 
 **Run the Quickshell lockscreen:**

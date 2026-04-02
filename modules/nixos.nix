@@ -40,6 +40,25 @@ in
       '';
       example = "cyberpunk";
     };
+
+    sddmThemeFonts = lib.mkOption {
+      type = lib.types.listOf lib.types.path;
+      default = [ ];
+      description = ''
+        Font files to install into the SDDM theme's font/ directory.
+        Required for themes that use licensed fonts not included in the repo.
+        Each entry should be a path to a .ttf or .otf file — typically a path
+        relative to your flake root (e.g. ./fonts/zhcn.ttf).
+
+        Theme → required font file:
+          Genshin      → zhcn.ttf          (HYWenHei-85W)
+          terraria     → Andy Bold.ttf
+          nier-automata → FOT-Rodin Pro DB.otf
+          sword        → The Last Shuriken.ttf
+          minecraft    → minecraft.ttf
+      '';
+      example = lib.literalExpression "[ ./fonts/zhcn.ttf ]";
+    };
   };
 
   config = lib.mkIf cfg.enable (
@@ -60,7 +79,7 @@ in
           pkgs.qt6.qtmultimedia
         ];
 
-        environment.systemPackages = [ (q.mkSddmThemePkg cfg.sddmTheme) ];
+        environment.systemPackages = [ (q.mkSddmThemePkg cfg.sddmTheme cfg.sddmThemeFonts) ];
       })
     ]
   );
