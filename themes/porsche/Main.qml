@@ -12,8 +12,12 @@ Rectangle {
     color: "#050203"
 
     // ── Properties ────────────────────────────────────────────────────
-    property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0)
-                               ? sessionModel.lastIndex : 0
+    property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
+    ListView {
+        id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
+        opacity: 0; width: 0; height: 0; z: -100; visible: true
+        delegate: Item { property string sName: model.name || "" }
+    }
     property real ui: 0
 
     // Palette
@@ -35,11 +39,6 @@ Rectangle {
     FontLoader { id: tektur; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // ── Helpers ───────────────────────────────────────────────────────
-    ListView {
-        id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
-        visible: false; width: 0; height: 0
-        delegate: Item { property string sName: model.name || "" }
-    }
     ListView {
         id: userHelper; model: userModel
         currentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
