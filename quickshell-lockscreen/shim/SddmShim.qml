@@ -1,22 +1,28 @@
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Pam
 
 Item {
     id: shim
-    
+
     property string themePath: ""
     property var config: ({})
+    property bool configReady: false
 
     function loadConfig(path) {
-        if (!path) return;
+        if (!path) {
+            config = { background: "bg.png" };
+            configReady = true;
+            return;
+        }
         var url = "file://" + path + "/theme.conf";
         var xhr = new XMLHttpRequest();
         xhr.onreadystatechange = function() {
             if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200 || xhr.status === 0) {
+                var newConfig = {};
+                if ((xhr.status === 200 || xhr.status === 0) && xhr.responseText) {
                     var lines = xhr.responseText.split("\n");
-                    var newConfig = {};
                     for (var i = 0; i < lines.length; i++) {
                         var line = lines[i].trim();
                         if (line.startsWith("[") || line === "" || line.startsWith("#")) continue;
@@ -25,19 +31,30 @@ Item {
                             newConfig[parts[0].trim()] = parts[1].trim();
                         }
                     }
-                    config = newConfig;
                 }
+                // Fallback: garantir que sempre exista um background padrão
+                if (!newConfig.background) {
+                    newConfig.background = "bg.png";
+                }
+                config = newConfig;
+                configReady = true;
             }
         };
-        xhr.open("GET", url, true);
-        xhr.send();
+        try {
+            xhr.open("GET", url, true);
+            xhr.send();
+        } catch (e) {
+            console.warn("SddmShim: falha ao carregar theme.conf:", e);
+            config = { background: "bg.png" };
+            configReady = true;
+        }
     }
 
     property var userModel: ListModel {
         id: internalUserModel
         property string lastUser: Quickshell.env("USER") || "traveler"
         property int lastIndex: 0
-        
+
         function index(row, col) {
             return row;
         }
@@ -61,8 +78,60 @@ Item {
     }
 
     property var sessionModel: ListModel {
-        ListElement { name: "Qtile"; file: "qtile.desktop" }
+        id: internalSessionModel
         property int lastIndex: 0
+    }
+
+    // Processo para enumerar sessões desktop do sistema
+    Process {
+        id: sessionEnumerator
+        command: [
+            "bash", "-c",
+            "for f in /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop; do " +
+            "[ -f \"$f\" ] && echo \"$(grep -m1 '^Name=' \"$f\" | sed 's/^Name=//')|||$(basename \"$f\")\"; " +
+            "done 2>/dev/null"
+        ]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                shim.parseSessions(this.text);
+            }
+        }
+
+        onExited: (exitCode, exitStatus) => {
+            // Se o processo falhou sem produzir saída, garantir fallback
+            if (internalSessionModel.count === 0) {
+                internalSessionModel.append({ name: "Unknown", file: "unknown.desktop" });
+            }
+        }
+    }
+
+    function parseSessions(output) {
+        internalSessionModel.clear();
+
+        if (!output || output.trim() === "") {
+            internalSessionModel.append({ name: "Unknown", file: "unknown.desktop" });
+            return;
+        }
+
+        var lines = output.trim().split("\n");
+        var added = 0;
+
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i].trim();
+            if (line === "") continue;
+
+            var parts = line.split("|||");
+            if (parts.length === 2 && parts[0] !== "" && parts[1] !== "") {
+                internalSessionModel.append({ name: parts[0], file: parts[1] });
+                added++;
+            }
+        }
+
+        // Fallback se nenhuma sessão válida foi encontrada
+        if (added === 0) {
+            internalSessionModel.append({ name: "Unknown", file: "unknown.desktop" });
+        }
     }
 
     property var sddm: QtObject {
@@ -103,4 +172,5 @@ Item {
     }
 
     onThemePathChanged: loadConfig(themePath)
+    Component.onCompleted: sessionEnumerator.exec()
 }
