@@ -39,6 +39,9 @@ Rectangle {
         delegate: Item { property string name: model.name || "" }
     }
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: passIn.forceActiveFocus() }
+
         Item {
         id: bgContainer
         anchors.fill: parent
