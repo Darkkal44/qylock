@@ -46,6 +46,13 @@ Rectangle {
 
     // Boot
     Component.onCompleted: fadeAnim.start()
+
+    Timer {
+        id: focusTimer
+        interval: 300
+        running: true
+        onTriggered: passwordField.forceActiveFocus()
+    }
     NumberAnimation {
         id: fadeAnim
         target: root; property: "ui"

@@ -28,6 +28,12 @@ Rectangle {
     TextConstants { id: textConstants }
 
     Component.onCompleted: bootAnim.start()
+
+    Timer {
+        interval: 300
+        running: true
+        onTriggered: inputFocus.forceActiveFocus()
+    }
     NumberAnimation {
         id: bootAnim
         target: root; property: "fadeIn"
