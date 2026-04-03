@@ -213,8 +213,7 @@ Rectangle {
                     interval: 60000; running: true; repeat: true
                     onTriggered: clockDate.label = Qt.formatDate(new Date(), "dddd, MMMM d")
                 }
-                Component.onCompleted: clockDate.label = Qt.formatDate(new Date(), "dddd, MMMM d")
-            }
+            Component.onCompleted: clockDate.label = Qt.formatDate(new Date(), "dddd, MMMM d")
         }
 
             // User Area
@@ -248,7 +247,6 @@ Rectangle {
                     }
                 }
             }
-        }
 
             // Password Area
 
@@ -291,7 +289,6 @@ Rectangle {
                     }
                 }
             }
-        }
 
         // MESSAGE
         Text {
@@ -341,7 +338,7 @@ Rectangle {
             // Dropdown
             Item {
                 id: sessionDropdown
-                opacity: 0; width: 100; height: 100; z: -100
+                opacity: 0; z: -100
                 width: parent.width
                 height: Math.min(sessionModel.rowCount() * 38, 152)
                 // opens ABOVE the session button
