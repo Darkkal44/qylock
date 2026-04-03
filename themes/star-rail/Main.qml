@@ -6,7 +6,7 @@ import Qt.labs.folderlistmodel
 import SddmComponents 2.0
 
 Rectangle {
-    readonly property real s: Screen.height / 768
+    readonly property real s: (Screen.height / 768) * 0.75
     id: root
     width: Screen.width
     height: Screen.height
