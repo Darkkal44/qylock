@@ -363,7 +363,7 @@ Rectangle {
             id: errorMsg
             anchors.horizontalCenter: parent.horizontalCenter
             text: ""
-            opacity: 0; width: 100; height: 100; z: -100
+            opacity: 0; height: 100; z: -100
             font.family: root.customFontName
             font.pixelSize: 12 * s
             color: "#ffddaa"
