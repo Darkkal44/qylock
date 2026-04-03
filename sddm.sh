@@ -54,6 +54,21 @@ error() {
 
 header
 
+# Verificação de dependências
+info "Verificando dependências..."
+
+if ! command -v sddm &> /dev/null; then
+    error "SDDM não está instalado. Instale com: pacman -S sddm"
+    exit 1
+fi
+substep "SDDM encontrado"
+
+if ! sudo -n true 2>/dev/null; then
+    substep "${C_YELLOW}Aviso: sudo pode solicitar sua senha durante a instalação${C_RESET}"
+fi
+
+success "Dependências verificadas"
+
 # Check if themes directory exists
 if [ ! -d "$THEMES_DIR" ]; then
     error "Themes directory not found at $THEMES_DIR"
