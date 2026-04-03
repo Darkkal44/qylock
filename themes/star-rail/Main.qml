@@ -280,8 +280,8 @@ Rectangle {
 
             // Restart (FUNCTIONAL)
             Item {
-                width: 64 * s; height: 68 * s
-                scale: rstMouse.containsMouse ? 1.08 : 1.0
+                width: 60 * s; height: 62 * s
+                scale: rstMouse.containsMouse ? 1.05 : 1.0
                 Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
 
                 // Side Brackets (Vertical)
@@ -289,19 +289,19 @@ Rectangle {
                     anchors.fill: parent; opacity: rstMouse.containsMouse ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
                     Rectangle { 
-                        width: 1.5*s; height: 32*s; color: root.srGold; anchors.left: parent.left; anchors.leftMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -8*s
+                        width: 1.5*s; height: 28*s; color: root.srGold; anchors.left: parent.left; anchors.leftMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -10*s
                     }
                     Rectangle { 
-                        width: 1.5*s; height: 32*s; color: root.srGold; anchors.right: parent.right; anchors.rightMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -8*s
+                        width: 1.5*s; height: 28*s; color: root.srGold; anchors.right: parent.right; anchors.rightMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -10*s
                     }
                 }
 
                 Canvas {
-                    id: rstCanvas; anchors.centerIn: parent; width: 28 * s; height: 28 * s; anchors.verticalCenterOffset: -8 * s
+                    id: rstCanvas; anchors.centerIn: parent; width: 26 * s; height: 26 * s; anchors.verticalCenterOffset: -10 * s
                     onPaint: {
                         var ctx = getContext("2d"); ctx.clearRect(0,0,width,height);
-                        ctx.strokeStyle = rstMouse.containsMouse ? root.srGoldLight : "white"; ctx.lineWidth = 2.2 * s; ctx.lineCap = "round";
-                        ctx.beginPath(); ctx.arc(width/2, height/2, 10*s, -Math.PI*0.7, Math.PI*0.8); ctx.stroke();
+                        ctx.strokeStyle = rstMouse.containsMouse ? root.srGoldLight : "white"; ctx.lineWidth = 1.6 * s; ctx.lineCap = "round";
+                        ctx.beginPath(); ctx.arc(width/2, height/2, 9*s, -Math.PI*0.7, Math.PI*0.8); ctx.stroke();
                         ctx.fillStyle = ctx.strokeStyle;
                         ctx.beginPath(); ctx.moveTo(width*0.2, height*0.2); ctx.lineTo(width*0.4, height*0.1); ctx.lineTo(width*0.35, height*0.35); ctx.closePath(); ctx.fill();
                     }
@@ -313,17 +313,17 @@ Rectangle {
                     }
                 }
                 Text {
-                    text: "RESTART"; anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter
-                    font.family: mainFont.name; font.pixelSize: 9 * s; font.bold: true; font.letterSpacing: 1.5 * s
-                    color: rstMouse.containsMouse ? root.srGoldLight : "white"; opacity: 0.9
+                    text: "Restart"; anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: mainFont.name; font.pixelSize: 10 * s; font.bold: false; font.letterSpacing: 0
+                    color: rstMouse.containsMouse ? root.srGoldLight : "white"; opacity: 0.8
                 }
                 MouseArea { id: rstMouse; anchors.fill: parent; hoverEnabled: true; onClicked: sddm.reboot() }
             }
 
             // Power Off (FUNCTIONAL)
             Item {
-                width: 64 * s; height: 68 * s
-                scale: shtMouse.containsMouse ? 1.08 : 1.0
+                width: 60 * s; height: 62 * s
+                scale: shtMouse.containsMouse ? 1.05 : 1.0
                 Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
 
                 // Side Brackets (Vertical)
@@ -331,20 +331,20 @@ Rectangle {
                     anchors.fill: parent; opacity: shtMouse.containsMouse ? 1 : 0
                     Behavior on opacity { NumberAnimation { duration: 200 } }
                     Rectangle { 
-                        width: 1.5*s; height: 32*s; color: root.srGold; anchors.left: parent.left; anchors.leftMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -8*s
+                        width: 1.5*s; height: 28*s; color: root.srGold; anchors.left: parent.left; anchors.leftMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -10*s
                     }
                     Rectangle { 
-                        width: 1.5*s; height: 32*s; color: root.srGold; anchors.right: parent.right; anchors.rightMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -8*s
+                        width: 1.5*s; height: 28*s; color: root.srGold; anchors.right: parent.right; anchors.rightMargin: -2*s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -10*s
                     }
                 }
 
                 Canvas {
-                    id: shtCanvas; anchors.centerIn: parent; width: 28 * s; height: 28 * s; anchors.verticalCenterOffset: -8 * s
+                    id: shtCanvas; anchors.centerIn: parent; width: 26 * s; height: 26 * s; anchors.verticalCenterOffset: -10 * s
                     onPaint: {
                         var ctx = getContext("2d"); ctx.clearRect(0,0,width,height);
-                        ctx.strokeStyle = shtMouse.containsMouse ? root.srGoldLight : "white"; ctx.lineWidth = 2.2 * s; ctx.lineCap = "round";
+                        ctx.strokeStyle = shtMouse.containsMouse ? root.srGoldLight : "white"; ctx.lineWidth = 1.6 * s; ctx.lineCap = "round";
                         ctx.beginPath(); ctx.moveTo(width/2, 6*s); ctx.lineTo(width/2, 14*s); ctx.stroke();
-                        ctx.beginPath(); ctx.arc(width/2, height/2, 10*s, -Math.PI*0.6, -Math.PI*0.4, true); ctx.stroke();
+                        ctx.beginPath(); ctx.arc(width/2, height/2, 9*s, -Math.PI*0.6, -Math.PI*0.4, true); ctx.stroke();
                     }
                     Connections { target: shtMouse; function onContainsMouseChanged() { shtCanvas.requestPaint() } }
                     SequentialAnimation {
@@ -354,9 +354,9 @@ Rectangle {
                     }
                 }
                 Text {
-                    text: "POWER OFF"; anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter
-                    font.family: mainFont.name; font.pixelSize: 9 * s; font.bold: true; font.letterSpacing: 1.5 * s
-                    color: shtMouse.containsMouse ? root.srGoldLight : "white"; opacity: 0.9
+                    text: "Power Off"; anchors.bottom: parent.bottom; anchors.horizontalCenter: parent.horizontalCenter
+                    font.family: mainFont.name; font.pixelSize: 10 * s; font.bold: false; font.letterSpacing: 0
+                    color: shtMouse.containsMouse ? root.srGoldLight : "white"; opacity: 0.8
                 }
                 MouseArea { id: shtMouse; anchors.fill: parent; hoverEnabled: true; onClicked: sddm.powerOff() }
             }
