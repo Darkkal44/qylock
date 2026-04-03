@@ -7,6 +7,9 @@ DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 export QML2_IMPORT_PATH="$DIR/imports:$QML2_IMPORT_PATH"
 export QML_XHR_ALLOW_FILE_READ=1
 
+# Garante que o tipo de sessão está disponível (pode não ser herdado em contextos como systemd services)
+export XDG_SESSION_TYPE="${XDG_SESSION_TYPE:-$(loginctl show-session $(loginctl | grep $(whoami) | awk '{print $1}') -p Type --value 2>/dev/null || echo wayland)}"
+
 # Change theme here if you want
 export QS_THEME="${1:-Genshin}"
 

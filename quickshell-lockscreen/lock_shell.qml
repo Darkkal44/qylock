@@ -29,9 +29,12 @@ ShellRoot {
             shellRoot.authenticated = true
             shellRoot.sessionLocked = false
             
-            // Hyprland Hack: Explicitly tell the compositor that it's okay for 
+            // Hyprland Hack: Explicitly tell the compositor that it's okay for
             // the session lock to vanish. This stops the "Oopsie daisy" screen.
-            Quickshell.execDetached(["hyprctl", "keyword", "misc:allow_session_lock_restore", "1"]);
+            // Só executa se o compositor for Hyprland
+            if (Quickshell.env("XDG_CURRENT_DESKTOP") === "Hyprland" || Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") !== "") {
+                Quickshell.execDetached(["hyprctl", "keyword", "misc:allow_session_lock_restore", "1"]);
+            }
             Quickshell.execDetached(["loginctl", "unlock-session"]);
 
             // Transition gracefully like caelestia does.
