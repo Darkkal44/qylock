@@ -80,6 +80,10 @@ Item {
     property var sessionModel: ListModel {
         id: internalSessionModel
         property int lastIndex: 0
+        Component.onCompleted: {
+            // Initial placeholder to ensure ListView.currentItem isn't null
+            append({ name: "Session", file: "" });
+        }
     }
 
     // Process to enumerate system desktop sessions
@@ -88,8 +92,11 @@ Item {
         command: [
             "bash", "-c",
             "for f in /usr/share/wayland-sessions/*.desktop /usr/share/xsessions/*.desktop; do " +
-            "[ -f \"$f\" ] && echo \"$(grep -m1 '^Name=' \"$f\" | sed 's/^Name=//')|||$(basename \"$f\")\"; " +
-            "done 2>/dev/null"
+            "if [ -f \"$f\" ]; then " +
+            "NAME=$(grep -m1 '^Name=' \"$f\" | cut -d'=' -f2); " +
+            "FILE=$(basename \"$f\"); " +
+            "echo \"$NAME|||$FILE\"; " +
+            "fi; done"
         ]
 
         stdout: StdioCollector {
@@ -107,14 +114,16 @@ Item {
     }
 
     function parseSessions(output) {
-        internalSessionModel.clear();
-
         if (!output || output.trim() === "") {
-            internalSessionModel.append({ name: "Unknown", file: "unknown.desktop" });
+            internalSessionModel.clear();
+            internalSessionModel.append({ name: "Session", file: "unknown.desktop" });
             return;
         }
 
+        internalSessionModel.clear();
         var lines = output.trim().split("\n");
+        var currentDesktop = (Quickshell.env("XDG_SESSION_DESKTOP") || Quickshell.env("DESKTOP_SESSION") || "").toLowerCase();
+        var bestIndex = 0;
         var added = 0;
 
         for (var i = 0; i < lines.length; i++) {
@@ -124,6 +133,12 @@ Item {
             var parts = line.split("|||");
             if (parts.length === 2 && parts[0] !== "" && parts[1] !== "") {
                 internalSessionModel.append({ name: parts[0], file: parts[1] });
+                
+                // Try to match the current desktop session
+                var fileName = parts[1].toLowerCase();
+                if (currentDesktop !== "" && (fileName.indexOf(currentDesktop) !== -1 || currentDesktop.indexOf(fileName.replace(".desktop", "")) !== -1)) {
+                    bestIndex = added;
+                }
                 added++;
             }
         }
@@ -131,6 +146,8 @@ Item {
         // Fallback if no valid sessions were found
         if (added === 0) {
             internalSessionModel.append({ name: "Unknown", file: "unknown.desktop" });
+        } else {
+            internalSessionModel.lastIndex = bestIndex;
         }
     }
 
@@ -172,5 +189,5 @@ Item {
     }
 
     onThemePathChanged: loadConfig(themePath)
-    Component.onCompleted: sessionEnumerator.exec()
+    Component.onCompleted: sessionEnumerator.running = true
 }
