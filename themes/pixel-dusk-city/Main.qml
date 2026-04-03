@@ -27,14 +27,12 @@ Rectangle {
     FontLoader { id: pfSemi; source: "font/PixelifySans-SemiBold.ttf" }
     FontLoader { id: pfBold; source: "font/PixelifySans-Bold.ttf" }
 
-    ListView {
-        id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
-        visible: false; width: 0; height: 0
+    ListView { id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
+        visible: false; width: 100; height: 100
         delegate: Item { property string sName: model.name || "" }
     }
-    ListView {
-        id: userHelper; model: userModel; currentIndex: root.userIndex
-        visible: false; width: 0; height: 0
+    ListView { id: userHelper; model: userModel; currentIndex: root.userIndex
+        visible: false; width: 100; height: 100
         delegate: Item {
             property string uName:  model.realName || model.name || ""
             property string uLogin: model.name || ""

@@ -4,610 +4,277 @@ import Qt5Compat.GraphicalEffects
 import Qt.labs.folderlistmodel
 import SddmComponents 2.0
 
-// Minecraft theme
+// Minecraft Theme — Final Polished Refactor
 Rectangle {
-    readonly property real s: Screen.height / 768
     id: root
-    width: Screen.width
-    height: Screen.height
+    readonly property real s: Screen.height / 768
+    width: Screen.width; height: Screen.height
+    color: "#1e1e1e"
 
-    LayoutMirroring.enabled: Qt.locale().textDirection == Qt.RightToLeft
-    LayoutMirroring.childrenInherit: true
-
-    property int sessionIndex: sessionModel.lastIndex
-
-    // Colors
-    //  Button face colours (stone slab)
-    readonly property color btnFace:      "#8B8B8B"
-    readonly property color btnHighlight: "#BCBCBC"  // top-left bevel
-    readonly property color btnShadow:    "#383838"  // bottom-right bevel
-    readonly property color btnHoverFace: "#9090C0"  // classic blue-hover tint
-    readonly property color btnHoverHL:   "#C0C0F0"
-    readonly property color btnPressface: "#585868"
-
-    //  Text
-    readonly property color txtWhite:  "#FFFFFF"
-    readonly property color txtShadow: "#3F3F3F"
-    readonly property color txtYellow: "#FFFF55"
-    readonly property color txtRed:    "#FF5555"
-    readonly property color txtGreen:  "#55FF55"
-    readonly property color txtGray:   "#AAAAAA"
-
-    //  Input field
-    readonly property color fldBg:        "#000000"
-    readonly property color fldBorder:    "#A0A0A0"
-    readonly property color fldBorderFoc: "#FFFFFF"
-
-    // States
+    // --- State Properties ---
+    property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
+    property int userIndex: 0
+    property bool sessionPopupOpen: false
     property real uiOpacity: 0
-    property real uiOffset: 40
-    property real splashScale: 1.0
-    property real bgScale: 1.1
-    property real bgOffset: 0
+    
+    // --- Minecraft Color Palette ---
+    readonly property color mcBtnFace:      "#8b8b8b"
+    readonly property color mcBtnHighlight: "#bcbcbc"
+    readonly property color mcBtnShadow:    "#373737"
+    readonly property color mcBtnHover:     "#9090c0" 
+    readonly property color mcBtnPress:     "#585858"
+    
+    readonly property color mcTextWhite:    "#ffffff"
+    readonly property color mcTextShadow:   "#3f3f3f"
+    readonly property color mcTextYellow:   "#ffff55"
+    readonly property color mcTextGray:     "#aaaaaa"
+    readonly property color mcTextRed:      "#ff5555"
+    readonly property color mcTextGreen:    "#55ff55"
+    
+    readonly property color mcFldBg:        "#000000"
+    readonly property color mcFldBorder:    "#a0a0a0"
 
-    // Font
-    FolderListModel {
-        id: fontFolder
-        folder: Qt.resolvedUrl("font")
-        nameFilters: ["*.ttf", "*.otf"]
-    }
-
+    // --- Fonts ---
+    FolderListModel { id: fontFolder; folder: Qt.resolvedUrl("font"); nameFilters: ["*.ttf", "*.otf"] }
     FontLoader { id: mcFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
-
     TextConstants { id: textConstants }
 
-    // Connections
-    Connections {
-        target: sddm
-
-        function onLoginSucceeded() {
-            errorMsg.color = root.txtGreen
-            errorMsg.text  = textConstants.loginSucceeded
-        }
-        function onLoginFailed() {
-            passInput.text = ""
-            errorMsg.color = root.txtRed
-            errorMsg.text  = textConstants.loginFailed
-        }
-        function onInformationMessage(message) {
-            errorMsg.color = root.txtRed
-            errorMsg.text  = message
-        }
-    }
-
-    // Background (Animated)
+    // --- Background (Tiled Dirt) ---
     Item {
         anchors.fill: parent
-        clip: true
         Image {
-            id: bgImage
-            width: parent.width * 1.2; height: parent.height * 1.2
+            anchors.fill: parent
             source: "background.png"
-            fillMode: Image.PreserveAspectCrop
-            anchors.centerIn: parent
-            scale: root.bgScale
-            x: - (root.bgOffset * 50)
-            
-            SequentialAnimation on x {
-                loops: Animation.Infinite
-                NumberAnimation { from: -50; to: 50; duration: 30000; easing.type: Easing.InOutSine }
-                NumberAnimation { from: 50; to: -50; duration: 30000; easing.type: Easing.InOutSine }
-            }
+            fillMode: Image.Tile
+            horizontalAlignment: Image.AlignLeft
+            verticalAlignment: Image.AlignTop
+            scale: 2.0 
+            transformOrigin: Item.Center
         }
     }
 
-    // Session Helper
+    // --- Standard Bridges (Quickshell Compatibility) ---
     ListView {
         id: sessionHelper
-        model: sessionModel
-        currentIndex: sessionIndex
-        visible: false; width: 0 * s; height: 0 * s
+        model: sessionModel; currentIndex: root.sessionIndex
+        opacity: 0; width: 100; height: 100; z: -100; visible: true
         delegate: Item { property string sName: model.name || "" }
     }
+    ListView {
+        id: userHelper
+        model: userModel; currentIndex: root.userIndex
+        opacity: 0; width: 100; height: 100; z: -100; visible: true
+        delegate: Item { property string uName: model.realName || model.name || ""; property string uLogin: model.name || "" }
+    }
 
-    // UI Stack
+    // --- Main UI Layout ---
     Column {
-        id: uiStack
-        width: 360 * s
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: root.uiOffset
-        spacing: 0 * s
-        opacity: root.uiOpacity
-        
-        // --- Boot Animation ---
-        Component.onCompleted: {
-            bootAnim.start()
-        }
-        
-        SequentialAnimation {
-            id: bootAnim
-            PauseAnimation { duration: 500 }
-            ParallelAnimation {
-                NumberAnimation { target: root; property: "uiOpacity"; to: 1.0; duration: 1000; easing.type: Easing.OutCubic }
-                NumberAnimation { target: root; property: "uiOffset"; to: 0; duration: 1000; easing.type: Easing.OutBack }
-            }
-        }
+        id: mainStack
+        anchors.centerIn: parent
+        width: 420 * s; spacing: 20 * s; opacity: root.uiOpacity
 
-            // Header Area
-
-            Item {
-                width: parent.width; height: 100 * s
-                
-                McText {
-                    id: clockTime
-                    anchors.centerIn: parent
-                    label: "00:00"
-                    pixelSize: 72 * s
-                    textColor: root.txtYellow
-                    Timer {
-                        interval: 1000; running: true; repeat: true
-                        onTriggered: clockTime.label = Qt.formatTime(new Date(), "hh:mm")
-                    }
-                    Component.onCompleted: clockTime.label = Qt.formatTime(new Date(), "hh:mm")
-                }
-
-                    // Splash Text
-                    Text {
-                        id: splashText
-                        text: "Welcome back!"
-                        font.family: mcFont.name
-                        font.pixelSize: 16 * s
-                        color: root.txtYellow
-                        style: Text.Outline
-                        styleColor: "black"
-                        rotation: -20
-                        anchors.left: clockTime.right
-                        anchors.leftMargin: -20 * s
-                        anchors.top: clockTime.top
-                        anchors.topMargin: -10 * s
-                        
-                        scale: root.splashScale
-                        
-                        SequentialAnimation on scale {
-                            loops: Animation.Infinite
-                            NumberAnimation { from: 1.0; to: 1.05; duration: 800; easing.type: Easing.InOutQuad }
-                            NumberAnimation { from: 1.05; to: 1.0; duration: 800; easing.type: Easing.InOutQuad }
-                        }
-
-                        Component.onCompleted: {
-                            var splashMessages = [
-                                "I use Arch btw",
-                                "sudo rm -rf /",
-                                "RTFM!",
-                                "Distro hopping again?",
-                                "Kernel Sanders",
-                                "cron flakes",
-                                "Where is the 'any' key?",
-                                "Powered by TUX!",
-                                "chmod 777 EVERYTHING",
-                                "Segmentation fault",
-                                "Wayland or X11?",
-                                "Vim > Emacs",
-                                "sudo get me a sandwich",
-                                "NAT NAT NAT!",
-                                "STILL COMPILING...",
-                                "It's GNU/Linux!",
-                                "Thou shalt not kill -9",
-                                "Free as in speech!",
-                                "Dependency hell!",
-                                "Kernel Panic!",
-                                "pacman -Syu",
-                                "NixOS is the way!",
-                                "Compile your own kernel",
-                                "X11 is watching you",
-                                "btw I use NixOS"
-                            ];
-                            text = splashMessages[Math.floor(Math.random() * splashMessages.length)];
-                        }
-                    }
-            }
-
-            McText {
-                id: clockDate
-                anchors.horizontalCenter: parent.horizontalCenter
-                label: ""
-                pixelSize: 18 * s
-                textColor: root.txtGray
-                Timer {
-                    interval: 60000; running: true; repeat: true
-                    onTriggered: clockDate.label = Qt.formatDate(new Date(), "dddd, MMMM d")
-                }
-            Component.onCompleted: clockDate.label = Qt.formatDate(new Date(), "dddd, MMMM d")
-        }
-
-            // User Area
-
-            McText {
-                label: "Username"
-                pixelSize: 14 * s
-                textColor: root.txtWhite
-            }
-
-            McInputField {
-                id: nameField
-                width: parent.width
-                height: 48 * s
-                inputRef: nameInput
-            }
-            TextInput {
-                id: nameInput
-                parent: nameField.inputArea
-                anchors.fill: parent; anchors.margins: 8 * s
-                verticalAlignment: TextInput.AlignVCenter
-                text: userModel.lastUser
-                font.family: mcFont.name; font.pixelSize: 14 * s
-                color: root.txtWhite
-                clip: true
-                KeyNavigation.backtab: rebootBtn
-                KeyNavigation.tab: passInput
-                Keys.onPressed: {
-                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        passInput.forceActiveFocus(); event.accepted = true
-                    }
-                }
-            }
-
-            // Password Area
-
-            McText {
-                label: "Password"
-                pixelSize: 14 * s
-                textColor: root.txtWhite
-            }
-
-            McInputField {
-                id: passField
-                width: parent.width
-                height: 48 * s
-                inputRef: passInput
-            }
-            TextInput {
-                id: passInput
-                parent: passField.inputArea
-                anchors.fill: parent; anchors.margins: 8 * s
-                verticalAlignment: TextInput.AlignVCenter
-                echoMode: TextInput.Password
-                font.family: mcFont.name; font.pixelSize: 14 * s; font.letterSpacing: 3 * s
-                color: root.txtWhite
-                clip: true
-
-                Text {
-                    anchors.fill: parent; verticalAlignment: Text.AlignVCenter
-                    text: "Enter password..."
-                    font.family: mcFont.name; font.pixelSize: 13 * s
-                    color: "#555555"
-                    visible: !passInput.text && !passInput.activeFocus
-                }
-
-                KeyNavigation.backtab: nameInput
-                KeyNavigation.tab: loginBtn
-                Keys.onPressed: {
-                    if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        sddm.login(nameInput.text, passInput.text, sessionIndex)
-                        event.accepted = true
-                    }
-                }
-            }
-
-        // MESSAGE
-        Text {
-            id: errorMsg
-            width: parent.width
-            horizontalAlignment: Text.AlignHCenter
-            text: ""
-            color: root.txtRed
-            font.family: mcFont.name; font.pixelSize: 13 * s
-            height: text === "" ? 0 : implicitHeight + 6
-            Behavior on height { NumberAnimation { duration: 150 } }
-        }
-
-        // LOGIN
-        McButton {
-            id: loginBtn
-            width: parent.width
-            height: 44 * s
-            label: "Login"
-            KeyNavigation.backtab: passInput
-            KeyNavigation.tab: sessionBtn
-            onClicked: sddm.login(nameInput.text, passInput.text, sessionIndex)
-        }
-
-        Item { width: 1 * s; height: 12 * s }
-
-        // Selection Area
+        // --- Header Block ---
         Item {
-            id: sessionSelector
-            width: parent.width
-            height: 44 * s
-            z: 10
-
-            McButton {
-                id: sessionBtn
-                width: parent.width
-                height: 44 * s
-                label: (sessionHelper.currentItem && sessionHelper.currentItem.sName ? sessionHelper.currentItem.sName : "Session")
-                     + (sessionDropdown.visible ? "  ▲" : "  ▼")
-                KeyNavigation.backtab: loginBtn
-                KeyNavigation.tab: shutdownBtn
-                onClicked: sessionDropdown.visible = !sessionDropdown.visible
+            width: parent.width; height: 140 * s
+            Column {
+                anchors.centerIn: parent; spacing: 4 * s
+                McText {
+                    id: clockTime; label: Qt.formatTime(new Date(), "HH:mm")
+                    pixelSize: 96 * s; textColor: root.mcTextYellow
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    Timer { interval: 1000; running: true; repeat: true; onTriggered: clockTime.label = Qt.formatTime(new Date(), "HH:mm") }
+                }
+                McText {
+                    label: Qt.formatDate(new Date(), "dddd, MMMM d")
+                    pixelSize: 20 * s; textColor: root.mcTextGray; anchors.horizontalCenter: parent.horizontalCenter
+                }
             }
 
-            // Dropdown
-            Item {
-                id: sessionDropdown
-                visible: false
-                opacity: visible ? 1 : 0; z: visible ? 100 : -100
-                width: parent.width
-                height: Math.min(sessionModel.rowCount() * 38, 152)
-                // opens ABOVE the session button
-                anchors.bottom: sessionBtn.top
-                anchors.bottomMargin: 4 * s
-
-                // Layer 1 — outer shadow slab (bottom-right, same as McButton)
-                Rectangle {
-                    anchors { fill: parent; topMargin: 2 * s; leftMargin: 2 * s }
-                    color: root.btnShadow
+            // Animated Splash
+            Text {
+                id: splashText; anchors.left: parent.horizontalCenter; anchors.leftMargin: 80 * s
+                anchors.top: parent.top; anchors.topMargin: -10 * s
+                text: "GNU/Linux!"; font.family: mcFont.name; font.pixelSize: 22 * s
+                color: root.mcTextYellow; rotation: -20; style: Text.Outline; styleColor: "black"
+                SequentialAnimation on scale {
+                    loops: Animation.Infinite
+                    NumberAnimation { from: 1.0; to: 1.18; duration: 600; easing.type: Easing.InOutQuad }
+                    NumberAnimation { from: 1.18; to: 1.0; duration: 600; easing.type: Easing.InOutQuad }
                 }
-                // Layer 2 — highlight slab (top-left)
-                Rectangle {
-                    anchors { fill: parent; bottomMargin: 2 * s; rightMargin: 2 * s }
-                    color: root.btnHighlight
+                Component.onCompleted: {
+                    var splashes = ["I use Arch btw", "RTFM!", "sudo rm -rf /", "Kernel Panic!", "Btw I use NixOS!", "Pacman -Syu", "chmod 777", "Segmentation Fault"];
+                    text = splashes[Math.floor(Math.random() * splashes.length)];
                 }
-                // Layer 3 — stone face (inset 2px, same colour as button face)
-                Rectangle {
-                    id: dropFace
-                    anchors { fill: parent; topMargin: 2 * s; leftMargin: 2 * s; bottomMargin: 2 * s; rightMargin: 2 * s }
-                    color: root.btnFace
-                    clip: true
+            }
+        }
 
-                    // Thin darker inner-bevel strip at very top of the panel
-                    Rectangle {
-                        anchors { top: parent.top; left: parent.left; right: parent.right }
-                        height: 2 * s
-                        color: root.btnShadow
-                        opacity: 0.6
-                    }
+        Item { width: 1; height: 12 * s } 
 
-                    ListView {
-                        id: sessionListView
-                        anchors.fill: parent
-                        anchors.topMargin: 2 * s
-                        model: sessionModel
-                        currentIndex: sessionIndex
-                        clip: true
+        // --- Username Area (Clickable Toggler) ---
+        Column {
+            width: parent.width; spacing: 10 * s
+            McText { label: "Logged in as:"; pixelSize: 15 * s; textColor: root.mcTextGray }
+            McTextField {
+                id: userBox; width: parent.width; height: 44 * s; inputRef: userMouse
+                McText {
+                    anchors.left: parent.left; anchors.leftMargin: 12 * s
+                    anchors.verticalCenter: parent.verticalCenter
+                    label: (userHelper.currentItem && userHelper.currentItem.uLogin !== "") ? userHelper.currentItem.uLogin : (userModel.lastUser || "User")
+                    pixelSize: 18 * s; textColor: root.mcTextWhite
+                }
+                MouseArea {
+                    id: userMouse; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true
+                    onClicked: root.userIndex = (root.userIndex + 1) % userModel.rowCount()
+                    property bool isHighlighted: containsMouse || pressed
+                }
+            }
+        }
 
-                        delegate: Item {
-                            width: sessionListView.width
-                            height: 38 * s
-
-                            // Row background: hover = button-blue, selected = darker blue, else stone
-                            Rectangle {
-                                anchors.fill: parent
-                                anchors.margins: 2 * s
-                                color: sessionItemMouse.containsMouse
-                                       ? root.btnHoverFace          // blue-hover tint
-                                       : (index === sessionIndex
-                                          ? Qt.darker(root.btnHoverFace, 1.3)  // selected darker blue
-                                          : "transparent")
-                            }
-
-                            // Session name — shadow then foreground (pure x/y positioning)
-                            Text {
-                                x: 15 * s; y: (parent.height - implicitHeight) / 2 + 1
-                                text: model.name || model.display || ""
-                                color: root.txtShadow
-                                font.family: mcFont.name; font.pixelSize: 13 * s
-                            }
-                            Text {
-                                x: 14 * s; y: (parent.height - implicitHeight) / 2
-                                text: model.name || model.display || ""
-                                color: sessionItemMouse.containsMouse ? root.txtYellow : root.txtWhite
-                                font.family: mcFont.name; font.pixelSize: 13 * s
-                            }
-
-                            // Checkmark for active session (shadowed green)
-                            Text {
-                                visible: index === sessionIndex
-                                anchors.right: parent.right; anchors.rightMargin: 12 * s
-                                y: (parent.height - implicitHeight) / 2 + 1
-                                text: "✓"; color: root.txtShadow
-                                font.family: mcFont.name; font.pixelSize: 13 * s
-                            }
-                            Text {
-                                visible: index === sessionIndex
-                                anchors.right: parent.right; anchors.rightMargin: 13 * s
-                                y: (parent.height - implicitHeight) / 2
-                                text: "✓"; color: root.txtGreen
-                                font.family: mcFont.name; font.pixelSize: 13 * s
-                            }
-
-                            // Thin separator line between rows (darker stone edge)
-                            Rectangle {
-                                visible: index < sessionModel.rowCount() - 1
-                                anchors { bottom: parent.bottom; left: parent.left; right: parent.right }
-                                anchors.leftMargin: 6 * s; anchors.rightMargin: 6 * s
-                                height: 1 * s
-                                color: root.btnShadow
-                                opacity: 0.5
-                            }
-
-                            MouseArea {
-                                id: sessionItemMouse
-                                anchors.fill: parent; hoverEnabled: true
-                                onClicked: { sessionIndex = index; sessionDropdown.visible = false }
-                            }
-                        }
+        // --- Password Area ---
+        Column {
+            width: parent.width; spacing: 10 * s
+            McText { label: "Enter Password:"; pixelSize: 15 * s; textColor: root.mcTextGray }
+            McTextField {
+                id: passField; width: parent.width; height: 42 * s; inputRef: passInput
+                TextInput {
+                    id: passInput; anchors.fill: parent; anchors.leftMargin: 12 * s; anchors.rightMargin: 12 * s
+                    echoMode: TextInput.Password; passwordCharacter: "*"; color: "white"
+                    font.family: mcFont.name; font.pixelSize: 18 * s; font.letterSpacing: 4 * s
+                    verticalAlignment: TextInput.AlignVCenter; clip: true; focus: true
+                    KeyNavigation.tab: loginBtn; KeyNavigation.backtab: rebootBtn
+                    Keys.onReturnPressed: doLogin()
+                    
+                    Text {
+                        anchors.fill: parent; verticalAlignment: Text.AlignVCenter; anchors.leftMargin: 2 * s
+                        text: "Enter password..."; color: "#555555"; font.family: mcFont.name; font.pixelSize: 14 * s
+                        visible: !parent.text && !parent.activeFocus
                     }
                 }
             }
         }
 
-        Item { width: 1 * s; height: 12 * s }
+        Text {
+            id: errText; width: parent.width; horizontalAlignment: Text.AlignHCenter
+            text: ""; color: root.mcTextRed; font.family: mcFont.name; font.pixelSize: 14 * s
+            visible: text !== ""
+        }
 
-        // Power Area
+        Item { width: 1; height: 10 * s } // Spacer
+
+        // --- Action Buttons ---
+        McButton { 
+            id: loginBtn; width: parent.width; height: 48 * s; label: "Login"
+            onClicked: doLogin(); KeyNavigation.tab: sessionBtn; KeyNavigation.backtab: passInput
+        }
+
+        McButton {
+            id: sessionBtn; width: parent.width; height: 48 * s
+            label: (sessionHelper.currentItem && sessionHelper.currentItem.sName ? sessionHelper.currentItem.sName : "SESSION")
+            onClicked: root.sessionPopupOpen = true; KeyNavigation.tab: shutdownBtn; KeyNavigation.backtab: loginBtn
+        }
+
         Row {
-            width: parent.width
-            spacing: 10 * s
+            width: parent.width; spacing: 12 * s
+            McButton { id: shutdownBtn; width: (parent.width - 12 * s) / 2; height: 48 * s; label: "Shutdown"; onClicked: sddm.powerOff(); KeyNavigation.tab: rebootBtn }
+            McButton { id: rebootBtn; width: (parent.width - 12 * s) / 2; height: 48 * s; label: "Reboot"; onClicked: sddm.reboot(); KeyNavigation.tab: passInput }
+        }
+    }
+
+    // --- Overlay Session Switcher ---
+    Item {
+        id: sessionOverlay
+        anchors.fill: parent; visible: root.sessionPopupOpen; z: 5000
+        
+        // Background Tint (High Opacity)
+        Rectangle { anchors.fill: parent; color: "black"; opacity: 0.88 }
+        
+        Column {
+            anchors.centerIn: parent; width: 420 * s; spacing: 16 * s
+            
+            McText {
+                label: "SELECT SESSION"; pixelSize: 24 * s; textColor: root.mcTextYellow
+                anchors.horizontalCenter: parent.horizontalCenter
+            }
+            
+            Item { width: 1; height: 10 * s }
+
+            Column {
+                width: parent.width; spacing: 8 * s
+                Repeater {
+                    model: sessionModel
+                    McButton {
+                        width: 420 * s; height: 44 * s
+                        label: model.name || "Default"
+                        // Highlight current
+                        Rectangle {
+                            anchors.fill: parent; color: "transparent"; border.color: root.mcTextYellow; border.width: 2 * s
+                            visible: index === root.sessionIndex
+                        }
+                        onClicked: { root.sessionIndex = index; root.sessionPopupOpen = false }
+                    }
+                }
+            }
+            
+            Item { width: 1; height: 12 * s }
 
             McButton {
-                id: shutdownBtn
-                width: (parent.width - 10) / 2
-                height: 44 * s
-                label: "Shutdown"
-                KeyNavigation.backtab: sessionBtn
-                KeyNavigation.tab: rebootBtn
-                onClicked: sddm.powerOff()
-            }
-            McButton {
-                id: rebootBtn
-                width: (parent.width - 10) / 2
-                height: 44 * s
-                label: "Reboot"
-                KeyNavigation.backtab: shutdownBtn
-                KeyNavigation.tab: nameInput
-                onClicked: sddm.reboot()
+                width: 200 * s; height: 44 * s; label: "Cancel"
+                anchors.horizontalCenter: parent.horizontalCenter
+                onClicked: root.sessionPopupOpen = false
             }
         }
-    }   // end Column
 
+        // Close on ESC
+        Keys.onEscapePressed: root.sessionPopupOpen = false
+        focus: visible
+    }
 
-    // Shared Components
+    // --- Fade-in ---
+    NumberAnimation { id: fadeIn; target: root; property: "uiOpacity"; to: 1; duration: 1000; easing.type: Easing.OutCubic }
+    Component.onCompleted: fadeIn.start()
 
-    // McText
+    function doLogin() { 
+        var lName = (userHelper.currentItem && userHelper.currentItem.uLogin !== "") ? userHelper.currentItem.uLogin : (userModel.lastUser || "")
+        sddm.login(lName, passInput.text, root.sessionIndex) 
+    }
+    Connections { target: sddm; function onLoginFailed() { errText.text = "INVALID CREDENTIALS"; passInput.text = ""; passInput.forceActiveFocus() } }
+
+    // --- Minecraft Components ---
     component McText: Item {
-        property string label:     "Text"
-        property int    pixelSize: 14 * s
-        property color  textColor: root.txtWhite
-
-        implicitWidth:  foreLabel.implicitWidth  + 2
-        implicitHeight: foreLabel.implicitHeight + 2
-
-        // shadow (offset 2,2)
-        Text {
-            x: 2 * s; y: 2 * s
-            text: label
-            font.family: mcFont.name; font.pixelSize: pixelSize
-            color: root.txtShadow
-        }
-        // foreground
-        Text {
-            id: foreLabel
-            x: 0 * s; y: 0 * s
-            text: label
-            font.family: mcFont.name; font.pixelSize: pixelSize
-            color: textColor
-        }
+        property string label: ""; property int pixelSize: 16 * s; property color textColor: root.mcTextWhite
+        implicitWidth: fore.implicitWidth + 2 * s; implicitHeight: fore.implicitHeight + 2 * s
+        Text { x: 2 * s; y: 2 * s; text: label; color: root.mcTextShadow; font.family: mcFont.name; font.pixelSize: pixelSize }
+        Text { id: fore; text: label; color: textColor; font.family: mcFont.name; font.pixelSize: pixelSize }
     }
-
-    // McInputField
-    component McInputField: Item {
-        property var inputRef        // bind the TextInput to this property
-        property alias inputArea: innerRect
-
-        // outer 2px black frame
+    component McTextField: Item {
+        property var inputRef
         Rectangle {
-            anchors.fill: parent
-            color: "#000000"
-            border.color: "#000000"; border.width: 1 * s
-        }
-
-        // inset shadow strips (darker top+left = "sunken" look)
-        Rectangle { anchors { top:parent.top; left:parent.left; right:parent.right }
-                    height: 2 * s; color: "#6E6E6E" }
-        Rectangle { anchors { top:parent.top; left:parent.left; bottom:parent.bottom }
-                    width: 2 * s; color: "#6E6E6E" }
-        // highlight bottom + right
-        Rectangle { anchors { bottom:parent.bottom; left:parent.left; right:parent.right }
-                    height: 2 * s; color: root.fldBorderFoc; opacity: 0.12 }
-        Rectangle { anchors { top:parent.top; right:parent.right; bottom:parent.bottom }
-                    width: 2 * s; color: root.fldBorderFoc; opacity: 0.12 }
-
-        // actual text area
-        Rectangle {
-            id: innerRect
-            anchors { fill:parent; margins: 2 * s }
-            color: "#000000"
-
-            // focus border (1px bright inner)
+            anchors.fill: parent; color: "black"
+            border.color: "#808080"; border.width: 2 * s
             Rectangle {
-                visible: inputRef && inputRef.activeFocus
-                anchors.fill: parent
-                color: "transparent"
-                border.color: root.fldBorderFoc; border.width: 1 * s
+                anchors.fill: parent; anchors.margins: 2 * s; color: "#0a0a0a"
+                Rectangle {
+                    visible: inputRef && (inputRef.activeFocus || (inputRef.isHighlighted === true))
+                    anchors.fill: parent; color: "transparent"; border.color: "#ffffff"; border.width: 1 * s
+                }
             }
         }
     }
-
-    // McButton
     component McButton: Item {
-        id: btnRoot
-        property string label:  "Button"
-        signal clicked()
-
-        // keyboard activation
-        Keys.onPressed: {
-            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter
-                || event.key === Qt.Key_Space) {
-                clicked(); event.accepted = true
-            }
-        }
-
-        // ── Layer 1: bottom-right shadow slab ──────────────────────────
+        id: mcBtn; property string label: ""; signal clicked()
         Rectangle {
-            anchors { fill:parent; topMargin:2 * s; leftMargin:2 * s }
-            color: hover.pressed ? root.btnShadow : root.btnShadow
-        }
-        // ── Layer 2: top-left highlight slab ───────────────────────────
-        Rectangle {
-            anchors { fill:parent; bottomMargin:2 * s; rightMargin:2 * s }
-            color: hover.pressed ? root.btnPressface
-                 : hover.containsMouse ? root.btnHoverHL
-                 : root.btnHighlight
-        }
-        // ── Layer 3: face slab (inset 2px from each edge) ──────────────
-        Rectangle {
-            id: face
-            anchors { fill:parent; topMargin:2 * s; leftMargin:2 * s; bottomMargin:2 * s; rightMargin:2 * s }
-            color: hover.pressed          ? root.btnPressface
-                 : hover.containsMouse    ? root.btnHoverFace
-                 : root.btnFace
-
-            scale: hover.containsMouse ? 1.02 : 1.0
-            Behavior on scale { NumberAnimation { duration: 100 } }
-
-            // ── Text with drop-shadow ─────────────────────────────────
-            Text {
-                anchors.centerIn: parent
-                anchors.horizontalCenterOffset: 2 * s; anchors.verticalCenterOffset: 2 * s
-                text: btnRoot.label
-                font.family: mcFont.name; font.pixelSize: 14 * s
-                color: root.txtShadow
+            anchors.fill: parent; color: "black"
+            Rectangle {
+                anchors.fill: parent; anchors.margins: 1.5 * s
+                color: mcMouse.pressed ? root.mcBtnPress : (mcMouse.containsMouse ? root.mcBtnHover : root.mcBtnFace)
+                Rectangle { anchors.top: parent.top; anchors.left: parent.left; anchors.right: parent.right; height: 2.5 * s; color: root.mcBtnHighlight; opacity: mcMouse.pressed ? 0.2 : 0.8 }
+                Rectangle { anchors.top: parent.top; anchors.left: parent.left; anchors.bottom: parent.bottom; width: 2.5 * s; color: root.mcBtnHighlight; opacity: mcMouse.pressed ? 0.2 : 0.8 }
+                Rectangle { anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.right: parent.right; height: 2.5 * s; color: root.mcBtnShadow }
+                Rectangle { anchors.top: parent.top; anchors.right: parent.right; anchors.bottom: parent.bottom; width: 2.5 * s; color: root.mcBtnShadow }
+                McText { anchors.centerIn: parent; label: mcBtn.label; textColor: mcMouse.containsMouse ? root.mcTextYellow : root.mcTextWhite; pixelSize: 18 * s }
             }
-            Text {
-                anchors.centerIn: parent
-                text: btnRoot.label
-                font.family: mcFont.name; font.pixelSize: 14 * s
-                color: hover.pressed          ? root.txtGray
-                     : hover.containsMouse    ? root.txtYellow
-                     : root.txtWhite
-            }
+            Rectangle { anchors.fill: parent; color: "transparent"; border.color: "white"; border.width: 1.5 * s; visible: mcMouse.containsMouse && !mcMouse.pressed }
         }
-
-        MouseArea {
-            id: hover
-            anchors.fill: parent
-            hoverEnabled: true
-            onClicked: btnRoot.clicked()
-        }
-    }
-
-    // Auto-focus fix for Quickshell (Loader does not propagate focus: true)
-    Timer { interval: 300; running: true; onTriggered: { if (nameInput.text === "") nameInput.forceActiveFocus(); else passInput.forceActiveFocus() } }
-
-    // ── Initial focus ──────────────────────────────────────────────────────
-    Component.onCompleted: {
-        if (nameInput.text === "") nameInput.forceActiveFocus()
-        else                       passInput.forceActiveFocus()
+        MouseArea { id: mcMouse; anchors.fill: parent; hoverEnabled: true; onClicked: mcBtn.clicked() }
     }
 }

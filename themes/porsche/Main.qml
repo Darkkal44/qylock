@@ -13,9 +13,8 @@ Rectangle {
 
     // ── Properties ────────────────────────────────────────────────────
     property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
-    ListView {
-        id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
-        opacity: 0; width: 0; height: 0; z: -100; visible: true
+    ListView { id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
+        opacity: 0; width: 100; height: 100; z: -100; visible: true
         delegate: Item { property string sName: model.name || "" }
     }
     property real ui: 0
@@ -39,10 +38,9 @@ Rectangle {
     FontLoader { id: tektur; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
 
     // ── Helpers ───────────────────────────────────────────────────────
-    ListView {
-        id: userHelper; model: userModel
+    ListView { id: userHelper; model: userModel
         currentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
-        visible: false; width: 0; height: 0
+        visible: false; width: 100; height: 100
         delegate: Item { property string uName: model.realName || model.name || "" }
     }
 
