@@ -510,8 +510,8 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
         }
         Text {
-            text: (sessionHelper.currentItem && sessionHelper.currentItem.sName)
-                  ? sessionHelper.currentItem.sName.toUpperCase() : "SESSION"
+            text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0)
+                  ? sessionModel.get(root.sessionIndex).name.toUpperCase() : "SESSION"
             color: root.smoke
             font.family: tektur.name; font.pixelSize: 9 * s; font.letterSpacing: 2 * s
             anchors.verticalCenter: parent.verticalCenter

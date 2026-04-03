@@ -88,7 +88,7 @@ Rectangle {
     Row {
         anchors.top: parent.top; anchors.left: parent.left; anchors.margins: 40 * s; spacing: 20 * s; opacity: root.ui
         Repeater {
-            model: [{l: (sessionHelper.currentItem ? sessionHelper.currentItem.sName : "SESSION").toUpperCase(), a: 2}, {l: "RESTART", a: 0}, {l: "POWER", a: 1}]
+            model: [{l: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0 ? sessionModel.get(root.sessionIndex).name : "SESSION").toUpperCase(), a: 2}, {l: "RESTART", a: 0}, {l: "POWER", a: 1}]
             delegate: Item {
                 width: pmt.implicitWidth + 20 * s; height: 26 * s
                 Rectangle { anchors.fill: parent; color: "transparent"; border.color: root.emerald; border.width: 1 * s; opacity: pm.containsMouse ? 1.0 : 0.4; radius: 4 * s; Rectangle { anchors.fill: parent; anchors.margins: 1 * s; color: root.emerald; radius: 3 * s; opacity: pm.containsMouse ? 0.3 : 0 } }

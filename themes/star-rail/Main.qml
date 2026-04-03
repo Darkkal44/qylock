@@ -468,7 +468,9 @@ Rectangle {
                         }
 
                         Text {
-                            text: (sessionHelper.currentItem && sessionHelper.currentItem.name) ? sessionHelper.currentItem.name : "Session"
+                            text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0)
+                                  ? sessionModel.get(root.sessionIndex).name
+                                  : "Select Session"
                             font.family: mainFont.name; font.pixelSize: 17 * s
                             color: "white"; anchors.verticalCenter: parent.verticalCenter
                         }

@@ -788,7 +788,7 @@ Rectangle {
                 
                 // Session dropdown button mapped to World
                 TerraButton {
-                    text: (sessionNameHelper.currentItem && sessionNameHelper.currentItem.sessionName) ? "World: " + sessionNameHelper.currentItem.sessionName : "Select World"
+                    text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? "World: " + sessionModel.get(root.sessionIndex).name : "Select World"
                     fontPixelSize: 24
                     onClicked: {
                         if (sessionModel && sessionModel.rowCount() > 0) {

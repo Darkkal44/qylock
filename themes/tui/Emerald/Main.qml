@@ -327,7 +327,7 @@ Rectangle {
                     TuiBtn {
                         id: sessionBtn
                         anchors.verticalCenter: parent.verticalCenter
-                        btnLabel: (sessionNameHelper.currentItem ? sessionNameHelper.currentItem.sessionName : "default") + " [ CYCLE ]"
+                        btnLabel: ((sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionModel.get(root.sessionIndex).name : "default") + " [ CYCLE ]"
                         KeyNavigation.backtab: loginBtn
                         KeyNavigation.tab:     shutdownBtn
                         onClicked: root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount()

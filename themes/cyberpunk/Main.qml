@@ -322,8 +322,8 @@ Rectangle {
                 width: 340 * s
 
                 CyberButton {
-                    text: (sessionNameHelper.currentItem && sessionNameHelper.currentItem.sessionName) 
-                          ? "FIRMWARE: " + sessionNameHelper.currentItem.sessionName 
+                    text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0)
+                          ? "FIRMWARE: " + sessionModel.get(root.sessionIndex).name 
                           : "CHANGE FIRMWARE"
                     fontName: mainFont.name
                     onClicked: {

@@ -301,7 +301,7 @@ Rectangle {
                     Rectangle { width: 4 * s; height: 4 * s; color: root.amberHot; anchors.verticalCenter: parent.verticalCenter }
                     Text {
                         id: sessionText
-                        text: (sessionHelper.currentItem && sessionHelper.currentItem.sName) ? sessionHelper.currentItem.sName.toUpperCase() : "SESSION"
+                        text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0 ? sessionModel.get(root.sessionIndex).name : "Session").toUpperCase()
                         color: root.textWhite; font.family: pfMed.name; font.pixelSize: 9 * s; font.letterSpacing: 1 * s
                         anchors.verticalCenter: parent.verticalCenter
                     }

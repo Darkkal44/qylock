@@ -202,7 +202,7 @@ Rectangle {
                 anchors.centerIn: parent; spacing: 10 * s
                 Rectangle { width: 4 * s; height: 4 * s; color: root.accent; radius: 2 * s; anchors.verticalCenter: parent.verticalCenter; opacity: sessionBtn.containsMouse ? 1 : 0.5 }
                 Text {
-                    text: (sessionHelper.currentItem && sessionHelper.currentItem.sName) ? sessionHelper.currentItem.sName.toUpperCase() : "SELECT SESSION"
+                    text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0 ? sessionModel.get(root.sessionIndex).name : "Select Session").toUpperCase()
                     font.family: orbitron.name; font.pixelSize: 11 * s; font.letterSpacing: 1 * s; color: "white"; font.weight: Font.Bold
                 }
             }

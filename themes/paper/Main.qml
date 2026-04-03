@@ -403,8 +403,8 @@ Rectangle {
                                     
                                     Text {
                                         anchors.centerIn: parent
-                                        text: (sessionNameHelper.currentItem && sessionNameHelper.currentItem.sessionName) 
-                                              ? sessionNameHelper.currentItem.sessionName.toUpperCase() 
+                                        text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) 
+                                              ? sessionModel.get(root.sessionIndex).name.toUpperCase() 
                                               : "SEARCHING..."
                                         font.family: root.fontName
                                         font.pixelSize: 12 * s

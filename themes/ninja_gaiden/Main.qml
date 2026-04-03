@@ -447,7 +447,7 @@ Rectangle {
                 width: parent.width; height: 32 * s; y: 64 * s
                 Text {
                     visible: menuList.currentIndex !== 2
-                    text: sessionHelper.currentItem ? sessionHelper.currentItem.sName : (sessionModel && sessionModel.rowCount() > 0 ? sessionModel.data(sessionModel.index(root.sessionIndex, 0), 257) : "Default")
+                    text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionModel.get(root.sessionIndex).name : "Default"
                     font.family: root.fn; font.pixelSize: 12 * s
                     color: root.cFgDim
                     anchors.left: parent.left; anchors.leftMargin: 14 * s
@@ -457,7 +457,7 @@ Rectangle {
                     visible: menuList.currentIndex === 2
                     anchors.fill: parent
                     Text {
-                        text: sessionHelper.currentItem ? sessionHelper.currentItem.sName : (sessionModel && sessionModel.rowCount() > 0 ? sessionModel.data(sessionModel.index(root.sessionIndex, 0), 257) : "Default")
+                        text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionModel.get(root.sessionIndex).name : "Default"
                         font.family: root.fn; font.pixelSize: 12 * s; color: root.cFg
                         anchors.left: parent.left; anchors.leftMargin: 14 * s
                         anchors.verticalCenter: parent.verticalCenter

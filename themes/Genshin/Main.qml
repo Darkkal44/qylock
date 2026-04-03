@@ -237,7 +237,7 @@ Rectangle {
                 }
 
                 Text {
-                    text: (sessionHelper.currentItem && sessionHelper.currentItem.name) ? sessionHelper.currentItem.name : "Select Realm"
+                    text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionModel.get(root.sessionIndex).name : "Select Realm"
                     anchors.centerIn: parent
                     font.family: mainFont.name; font.pixelSize: 22 * s; color: "#ece5d8"
                     font.letterSpacing: 1.5 * s

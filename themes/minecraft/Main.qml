@@ -326,9 +326,7 @@ Rectangle {
                 id: sessionBtn
                 width: parent.width
                 height: 44 * s
-                label: (sessionNameHelper.currentItem
-                        ? sessionNameHelper.currentItem.sessionName
-                        : "Select Session")
+                label: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0 ? sessionModel.get(root.sessionIndex).name : "Select Session")
                      + (sessionDropdown.visible ? "  ▲" : "  ▼")
                 KeyNavigation.backtab: loginBtn
                 KeyNavigation.tab: shutdownBtn

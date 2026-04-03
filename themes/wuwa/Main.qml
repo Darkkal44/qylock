@@ -303,7 +303,7 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                     }
                     Text {
-                        text: (sessionHelper.currentItem && sessionHelper.currentItem.name) ? sessionHelper.currentItem.name : "Select Session"
+                        text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionModel.get(root.sessionIndex).name : "Select Session"
                         font.family: mainFont.name; font.pixelSize: 12 * s
                         font.letterSpacing: 0.5 * s
                         color: root.wSilver

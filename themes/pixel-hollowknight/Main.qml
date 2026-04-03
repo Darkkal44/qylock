@@ -95,7 +95,7 @@ Rectangle {
     // Session Switcher
     Item {
         anchors.top: parent.top; anchors.left: parent.left; anchors.margins: 40 * s; width: stm.implicitWidth + 24 * s; height: 28 * s; opacity: root.ui
-        Text { id: stm; anchors.centerIn: parent; text: (sessionHelper.currentItem ? sessionHelper.currentItem.sName : "SESSION").toUpperCase(); color: sm.containsMouse ? root.lantern : root.lore; opacity: sm.containsMouse ? 1.0 : 0.5; font.family: pf.name; font.pixelSize: 10 * s; font.letterSpacing: 4 * s; Behavior on color { ColorAnimation { duration: 150 } } Behavior on opacity { NumberAnimation { duration: 150 } } }
+        Text { id: stm; anchors.centerIn: parent; text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0 ? sessionModel.get(root.sessionIndex).name : "SESSION").toUpperCase(); color: sm.containsMouse ? root.lantern : root.lore; opacity: sm.containsMouse ? 1.0 : 0.5; font.family: pf.name; font.pixelSize: 10 * s; font.letterSpacing: 4 * s; Behavior on color { ColorAnimation { duration: 150 } } Behavior on opacity { NumberAnimation { duration: 150 } } }
         MouseArea { id: sm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { if (sessionModel && sessionModel.rowCount() > 0) root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount() } }
     }
 

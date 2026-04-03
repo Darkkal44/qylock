@@ -687,7 +687,7 @@ Rectangle {
                             id: btnRect
                             width: parent.width; height: 28 * s; color: bMa.pressed ? "#4a4840" : bMa.containsMouse ? "#3a3830" : "#2c2a24"; border.color: bMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1
                             Rectangle { width: 3 * s; height: parent.height; color: bMa.containsMouse ? root.nierAccent : root.nierBorder }
-                            Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12 * s; font.family: root.fontName; font.pixelSize: 11 * s; font.letterSpacing: 0.8; color: bMa.containsMouse ? root.nierAccent : "#b0ac94"; text: modelData.action === "session" ? "◆ Session: " + (sessionHelper.currentItem ? sessionHelper.currentItem.sName : "—") : "◆ " + modelData.label }
+                            Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12 * s; font.family: root.fontName; font.pixelSize: 11 * s; font.letterSpacing: 0.8; color: bMa.containsMouse ? root.nierAccent : "#b0ac94"; text: modelData.action === "session" ? "◆ Session: " + ((sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionModel.get(root.sessionIndex).name : "—") : "◆ " + modelData.label }
 
                             MouseArea { 
                                 id: bMa; anchors.fill: parent; hoverEnabled: true 
