@@ -53,16 +53,16 @@ error() {
 
 header
 
-# Verificação de dependências
-info "Verificando dependências..."
+# Dependency check
+info "Checking dependencies..."
 
 if ! command -v quickshell &> /dev/null; then
-    error "Quickshell não está instalado. Instale com: pacman -S quickshell ou yay -S quickshell"
+    error "Quickshell is not installed. Install it with: pacman -S quickshell or yay -S quickshell"
     exit 1
 fi
-substep "Quickshell encontrado"
+substep "Quickshell found"
 
-success "Dependências verificadas"
+success "Dependencies verified"
 
 info "Initializing Installation..."
 substep "Target directory: $TARGET_DIR"

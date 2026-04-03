@@ -54,20 +54,20 @@ error() {
 
 header
 
-# Verificação de dependências
-info "Verificando dependências..."
+# Dependency check
+info "Checking dependencies..."
 
 if ! command -v sddm &> /dev/null; then
-    error "SDDM não está instalado. Instale com: pacman -S sddm"
+    error "SDDM is not installed. Install it with: pacman -S sddm"
     exit 1
 fi
-substep "SDDM encontrado"
+substep "SDDM found"
 
 if ! sudo -n true 2>/dev/null; then
-    substep "${C_YELLOW}Aviso: sudo pode solicitar sua senha durante a instalação${C_RESET}"
+    substep "${C_YELLOW}Note: sudo may prompt for your password during installation${C_RESET}"
 fi
 
-success "Dependências verificadas"
+success "Dependencies verified"
 
 # Check if themes directory exists
 if [ ! -d "$THEMES_DIR" ]; then

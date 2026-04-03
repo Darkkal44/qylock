@@ -31,7 +31,7 @@ ShellRoot {
             
             // Hyprland Hack: Explicitly tell the compositor that it's okay for
             // the session lock to vanish. This stops the "Oopsie daisy" screen.
-            // Só executa se o compositor for Hyprland
+            // Only execute if the compositor is Hyprland
             if (Quickshell.env("XDG_CURRENT_DESKTOP") === "Hyprland" || Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE") !== "") {
                 Quickshell.execDetached(["hyprctl", "keyword", "misc:allow_session_lock_restore", "1"]);
             }
