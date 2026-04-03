@@ -33,6 +33,9 @@ Rectangle {
     FontLoader { id: customFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
     readonly property string fn: customFont.name
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: pwInput.forceActiveFocus() }
+
     Timer {
         interval: 1000; running: true; repeat: true
         onTriggered: {

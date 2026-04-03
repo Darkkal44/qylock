@@ -32,6 +32,9 @@ Rectangle {
     ListView { id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex; visible: false; delegate: Item { property string sName: model.name || "" } }
     ListView { id: userHelper; model: userModel; currentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0; visible: false; delegate: Item { property string uName: model.realName || model.name || "" } }
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: passwordField.forceActiveFocus() }
+
     Component.onCompleted: fadeAnim.start()
     NumberAnimation { id: fadeAnim; target: root; property: "ui"; from: 0; to: 1; duration: 1800; easing.type: Easing.OutCubic }
 

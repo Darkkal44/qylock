@@ -47,6 +47,9 @@ Rectangle {
         delegate: Item { property string uName: model.realName || model.name || "" }
     }
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: passwordField.forceActiveFocus() }
+
     // ── Boot Fade-in ──────────────────────────────────────────────────
     Component.onCompleted: fadeAnim.start()
     NumberAnimation {

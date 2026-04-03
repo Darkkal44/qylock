@@ -42,6 +42,9 @@ Rectangle {
         source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : ""
     }
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: passIn.forceActiveFocus() }
+
     // Session Helper
     ListView {
         id: sessionHelper

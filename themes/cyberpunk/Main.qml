@@ -67,6 +67,9 @@ Rectangle {
         }
     }
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: passwordInput.forceActiveFocus() }
+
     // Boot Sequence
     Component.onCompleted: bootSequence.start()
     SequentialAnimation {

@@ -606,6 +606,9 @@ Rectangle {
         }
     }
 
+    // Auto-focus fix para Quickshell (Loader não propaga focus: true)
+    Timer { interval: 300; running: true; onTriggered: { if (nameInput.text === "") nameInput.forceActiveFocus(); else passInput.forceActiveFocus() } }
+
     // ── Initial focus ──────────────────────────────────────────────────────
     Component.onCompleted: {
         if (nameInput.text === "") nameInput.forceActiveFocus()
