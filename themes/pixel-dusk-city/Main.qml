@@ -22,9 +22,9 @@ Rectangle {
     readonly property color textDim:    "#907860"
 
     TextConstants { id: textConstants }
-    FontLoader { id: pfReg; source: "font/PixelifySans-Regular.ttf" }
-    FontLoader { id: pfMed; source: "font/PixelifySans-Medium.ttf" }
-    FontLoader { id: pfSemi; source: "font/PixelifySans-SemiBold.ttf" }
+    FontLoader { id: pfReg; source: "font/PixelifySans-Bold.ttf" }
+    FontLoader { id: pfMed; source: "font/PixelifySans-Bold.ttf" }
+    FontLoader { id: pfSemi; source: "font/PixelifySans-Bold.ttf" }
     FontLoader { id: pfBold; source: "font/PixelifySans-Bold.ttf" }
 
     ListView { id: sessionHelper; model: sessionModel; currentIndex: root.sessionIndex
