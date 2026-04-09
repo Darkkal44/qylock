@@ -13,6 +13,7 @@ Rectangle {
 
     property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0)
                                ? sessionModel.lastIndex : 0
+    property int userIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
     property real ui: 0
 
     TextConstants { id: textConstants }
@@ -39,9 +40,9 @@ Rectangle {
     ListView {
         id: userHelper
         model: userModel
-        currentIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
-        visible: false; width: 0 * s; height: 0 * s
-        delegate: Item { property string uName: model.realName || model.name || "" }
+        currentIndex: root.userIndex
+        opacity: 0; width: 100 * s; height: 100 * s; z: -100
+        delegate: Item { property string uName: model.realName || model.name || ""; property string uLogin: model.name || "" }
     }
 
     // Boot
@@ -144,7 +145,7 @@ Rectangle {
         id: loginPanel
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.rightMargin: 80 * s
+        anchors.rightMargin: 40 * s
         anchors.bottomMargin: 110 * s
         width: 280 * s
         spacing: 0 * s
@@ -161,6 +162,34 @@ Rectangle {
             font.family: shurikenFont.name
             font.pixelSize: 22 * s
             font.letterSpacing: 2 * s
+            
+            scale: uMa.containsMouse ? 1.05 : 1.0
+            Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+            transform: Translate { id: uTrans; x: 0 }
+
+            MouseArea {
+                id: uMa
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (userModel && userModel.rowCount() > 0)
+                        uToggleAnim.start()
+                }
+            }
+
+            SequentialAnimation {
+                id: uToggleAnim
+                ParallelAnimation {
+                    NumberAnimation { target: userDisplay; property: "opacity"; to: 0; duration: 120; easing.type: Easing.InQuad }
+                    NumberAnimation { target: uTrans; property: "x"; to: 15 * s; duration: 120; easing.type: Easing.InQuad }
+                }
+                ScriptAction { script: root.userIndex = (root.userIndex + 1) % userModel.rowCount() }
+                ParallelAnimation {
+                    NumberAnimation { target: userDisplay; property: "opacity"; to: 1; duration: 180; easing.type: Easing.OutQuad }
+                    NumberAnimation { target: uTrans; property: "x"; to: 0; duration: 180; easing.type: Easing.OutQuad }
+                }
+            }
         }
 
         Item { width: 1 * s; height: 22 * s }
@@ -176,12 +205,10 @@ Rectangle {
                 anchors.right: arrowHint.left
                 anchors.rightMargin: 12 * s
                 anchors.verticalCenter: parent.verticalCenter
-                color: "white"
+                color: "transparent"
                 font.family: shurikenFont.name
                 font.pixelSize: 14 * s
-                font.letterSpacing: 1 * s
-                echoMode: TextInput.Password
-                passwordCharacter: "·"
+                echoMode: TextInput.NoEcho
                 focus: true
                 clip: true
                 cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
@@ -190,31 +217,55 @@ Rectangle {
                 Keys.onReturnPressed: doLogin()
                 Keys.onEnterPressed:  doLogin()
                 
+                // Visual representation row
+                Row {
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 8 * s
+
+                    Repeater {
+                        model: passwordField.text.length
+                        delegate: Text {
+                            text: "✦"
+                            color: "white"
+                            font: passwordField.font
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                    }
+
+                    Text {
+                        id: customCursor
+                        text: "✦"
+                        color: "white"
+                        font: passwordField.font
+                        verticalAlignment: Text.AlignVCenter
+                        visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                        
+                        layer.enabled: true
+                        layer.effect: DropShadow { color: "white"; radius: 8; samples: 16 }
+
+                        SequentialAnimation {
+                            loops: Animation.Infinite; running: customCursor.visible
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.2; duration: 600; easing.type: Easing.InOutSine }
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 0.2; to: 1; duration: 600; easing.type: Easing.InOutSine }
+                        }
+                    }
+                }
+
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Enter password"
                     color: "white"
-                    opacity: passwordField.text.length === 0 ? 0.25 : 0
-                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                    opacity: (passwordField.text.length === 0 && !passwordField.wasClicked) ? 0.25 : 0
+                    Behavior on opacity { NumberAnimation { duration: 450; easing.type: Easing.InOutSine } }
                     font.family: shurikenFont.name
                     font.pixelSize: 14 * s
-                    font.letterSpacing: 1 * s
+                    font.letterSpacing: 2 * s
                 }
-                Rectangle {
-                    id: customCursor
-                    width: 2 * s; height: 16 * s
-                    color: "white"
-                    anchors.verticalCenter: parent.verticalCenter
-                    x: passwordField.cursorRectangle.x
-                    visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
-                    SequentialAnimation {
-                        loops: Animation.Infinite; running: customCursor.visible
-                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
-                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
-                    }
-                }
+
                 MouseArea {
                     anchors.fill: parent
+                    cursorShape: Qt.IBeamCursor
                     onClicked: {
                         passwordField.forceActiveFocus()
                         passwordField.wasClicked = true
@@ -282,33 +333,60 @@ Rectangle {
         opacity: root.ui * 0.8
 
         // Left: Session cycler
-        Row {
-            anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            spacing: 10 * s
+        Item {
+            width: sessionSwitchRow.implicitWidth; height: sessionSwitchRow.implicitHeight
+            anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter
 
-            Text {
-                text: "◈"
-                color: "#405070"; font.pixelSize: 10 * s
-                anchors.verticalCenter: parent.verticalCenter
+            Row {
+                id: sessionSwitchRow
+                spacing: 10 * s
+                
+                opacity: sMa.containsMouse ? 1.0 : 0.85
+                scale: sMa.containsMouse ? 1.05 : 1.0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+                transform: Translate { id: sTrans; x: 0 }
+
+                Text {
+                    text: "◈"
+                    color: "#405070"; font.pixelSize: 10 * s
+                    anchors.verticalCenter: parent.verticalCenter
+                }
+                Text {
+                    id: sessionLabel
+                    text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0)
+                          ? sessionHelper.currentItem.sName
+                          : "Session"
+                    color: "white"
+                    opacity: 0.6
+                    font.family: shurikenFont.name
+                    font.pixelSize: 12 * s
+                    font.letterSpacing: 1 * s
+                    anchors.verticalCenter: parent.verticalCenter
+                }
             }
-            Text {
-                text: (sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0)
-                      ? sessionHelper.currentItem.sName
-                      : "Session"
-                color: "white"
-                opacity: 0.45
-                font.family: shurikenFont.name
-                font.pixelSize: 12 * s
-                font.letterSpacing: 1 * s
-                anchors.verticalCenter: parent.verticalCenter
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    onClicked: {
-                        if (sessionModel && sessionModel.rowCount() > 0)
-                            root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount()
-                    }
+            
+            MouseArea {
+                id: sMa
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+                    if (sessionModel && sessionModel.rowCount() > 0)
+                        sToggleAnim.start()
+                }
+            }
+
+            SequentialAnimation {
+                id: sToggleAnim
+                ParallelAnimation {
+                    NumberAnimation { target: sessionLabel; property: "opacity"; to: 0; duration: 120; easing.type: Easing.InQuad }
+                    NumberAnimation { target: sTrans; property: "x"; to: 10 * s; duration: 120; easing.type: Easing.InQuad }
+                }
+                ScriptAction { script: root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount() }
+                ParallelAnimation {
+                    NumberAnimation { target: sessionLabel; property: "opacity"; to: 0.6; duration: 180; easing.type: Easing.OutQuad }
+                    NumberAnimation { target: sTrans; property: "x"; to: 0; duration: 180; easing.type: Easing.OutQuad }
                 }
             }
         }
@@ -325,7 +403,11 @@ Rectangle {
                 font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s
 
                 Behavior on opacity { NumberAnimation { duration: 150 } }
+                scale: rMa.containsMouse ? 1.1 : 1.0
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+                
                 MouseArea {
+                    id: rMa
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
@@ -340,7 +422,11 @@ Rectangle {
                 font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s
 
                 Behavior on opacity { NumberAnimation { duration: 150 } }
+                scale: pMa.containsMouse ? 1.1 : 1.0
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+
                 MouseArea {
+                    id: pMa
                     anchors.fill: parent
                     hoverEnabled: true
                     cursorShape: Qt.PointingHandCursor
@@ -373,8 +459,8 @@ Rectangle {
     }
 
     function doLogin() {
-        var uname = (userHelper.currentItem && userHelper.currentItem.uName)
-                    ? userHelper.currentItem.uName : userModel.lastUser
+        var uname = (userHelper.currentItem && userHelper.currentItem.uLogin)
+                    ? userHelper.currentItem.uLogin : userModel.lastUser
         sddm.login(uname, passwordField.text, root.sessionIndex)
     }
 }

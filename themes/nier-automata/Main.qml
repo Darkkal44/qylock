@@ -242,30 +242,34 @@ Rectangle {
                     { name: "SYSTEM",  icon: "⊙" }
                 ]
                 Rectangle {
+                    id: tabBtn
                     property bool isActive: modelData.name === "LOGIN"
-                    width:  tabRow.implicitWidth + 20 * s
+                    property bool hovered: tMa.containsMouse
+                    width:  tabContent.implicitWidth + 20 * s
                     height: topBar.height
-                    color:  isActive ? root.nierSelected : "transparent"
-                    border.color: isActive ? root.nierBorder : "transparent"
-                    border.width: isActive ? 1 : 0
+                    color:  isActive ? root.nierSelected : (hovered ? "#4a4840" : "transparent")
+                    border.color: (isActive || hovered) ? root.nierBorder : "transparent"
+                    border.width: (isActive || hovered) ? 1 : 0
+                    Behavior on color { ColorAnimation { duration: 150 } }
 
                     Row {
-                        id: tabRow
+                        id: tabContent
                         anchors.centerIn: parent
                         spacing: 4 * s
                         Text {
                             text: modelData.icon
                             font.family: root.fontName; font.pixelSize: 9 * s
-                            color: parent.parent.isActive ? root.nierAccent : root.nierBorder
+                            color: (isActive || hovered) ? root.nierAccent : root.nierBorder
                             anchors.verticalCenter: parent.verticalCenter
                         }
                         Text {
                             text: modelData.name
                             font.family: root.fontName; font.pixelSize: 10 * s
                             font.letterSpacing: 2 * s
-                            color: parent.parent.isActive ? root.nierAccent : root.nierBorder
+                            color: (isActive || hovered) ? root.nierAccent : root.nierBorder
                         }
                     }
+                    MouseArea { id: tMa; anchors.fill: parent; hoverEnabled: true }
                 }
             }
         }
@@ -446,56 +450,58 @@ Rectangle {
                     property bool sel:     userList.currentIndex === index
                     property bool hovered: rowMa.containsMouse
 
-                    Rectangle {
+                    Item {
                         anchors.fill: parent
-                        color: rowItem.sel ? root.nierSelected
-                             : rowItem.hovered ? "#312f29" : "transparent"
-                        border.color: rowItem.hovered ? root.nierBorder : "transparent"
-                        border.width: rowItem.hovered ? 1 : 0
-                        Behavior on color { ColorAnimation { duration: 90 } }
+                        // Lighter hover slide
+                        x: (rowItem.sel || rowItem.hovered) ? 4 * s : 0
+                        Behavior on x { NumberAnimation { duration: 250; easing.type: Easing.OutQuart } }
 
-                        // Left accent bar
                         Rectangle {
-                            width: 3 * s; height: parent.height
-                            color: root.nierAccent
-                            opacity: rowItem.sel ? 1 : rowItem.hovered ? 0.35 : 0
-                            Behavior on opacity { NumberAnimation { duration: 120 } }
-                        }
+                            anchors.fill: parent
+                            color: rowItem.sel ? root.nierSelected
+                                 : rowItem.hovered ? "#312f29" : "transparent"
+                            border.color: rowItem.hovered ? root.nierBorder : "transparent"
+                            border.width: rowItem.hovered ? 1 : 0
+                            Behavior on color { ColorAnimation { duration: 150 } }
 
-                        // Bullet glyph — small indent from the box edge
-                        Text {
-                            text: "⊙"
-                            font.family: root.fontName; font.pixelSize: 11 * s
-                            color: rowItem.sel || rowItem.hovered ? root.nierAccent : root.nierBorder
-                            anchors.verticalCenter: parent.verticalCenter
-                            x: 14 * s
-                        }
+                            // Bullet glyph
+                            Text {
+                                text: rowItem.sel ? "◈" : "⊙"
+                                font.family: root.fontName; font.pixelSize: 11 * s
+                                color: rowItem.sel || rowItem.hovered ? root.nierAccent : root.nierBorder
+                                anchors.verticalCenter: parent.verticalCenter
+                                x: 14 * s
+                                
+                                scale: rowItem.sel ? 1.2 : 1.0
+                                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+                            }
 
-                        // Username — centered in the box, consistent with bullet
-                        Text {
-                            text: (model.realName || model.name).toUpperCase()
-                            font.family: root.fontName; font.pixelSize: 14 * s
-                            font.letterSpacing: 0.8
-                            color: rowItem.sel || rowItem.hovered ? root.nierAccent : root.nierText
-                            anchors.verticalCenter: parent.verticalCenter
-                            anchors.left: parent.left; anchors.leftMargin: 36 * s
-                            Behavior on color { ColorAnimation { duration: 90 } }
-                        }
+                            // Username
+                            Text {
+                                text: (model.realName || model.name).toUpperCase()
+                                font.family: root.fontName; font.pixelSize: 14 * s
+                                font.letterSpacing: 0.8
+                                color: rowItem.sel || rowItem.hovered ? root.nierAccent : root.nierText
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.left: parent.left; anchors.leftMargin: 36 * s
+                                Behavior on color { ColorAnimation { duration: 150 } }
+                            }
 
-                        // Separator
-                        Rectangle {
-                            anchors.bottom: parent.bottom; width: parent.width; height: 1
-                            color: root.nierBorder; opacity: 0.35
+                            // Separator
+                            Rectangle {
+                                anchors.bottom: parent.bottom; width: parent.width; height: 1
+                                color: root.nierBorder; opacity: 0.35
+                            }
                         }
                     }
 
-                    // Pulsing selection diamond — positioned left of the panel
+                    // Pulsing selection diamond
                     Text {
                         text: "◆"
                         font.family: root.fontName; font.pixelSize: 9 * s
                         color: root.nierText
                         anchors.verticalCenter: parent.verticalCenter
-                        x: -14 * s
+                        x: -16 * s
                         visible: rowItem.sel
                         SequentialAnimation on opacity {
                             running: rowItem.sel; loops: Animation.Infinite
@@ -506,7 +512,7 @@ Rectangle {
 
                     MouseArea {
                         id: rowMa; anchors.fill: parent; hoverEnabled: true
-                        onClicked: { userList.currentIndex = index; pwInput.focus = true }
+                        onClicked: { userList.currentIndex = index; pwInput.forceActiveFocus() }
                     }
                 }
             }
@@ -602,6 +608,7 @@ Rectangle {
                 anchors.top: parent.top; anchors.topMargin: 32 * s
                 anchors.left: parent.left; anchors.right: parent.right
                 spacing: 24 * s
+                z: 10 // Higher z-order to ensure dropdowns cover bottom technical group
 
 
                 // ── Status panel ──────────────────────────────────────────────
@@ -674,25 +681,26 @@ Rectangle {
                         TextInput {
                             id: pwInput; anchors.fill: parent; anchors.leftMargin: 10 * s; anchors.rightMargin: 36 * s
                             anchors.verticalCenterOffset: 3 * s
-                            verticalAlignment: TextInput.AlignVCenter; font.family: root.fontName; font.pixelSize: 13 * s; color: root.nierAccent; echoMode: TextInput.Password; passwordCharacter: "◆"; focus: true; clip: true
+                            verticalAlignment: TextInput.AlignVCenter; font.family: root.fontName; font.pixelSize: 13 * s; color: root.nierAccent; echoMode: TextInput.Password; passwordCharacter: "■"; focus: true; clip: true
                             cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
                             selectionColor: root.nierAccent
-                            font.letterSpacing: 6 * s
+                            font.letterSpacing: 4 * s
                             property bool wasClicked: false
                             Text { text: "Passphrase..."; opacity: parent.text.length === 0 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } } color: root.nierBorder; font.family: root.fontName; font.pixelSize: 11 * s; font.letterSpacing: 1.5 * s; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -3 * s }
                             Keys.onPressed: { if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) doLogin(); else if (event.key === Qt.Key_Tab) { event.accepted = true; if (sessionModel && sessionModel.rowCount() > 0) root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount(); } else if (event.key === Qt.Key_Up) { event.accepted = true; userList.currentIndex = Math.max(0, userList.currentIndex - 1); } else if (event.key === Qt.Key_Down) { event.accepted = true; userList.currentIndex = Math.min(userList.model.count - 1, userList.currentIndex + 1); } }
                             Rectangle {
                                 id: customCursor
-                                width: 2 * s; height: 18 * s
+                                width: 8 * s; height: 2 * s
                                 color: root.nierAccent
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.verticalCenterOffset: -3 * s
-                                x: pwInput.cursorRectangle.x - width/2 + 3 * s
+                                anchors.bottom: parent.bottom; anchors.bottomMargin: 6 * s
+                                x: pwInput.cursorRectangle.x + 2 * s
                                 visible: pwInput.focus && (pwInput.text.length > 0 || pwInput.wasClicked)
                                 SequentialAnimation {
                                     loops: Animation.Infinite; running: customCursor.visible
-                                    NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
-                                    NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                                    PropertyAction { target: customCursor; property: "opacity"; value: 1 }
+                                    PauseAnimation { duration: 400 }
+                                    PropertyAction { target: customCursor; property: "opacity"; value: 0 }
+                                    PauseAnimation { duration: 400 }
                                 }
                             }
                             MouseArea {
@@ -703,23 +711,127 @@ Rectangle {
                                 }
                             }
                         }
-                        Rectangle { anchors.right: parent.right; anchors.rightMargin: 2 * s; anchors.verticalCenter: parent.verticalCenter; width: 28 * s; height: 28 * s; color: subMa.pressed ? "#4a4840" : subMa.containsMouse ? "#3a3830" : "#2c2a24"; border.color: subMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1; Text { anchors.centerIn: parent; text: "▶"; font.family: root.fontName; font.pixelSize: 11 * s; color: subMa.containsMouse ? root.nierAccent : root.nierBorder } MouseArea { id: subMa; anchors.fill: parent; hoverEnabled: true; onClicked: doLogin() } }
+                        Rectangle { 
+                            id: loginBtn
+                            anchors.right: parent.right; anchors.rightMargin: 2 * s; anchors.verticalCenter: parent.verticalCenter; width: 28 * s; height: 28 * s
+                            color: subMa.pressed ? "#4a4840" : subMa.containsMouse ? "#3a3830" : "#2c2a24"
+                            border.color: subMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1
+                            
+                            scale: subMa.containsMouse ? 1.15 : 1.0
+                            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+
+                            Text { 
+                                anchors.centerIn: parent; text: "▶"
+                                font.family: root.fontName; font.pixelSize: 11 * s
+                                color: subMa.containsMouse ? root.nierAccent : root.nierBorder 
+                            } 
+                            MouseArea { id: subMa; anchors.fill: parent; hoverEnabled: true; onClicked: doLogin() } 
+                        }
                     }
                 }
 
                 Column {
-                    width: parent.width; spacing: 6 * s
+                    width: parent.width; spacing: 8 * s
+                    
+                    property bool sessionMenuOpen: false
+
+                    // Power & Reboot
                     Repeater {
-                        model: [ { label: "Power Off", action: "off" }, { label: "Reboot", action: "reboot" }, { label: "__session__", action: "session" } ]
+                        model: [ { label: "Power Off", action: "off" }, { label: "Reboot", action: "reboot" } ]
                         Rectangle {
                             id: btnRect
-                            width: parent.width; height: 28 * s; color: bMa.pressed ? "#4a4840" : bMa.containsMouse ? "#3a3830" : "#2c2a24"; border.color: bMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1
-                            Rectangle { width: 3 * s; height: parent.height; color: bMa.containsMouse ? root.nierAccent : root.nierBorder }
-                            Text { anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12 * s; font.family: root.fontName; font.pixelSize: 11 * s; font.letterSpacing: 0.8; color: bMa.containsMouse ? root.nierAccent : "#b0ac94"; text: modelData.action === "session" ? "◆ Session: " + ((sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionHelper.currentItem.sName : "—") : "◆ " + modelData.label }
+                            width: parent.width; height: 32 * s; color: bMa.pressed ? "#4a4840" : bMa.containsMouse ? "#3a3830" : "#2c2a24"; border.color: bMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1
+                            
+                            // Enhanced button animation (slide right)
+                            Item {
+                                anchors.fill: parent
+                                x: bMa.containsMouse ? 4 * s : 0
+                                Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+                                Text { 
+                                    anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12 * s; 
+                                    font.family: root.fontName; font.pixelSize: 11 * s; font.letterSpacing: 1.0; 
+                                    color: bMa.containsMouse ? root.nierAccent : "#b0ac94"; 
+                                    text: "◆ " + modelData.label 
+                                }
+                            }
 
                             MouseArea { 
                                 id: bMa; anchors.fill: parent; hoverEnabled: true 
-                                onClicked: { if (modelData.action === "off") sddm.powerOff(); else if (modelData.action === "reboot") sddm.reboot(); else if (modelData.action === "session") { if (sessionModel && sessionModel.rowCount() > 0) root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount(); } } 
+                                onClicked: { if (modelData.action === "off") sddm.powerOff(); else if (modelData.action === "reboot") sddm.reboot(); } 
+                            }
+                        }
+                    }
+
+                    // Session Dropdown
+                    Item {
+                        width: parent.width; height: 32 * s
+                        z: 10 // Ensure this container can overlap others if needed
+                        
+                        Rectangle {
+                            id: sessionBtn
+                            anchors.fill: parent
+                            color: sBtnMa.pressed ? "#4a4840" : sBtnMa.containsMouse ? "#3a3830" : "#2c2a24"; border.color: sBtnMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1
+                            
+                            Item {
+                                anchors.fill: parent
+                                x: sBtnMa.containsMouse ? 4 * s : 0
+                                Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+
+
+                                Text { 
+                                    anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 12 * s; 
+                                    font.family: root.fontName; font.pixelSize: 11 * s; font.letterSpacing: 1.0; 
+                                    color: (sBtnMa.containsMouse || parent.parent.parent.sessionMenuOpen) ? root.nierAccent : "#b0ac94"; 
+                                    text: "◆ Session: " + ((sessionModel && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionHelper.currentItem.sName : "—") 
+                                }
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter; anchors.right: parent.right; anchors.rightMargin: 12 * s
+                                    text: parent.parent.parent.sessionMenuOpen ? "▴" : "▾"
+                                    font.family: root.fontName; font.pixelSize: 10 * s; color: (sBtnMa.containsMouse || parent.parent.parent.sessionMenuOpen) ? root.nierAccent : root.nierBorder
+                                }
+                            }
+
+                            MouseArea {
+                                id: sBtnMa; anchors.fill: parent; hoverEnabled: true
+                                onClicked: parent.parent.parent.sessionMenuOpen = !parent.parent.parent.sessionMenuOpen
+                            }
+                        }
+
+                        // Session Menu (The Dropdown) - Anchored to cover elements below
+                        Rectangle {
+                            id: sessionMenuContainer
+                            anchors.top: sessionBtn.bottom
+                            width: parent.width; height: parent.parent.sessionMenuOpen ? Math.min(sessionMenuLv.contentHeight, 160 * s) : 0
+                            clip: true; color: "#1a1814"; border.color: root.nierBorder; border.width: parent.parent.sessionMenuOpen ? 1 : 0
+                            z: 100 // Higher z-order to cover following elements
+
+                            Behavior on height { NumberAnimation { duration: 350; easing.type: Easing.OutExpo } }
+
+                            ListView {
+                                id: sessionMenuLv
+                                anchors.fill: parent; model: sessionModel; spacing: 0; clip: true
+                                delegate: Rectangle {
+                                    width: sessionMenuLv.width; height: 30 * s
+                                    color: sItemMa.containsMouse ? "#3a3830" : (root.sessionIndex === index ? "#2c2a24" : "transparent")
+                                    
+
+                                    
+                                    Text {
+                                        anchors.centerIn: parent
+                                        text: model.name.toUpperCase()
+                                        font.family: root.fontName; font.pixelSize: 10 * s; font.letterSpacing: 1.5
+                                        color: sItemMa.containsMouse || root.sessionIndex === index ? root.nierAccent : root.nierTextMid
+                                    }
+
+                                    MouseArea {
+                                        id: sItemMa; anchors.fill: parent; hoverEnabled: true
+                                        onClicked: {
+                                            root.sessionIndex = index
+                                            sessionMenuContainer.parent.parent.sessionMenuOpen = false
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

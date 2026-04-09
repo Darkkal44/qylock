@@ -14,7 +14,8 @@ Rectangle {
 
     property real uiOpacity: 0
     property int sessionIndex: (sessionModel && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
-    property string activeUser: userModel.lastUser
+    property int userIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
+    property string activeUser: (userHelper.currentItem && userHelper.currentItem.uName) ? userHelper.currentItem.uName : userModel.lastUser
     property bool sessionPopupOpen: false
 
     readonly property string bgMode: config.background_mode || "time"
@@ -55,6 +56,13 @@ Rectangle {
         model: sessionModel; currentIndex: root.sessionIndex
         opacity: 0; width: 100; height: 100; z: -100
         delegate: Item { property string sName: model.name || "" }
+    }
+
+    ListView {
+        id: userHelper
+        model: userModel; currentIndex: root.userIndex
+        opacity: 0; width: 100; height: 100; z: -100
+        delegate: Item { property string uName: model.realName || model.name || ""; property string uLogin: model.name || "" }
     }
 
     Item {
@@ -127,6 +135,15 @@ Rectangle {
                 font.family: mainFont.name; font.pixelSize: 16 * s; font.letterSpacing: 2 * s
                 color: root.gTextMain; font.bold: true
                 style: Text.Outline; styleColor: root.isDarkTheme ? "#aa000000" : "#44ffffff"
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        if (userModel && userModel.rowCount() > 0)
+                            root.userIndex = (root.userIndex + 1) % userModel.rowCount()
+                    }
+                }
             }
         }
 
@@ -229,7 +246,7 @@ Rectangle {
                     }
                     Keys.onPressed: {
                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                            var uname = userModel.data(userModel.index(userModel.lastIndex, 0), Qt.UserRole + 1)
+                            var uname = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : userModel.lastUser
                             sddm.login(uname, passIn.text, root.sessionIndex)
                         }
                     }
