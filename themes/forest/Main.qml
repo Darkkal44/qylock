@@ -35,12 +35,14 @@ Item {
     
     Connections { target: sddm; function onLoginFailed() { root.loginError = true; passInput.text = ""; passInput.forceActiveFocus() } }
 
+    Timer { interval: 300; running: true; onTriggered: passInput.forceActiveFocus() }
+
     // BACKGROUND
     Rectangle { anchors.fill: parent; color: "#010801"; z: -1000 }
     
     MediaPlayer {
         id: player; source: "bg.mp4"
-        videoOutput: bgVideo; loops: MediaPlayer.Infinite; audioOutput: AudioOutput { muted: true }
+        videoOutput: bgVideo; loops: MediaPlayer.Infinite
         Component.onCompleted: player.play()
     }
     VideoOutput { id: bgVideo; anchors.fill: parent; fillMode: VideoOutput.PreserveAspectCrop; z: -500 }

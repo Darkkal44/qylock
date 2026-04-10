@@ -57,7 +57,7 @@ Item {
     Rectangle { anchors.fill: parent; color: "#000000"; z: -1000 }
     
     MediaPlayer { 
-        id: player; source: "bg.mp4"; videoOutput: bgVideo; loops: MediaPlayer.Infinite; audioOutput: AudioOutput { muted: true }
+        id: player; source: "bg.mp4"; videoOutput: bgVideo; loops: MediaPlayer.Infinite
         Component.onCompleted: player.play()
     }
     

@@ -169,8 +169,8 @@ Item {
             pam.start();
         }
 
-        function reboot() { Quickshell.execDetached(["systemctl", "reboot"]); }
-        function powerOff() { Quickshell.execDetached(["systemctl", "poweroff"]); }
+        function reboot() { Quickshell.execDetached(["bash", "-c", "if [ -d /run/systemd/system ]; then systemctl reboot; else loginctl reboot; fi"]); }
+        function powerOff() { Quickshell.execDetached(["bash", "-c", "if [ -d /run/systemd/system ]; then systemctl poweroff; else loginctl poweroff; fi"]); }
     }
 
     PamContext {

@@ -70,6 +70,8 @@ Item {
         sddm.login(n, passInput.text, root.sessionIndex)
     }
 
+    Timer { interval: 300; running: true; onTriggered: passInput.forceActiveFocus() }
+
     // Background
     Rectangle {
         anchors.fill: parent
@@ -82,9 +84,6 @@ Item {
         source: "bg.mp4"
         videoOutput: bgVideo
         loops: MediaPlayer.Infinite
-        audioOutput: AudioOutput {
-            muted: true
-        }
         Component.onCompleted: {
             player.play()
         }

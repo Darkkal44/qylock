@@ -42,12 +42,13 @@ Item {
         }
     }
 
+    Timer { interval: 300; running: true; onTriggered: passInput.forceActiveFocus() }
+
     // ── BACKGROUND ──
     Rectangle { anchors.fill: parent; color: "#05080c"; z: -1000 }
     MediaPlayer {
         id: player; source: "bg.mp4"
         videoOutput: bgVideo; loops: MediaPlayer.Infinite
-        audioOutput: AudioOutput { muted: true }
         Component.onCompleted: player.play()
     }
     VideoOutput { id: bgVideo; anchors.fill: parent; fillMode: VideoOutput.PreserveAspectCrop; z: -500 }
