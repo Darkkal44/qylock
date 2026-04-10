@@ -288,17 +288,6 @@ Rectangle {
                 Behavior on opacity { NumberAnimation { duration: 300 } }
             }
 
-            // Placeholder
-            Text {
-                anchors.left: parent.left
-                anchors.leftMargin: 36 * s
-                anchors.verticalCenter: parent.verticalCenter
-                text: "password"
-                color: "white"; opacity: 0.2
-                font.family: orbitron.name; font.pixelSize: 13 * s; font.letterSpacing: 2 * s
-                visible: !passwordField.text && !passwordField.activeFocus
-            }
-
             // Actual input
             TextInput {
                 id: passwordField
@@ -312,8 +301,40 @@ Rectangle {
                 echoMode: TextInput.Password
                 passwordCharacter: "✦"
                 focus: true; clip: true
+                cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                selectionColor: root.sakuraPink
+                property bool wasClicked: false
                 Keys.onReturnPressed: doLogin()
                 Keys.onEnterPressed:  doLogin()
+                
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "password"
+                    color: "white"
+                    opacity: passwordField.text.length === 0 ? 0.2 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                    font.family: orbitron.name; font.pixelSize: 13 * s; font.letterSpacing: 2 * s
+                }
+                Rectangle {
+                    id: customCursor
+                    width: 2 * s; height: 18 * s
+                    color: root.sakuraPink
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: passwordField.cursorRectangle.x
+                    visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                    SequentialAnimation {
+                        loops: Animation.Infinite; running: customCursor.visible
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        passwordField.forceActiveFocus()
+                        passwordField.wasClicked = true
+                    }
+                }
             }
 
             // Submit Button

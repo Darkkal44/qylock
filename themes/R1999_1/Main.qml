@@ -435,6 +435,7 @@ Item {
                 font.letterSpacing: 10 * s
                 color: root.fg
                 focus: true
+                property bool wasClicked: false
                 
                 cursorVisible: false
                 cursorDelegate: Item {
@@ -491,13 +492,20 @@ Item {
                     color: root.gold
                     anchors.verticalCenter: parent.verticalCenter
                     x: passInput.cursorRectangle.x
-                    visible: passInput.focus && passInput.text.length > 0
+                    visible: passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
                     
                     SequentialAnimation {
                         loops: Animation.Infinite
                         running: customCursor.visible
                         NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
                         NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        passInput.forceActiveFocus()
+                        passInput.wasClicked = true
                     }
                 }
             }

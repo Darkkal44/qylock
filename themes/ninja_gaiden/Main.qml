@@ -421,12 +421,35 @@ Rectangle {
                         echoMode: TextInput.Password; passwordCharacter: "▪"
                         focus: menuList.currentIndex === 1
                         verticalAlignment: TextInput.AlignVCenter
-                        cursorVisible: activeFocus
+                        cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                        selectionColor: root.cRed
+                        property bool wasClicked: false
                         Text {
                             text: "Enter passcode..."
-                            visible: !parent.text && !parent.activeFocus
+                            opacity: parent.text.length === 0 ? 1 : 0
+                            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                             color: root.cFgDim; font: parent.font
                             anchors.verticalCenter: parent.verticalCenter
+                        }
+                        Rectangle {
+                            id: customCursor
+                            width: 2 * s; height: 18 * s
+                            color: root.cRed
+                            anchors.verticalCenter: parent.verticalCenter
+                            x: pwInput.cursorRectangle.x
+                            visible: pwInput.focus && (pwInput.text.length > 0 || pwInput.wasClicked)
+                            SequentialAnimation {
+                                loops: Animation.Infinite; running: customCursor.visible
+                                NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                                NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                pwInput.forceActiveFocus()
+                                pwInput.wasClicked = true
+                            }
                         }
                         Keys.onReturnPressed: { doLogin() }
                         Keys.onEscapePressed:  { menuList.focus = true }

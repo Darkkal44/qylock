@@ -671,9 +671,36 @@ Rectangle {
                         anchors.top: authHdr.bottom; anchors.topMargin: 8 * s; anchors.left: parent.left; anchors.leftMargin: 12 * s; anchors.right: parent.right; anchors.rightMargin: 12 * s; height: 32 * s
                         color: pwInput.activeFocus ? "#2c2a24" : "#201f1a"; border.color: pwInput.activeFocus ? root.nierAccent : root.nierBorder; border.width: 1
                         TextInput {
-                            id: pwInput; anchors.fill: parent; anchors.leftMargin: 10 * s; anchors.rightMargin: 36 * s; verticalAlignment: TextInput.AlignVCenter; font.family: root.fontName; font.pixelSize: 13 * s; color: root.nierAccent; echoMode: TextInput.Password; passwordCharacter: "◆"; focus: true; clip: true
-                            Text { text: "Passphrase..."; visible: !parent.text && !parent.activeFocus; color: root.nierBorder; font: parent.font; anchors.verticalCenter: parent.verticalCenter }
+                            id: pwInput; anchors.fill: parent; anchors.leftMargin: 10 * s; anchors.rightMargin: 36 * s
+                            anchors.verticalCenterOffset: 3 * s
+                            verticalAlignment: TextInput.AlignVCenter; font.family: root.fontName; font.pixelSize: 13 * s; color: root.nierAccent; echoMode: TextInput.Password; passwordCharacter: "◆"; focus: true; clip: true
+                            cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                            selectionColor: root.nierAccent
+                            font.letterSpacing: 6 * s
+                            property bool wasClicked: false
+                            Text { text: "Passphrase..."; opacity: parent.text.length === 0 ? 1 : 0; Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } } color: root.nierBorder; font: parent.font; anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -3 * s }
                             Keys.onPressed: { if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) doLogin(); else if (event.key === Qt.Key_Tab) { event.accepted = true; if (sessionModel && sessionModel.rowCount() > 0) root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount(); } else if (event.key === Qt.Key_Up) { event.accepted = true; userList.currentIndex = Math.max(0, userList.currentIndex - 1); } else if (event.key === Qt.Key_Down) { event.accepted = true; userList.currentIndex = Math.min(userList.model.count - 1, userList.currentIndex + 1); } }
+                            Rectangle {
+                                id: customCursor
+                                width: 2 * s; height: 18 * s
+                                color: root.nierAccent
+                                anchors.verticalCenter: parent.verticalCenter
+                                anchors.verticalCenterOffset: -3 * s
+                                x: pwInput.cursorRectangle.x - width/2 + 3 * s
+                                visible: pwInput.focus && (pwInput.text.length > 0 || pwInput.wasClicked)
+                                SequentialAnimation {
+                                    loops: Animation.Infinite; running: customCursor.visible
+                                    NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                                    NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                                }
+                            }
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    pwInput.forceActiveFocus()
+                                    pwInput.wasClicked = true
+                                }
+                            }
                         }
                         Rectangle { anchors.right: parent.right; anchors.rightMargin: 2 * s; anchors.verticalCenter: parent.verticalCenter; width: 28 * s; height: 28 * s; color: subMa.pressed ? "#4a4840" : subMa.containsMouse ? "#3a3830" : "#2c2a24"; border.color: subMa.containsMouse ? root.nierAccent : root.nierBorder; border.width: 1; Text { anchors.centerIn: parent; text: "▶"; font.family: root.fontName; font.pixelSize: 11 * s; color: subMa.containsMouse ? root.nierAccent : root.nierBorder } MouseArea { id: subMa; anchors.fill: parent; hoverEnabled: true; onClicked: doLogin() } }
                     }

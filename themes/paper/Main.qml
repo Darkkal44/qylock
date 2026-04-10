@@ -362,6 +362,36 @@ Rectangle {
                                 color: root.mainColor
                                 echoMode: TextInput.Password
                                 focus: true
+                                cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                                selectionColor: root.bgLight
+                                property bool wasClicked: false
+                                Text {
+                                    text: "PASSWORD"
+                                    opacity: parent.text.length === 0 ? 0.3 : 0
+                                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                                    color: root.mainColor; font.family: root.mono; font.pixelSize: 14 * s
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                                Rectangle {
+                                    id: customCursor
+                                    width: 2 * s; height: 20 * s
+                                    color: root.mainColor
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    x: passwordInput.cursorRectangle.x
+                                    visible: passwordInput.focus && (passwordInput.text.length > 0 || passwordInput.wasClicked)
+                                    SequentialAnimation {
+                                        loops: Animation.Infinite; running: customCursor.visible
+                                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                                    }
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        passwordInput.forceActiveFocus()
+                                        passwordInput.wasClicked = true
+                                    }
+                                }
                                 
                                 onAccepted: sddm.login(userList.currentItem.userName, passwordInput.text, root.sessionIndex)
                                 Keys.onPressed: {

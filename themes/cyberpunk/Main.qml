@@ -294,15 +294,39 @@ Rectangle {
                     verticalAlignment: TextInput.AlignVCenter
                     font.family: mainFont.name; font.pixelSize: 18 * s; color: "#00f0ff"
                     echoMode: TextInput.Password; focus: true; passwordCharacter: "*"
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: "#00f0ff"
+                    property bool wasClicked: false
                     
                     Text {
                         text: "ACCESS CODES"
-                        visible: !parent.text
+                        opacity: passwordInput.text.length === 0 ? 1.0 : 0
+                        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                         color: "#ff003c"
                         font.family: parent.font.family
                         font.pixelSize: 14 * s
                         font.letterSpacing: 2 * s
                         anchors.verticalCenter: parent.verticalCenter
+                    }
+                    Rectangle {
+                        id: customCursor
+                        width: 2 * s; height: 20 * s
+                        color: "#ff003c"
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: passwordInput.cursorRectangle.x
+                        visible: passwordInput.focus && (passwordInput.text.length > 0 || passwordInput.wasClicked)
+                        SequentialAnimation {
+                            loops: Animation.Infinite; running: customCursor.visible
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            passwordInput.forceActiveFocus()
+                            passwordInput.wasClicked = true
+                        }
                     }
 
                     Keys.onPressed: {

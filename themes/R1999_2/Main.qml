@@ -181,16 +181,24 @@ Item {
                         selectionColor: root.gold
                         cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
                         onAccepted: root.login()
-                        onActiveFocusChanged: { if (!activeFocus && text.length === 0) root.interactionMode = false }
+                        onActiveFocusChanged: { if (!activeFocus && text.length === 0) { root.interactionMode = false; wasClicked = false } }
+                        property bool wasClicked: false
                         
                         Rectangle {
                             id: cursorRect; width: 2.2 * s; height: 32 * s; color: root.gold; anchors.verticalCenter: parent.verticalCenter
                             x: passInput.cursorRectangle.x - (width / 2)
-                            opacity: (passInput.focus && root.interactionMode) ? 1.0 : 0
+                            opacity: (passInput.focus && root.interactionMode && (passInput.text.length > 0 || passInput.wasClicked)) ? 1.0 : 0
                             SequentialAnimation {
                                 loops: Animation.Infinite; running: cursorRect.opacity > 0
                                 NumberAnimation { target: cursorRect; property: "opacity"; from: 1; to: 0.1; duration: 450 }
                                 NumberAnimation { target: cursorRect; property: "opacity"; from: 0.1; to: 1; duration: 450 }
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                passInput.forceActiveFocus()
+                                passInput.wasClicked = true
                             }
                         }
                     }

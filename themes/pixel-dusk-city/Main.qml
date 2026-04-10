@@ -193,9 +193,10 @@ Rectangle {
                     anchors.left: parent.left; anchors.leftMargin: 2 * s
                     anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -1 * s
                     text: "password"
-                    color: root.amberSoft; opacity: 0.38
+                    color: root.amberSoft
                     font.family: pfMed.name; font.pixelSize: 14 * s; font.letterSpacing: 3 * s
-                    visible: !passwordField.text && !passwordField.activeFocus
+                    opacity: passwordField.text.length === 0 ? 0.38 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                 }
 
                 TextInput {
@@ -207,8 +208,31 @@ Rectangle {
                     font.family: pfReg.name; font.pixelSize: 14 * s; font.letterSpacing: 3 * s
                     echoMode: TextInput.Password; passwordCharacter: "─"
                     focus: true; clip: true
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: root.amberHot
+                    property bool wasClicked: false
                     Keys.onReturnPressed: doLogin()
                     Keys.onEnterPressed:  doLogin()
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            passwordField.forceActiveFocus()
+                            passwordField.wasClicked = true
+                        }
+                    }
+                }
+                Rectangle {
+                    id: customCursor
+                    width: 2 * s; height: 16 * s
+                    color: root.amberHot
+                    anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -1 * s
+                    x: passwordField.x + passwordField.cursorRectangle.x
+                    visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                    SequentialAnimation {
+                        loops: Animation.Infinite; running: customCursor.visible
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                    }
                 }
 
                 // Submit Action

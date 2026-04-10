@@ -149,13 +149,37 @@ Rectangle {
                     echoMode: TextInput.Password; passwordCharacter: "*"; color: "white"
                     font.family: mcFont.name; font.pixelSize: 18 * s; font.letterSpacing: 4 * s
                     verticalAlignment: TextInput.AlignVCenter; clip: true; focus: true
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: root.mcBtnHover
+                    property bool wasClicked: false
                     KeyNavigation.tab: loginBtn; KeyNavigation.backtab: rebootBtn
                     Keys.onReturnPressed: doLogin()
                     
                     Text {
                         anchors.fill: parent; verticalAlignment: Text.AlignVCenter; anchors.leftMargin: 2 * s
                         text: "Enter password..."; color: "#555555"; font.family: mcFont.name; font.pixelSize: 14 * s
-                        visible: !parent.text && !parent.activeFocus
+                        opacity: passInput.text.length === 0 ? 1.0 : 0
+                        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                    }
+                    Rectangle {
+                        id: customCursor
+                        width: 2 * s; height: 22 * s
+                        color: root.mcTextWhite
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: passInput.cursorRectangle.x
+                        visible: passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
+                        SequentialAnimation {
+                            loops: Animation.Infinite; running: customCursor.visible
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            passInput.forceActiveFocus()
+                            passInput.wasClicked = true
+                        }
                     }
                 }
             }

@@ -210,10 +210,38 @@ Item {
             }
             TextInput {
                 id: passInput; anchors.fill: parent; anchors.leftMargin: 25 * s; anchors.rightMargin: 25 * s
+                anchors.verticalCenterOffset: 2 * s
                 verticalAlignment: TextInput.AlignVCenter; echoMode: TextInput.Password; passwordCharacter: "●"
                 font.family: mainFont.name; font.pixelSize: 22 * s; color: root.accentColor; clip: true; focus: true; selectionColor: "white"
-                font.letterSpacing: 2 * s; onAccepted: root.login()
-                Text { text: "Enter Passcode"; anchors.fill: parent; verticalAlignment: Text.AlignVCenter; color: "white"; font.italic: true; opacity: 0.3; visible: !parent.text && !parent.activeFocus; font.pixelSize: 18 * s }
+                font.letterSpacing: 4 * s; onAccepted: root.login()
+                property bool wasClicked: false
+                onActiveFocusChanged: if (!activeFocus && text.length === 0) wasClicked = false
+                cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                Text { 
+                    text: "Enter Passcode"; anchors.fill: parent; verticalAlignment: Text.AlignVCenter; color: "white"; font.italic: true; font.pixelSize: 18 * s
+                    opacity: passInput.text.length === 0 ? 0.3 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                }
+                Rectangle {
+                    id: customCursor
+                    width: 2.2 * s; height: 26 * s
+                    color: root.accentColor
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: passInput.cursorRectangle.x - width/2 + 2 * s
+                    visible: passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
+                    SequentialAnimation {
+                        loops: Animation.Infinite; running: customCursor.visible
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        passInput.forceActiveFocus()
+                        passInput.wasClicked = true
+                    }
+                }
             }
         }
 

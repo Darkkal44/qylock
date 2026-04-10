@@ -112,9 +112,37 @@ Rectangle {
                 TextInput {
                     id: pwd; anchors.fill: parent; color: root.lamp; font.family: pf.name; font.pixelSize: 18 * s; font.letterSpacing: 4 * s
                     echoMode: TextInput.Password; passwordCharacter: "─"; focus: true; clip: true; verticalAlignment: TextInput.AlignVCenter
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: root.rainBlue
+                    property bool wasClicked: false
+                    onActiveFocusChanged: if (!activeFocus && text.length === 0) wasClicked = false
                     Keys.onReturnPressed: doLogin(); Keys.onEnterPressed: doLogin()
                 }
-                Text { anchors.verticalCenter: parent.verticalCenter; text: "password..."; color: root.rainBlue; opacity: 0.4; font.family: pf.name; font.pixelSize: 14 * s; font.letterSpacing: 4 * s; visible: !pwd.text && !pwd.activeFocus }
+                Text { 
+                    anchors.verticalCenter: parent.verticalCenter; text: "password..."; color: root.rainBlue; font.family: pf.name; font.pixelSize: 14 * s; font.letterSpacing: 4 * s
+                    opacity: pwd.text.length === 0 ? 0.4 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                }
+                Rectangle {
+                    id: customCursor
+                    width: 2 * s; height: 20 * s
+                    color: root.lamp
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: pwd.cursorRectangle.x
+                    visible: pwd.focus && (pwd.text.length > 0 || pwd.wasClicked)
+                    SequentialAnimation {
+                        loops: Animation.Infinite; running: customCursor.visible
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        pwd.forceActiveFocus()
+                        pwd.wasClicked = true
+                    }
+                }
             }
 
             // Buttons

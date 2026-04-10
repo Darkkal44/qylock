@@ -149,14 +149,38 @@ Item {
                         echoMode: TextInput.Password; passwordCharacter: "·"
                         font.family: mainFont.name; font.pixelSize: 32 * s; font.letterSpacing: 10 * s
                         color: root.textPrimary; clip: true; focus: true
+                        cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                        selectionColor: root.accent
                         onAccepted: root.login()
+                    property bool wasClicked: false
+                    onActiveFocusChanged: if (!activeFocus && text.length === 0) wasClicked = false
 
                         Text {
                             anchors.centerIn: parent
                             text: "PASSWORD"; font.family: mainFont.name
                             font.pixelSize: 14 * s; font.letterSpacing: 6 * s
-                            color: root.textSecondary; opacity: (!passInput.text && !passInput.activeFocus) ? 0.6 : 0.0
-                            Behavior on opacity { NumberAnimation { duration: 250 } }
+                            color: root.textSecondary; opacity: passInput.text.length === 0 ? 0.6 : 0.0
+                            Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                        }
+                        Rectangle {
+                            id: customCursor
+                            width: 2.2 * s; height: 32 * s
+                            color: root.textPrimary
+                            anchors.verticalCenter: parent.verticalCenter
+                            x: passInput.cursorRectangle.x - (width / 2)
+                            visible: passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
+                            SequentialAnimation {
+                                loops: Animation.Infinite; running: customCursor.visible
+                                NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                                NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                            }
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                passInput.forceActiveFocus()
+                                passInput.wasClicked = true
+                            }
                         }
 
                         SequentialAnimation {

@@ -170,18 +170,6 @@ Rectangle {
             width: parent.width
             height: 36 * s
 
-            Text {
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                text: "Enter password"
-                color: "white"
-                opacity: 0.25
-                font.family: shurikenFont.name
-                font.pixelSize: 14 * s
-                font.letterSpacing: 1 * s
-                visible: !passwordField.text && !passwordField.activeFocus
-            }
-
             TextInput {
                 id: passwordField
                 anchors.left: parent.left
@@ -196,8 +184,42 @@ Rectangle {
                 passwordCharacter: "·"
                 focus: true
                 clip: true
+                cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                selectionColor: "#6090b8"
+                property bool wasClicked: false
                 Keys.onReturnPressed: doLogin()
                 Keys.onEnterPressed:  doLogin()
+                
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "Enter password"
+                    color: "white"
+                    opacity: passwordField.text.length === 0 ? 0.25 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                    font.family: shurikenFont.name
+                    font.pixelSize: 14 * s
+                    font.letterSpacing: 1 * s
+                }
+                Rectangle {
+                    id: customCursor
+                    width: 2 * s; height: 16 * s
+                    color: "white"
+                    anchors.verticalCenter: parent.verticalCenter
+                    x: passwordField.cursorRectangle.x
+                    visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                    SequentialAnimation {
+                        loops: Animation.Infinite; running: customCursor.visible
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                    }
+                }
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        passwordField.forceActiveFocus()
+                        passwordField.wasClicked = true
+                    }
+                }
             }
 
             Text {

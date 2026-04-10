@@ -295,7 +295,8 @@ Rectangle {
                     anchors.fill: parent; verticalAlignment: Text.AlignVCenter
                     text: "············"
                     color: root.gray; font.family: root.mono; font.pixelSize: 13 * s
-                    visible: !passInput.text && !passInput.activeFocus
+                    opacity: passInput.text.length === 0 ? 1.0 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                 }
 
                 KeyNavigation.backtab: nameInput

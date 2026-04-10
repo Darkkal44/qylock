@@ -243,7 +243,8 @@ Rectangle {
                     anchors.verticalCenter: parent.verticalCenter; anchors.left: parent.left; anchors.leftMargin: 6 * s
                     text: "Password"
                     font.family: root.customFontName; font.pixelSize: 13 * s; color: "#80404050"
-                    visible: inputFocus.text === "" && !inputFocus.activeFocus
+                    opacity: inputFocus.text.length === 0 ? 1 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                 }
 
                 Row {
@@ -274,13 +275,11 @@ Rectangle {
                     width: 1 * s; height: 16 * s; color: "#101820"
                     anchors.verticalCenter: parent.verticalCenter
                     x: 6 * s + (inputFocus.cursorPosition * (7 * s + 4 * s))
-                    visible: inputFocus.activeFocus && cursorFlash.flashVisible
-                    Timer {
-                        id: cursorFlash
-                        property bool flashVisible: true
-                        interval: 500; running: inputFocus.activeFocus; repeat: true
-                        onTriggered: flashVisible = !flashVisible
-                        onRunningChanged: if (!running) flashVisible = true
+                    visible: inputFocus.activeFocus && (inputFocus.text.length > 0 || inputFocus.wasClicked)
+                    SequentialAnimation {
+                        loops: Animation.Infinite; running: customCursor.visible
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                        NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
                     }
                 }
 
@@ -294,9 +293,19 @@ Rectangle {
                     selectionColor: "#3399ff"
                     cursorVisible: false
                     cursorDelegate: Item {}
+                    property bool wasClicked: false
+                    onActiveFocusChanged: if (!activeFocus && text.length === 0) wasClicked = false
                     
                     Keys.onReturnPressed: doLogin()
                     Keys.onEnterPressed:  doLogin()
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        inputFocus.forceActiveFocus()
+                        inputFocus.wasClicked = true
+                    }
                 }
             }
 

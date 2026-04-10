@@ -196,11 +196,36 @@ Rectangle {
                     font.family: mainFont.name; font.pixelSize: 18 * s; color: root.gTextMain
                     echoMode: TextInput.Password; passwordCharacter: "◆"
                     horizontalAlignment: TextInput.AlignHCenter; verticalAlignment: TextInput.AlignVCenter
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: root.gGold
+                    property bool wasClicked: false
+                    onActiveFocusChanged: if (!activeFocus && text.length === 0) wasClicked = false
                     
                     Text {
                         text: "PASSWORD"
-                        visible: !parent.text && !parent.activeFocus
+                        opacity: passIn.text.length === 0 ? 1.0 : 0
+                        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                         font: parent.font; color: root.gTextDim; anchors.centerIn: parent
+                    }
+                    Rectangle {
+                        id: customCursor
+                        width: 2 * s; height: 20 * s
+                        color: root.gGold
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: passIn.cursorRectangle.x
+                        visible: passIn.focus && (passIn.text.length > 0 || passIn.wasClicked)
+                        SequentialAnimation {
+                            loops: Animation.Infinite; running: customCursor.visible
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            passIn.forceActiveFocus()
+                            passIn.wasClicked = true
+                        }
                     }
                     Keys.onPressed: {
                         if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {

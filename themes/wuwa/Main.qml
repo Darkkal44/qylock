@@ -260,14 +260,38 @@ Rectangle {
                     horizontalAlignment: TextInput.AlignLeft
                     verticalAlignment: TextInput.AlignVCenter
                     onTextEdited: jitterAnim.restart()
+                    property bool wasClicked: false
 
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: root.wCyan
                     Text {
                         text: "Enter password..."
-                        visible: !parent.text && !parent.activeFocus
                         font.family: mainFont.name; font.pixelSize: 13 * s
                         font.letterSpacing: 1 * s
                         color: "#77ffffff"
                         anchors.verticalCenter: parent.verticalCenter
+                        opacity: passIn.text.length === 0 ? 1.0 : 0
+                        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
+                    }
+                    Rectangle {
+                        id: customCursor
+                        width: 2 * s; height: 20 * s
+                        color: root.wCyan
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: passIn.cursorRectangle.x
+                        visible: passIn.focus && (passIn.text.length > 0 || passIn.wasClicked)
+                        SequentialAnimation {
+                            loops: Animation.Infinite; running: customCursor.visible
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            passIn.forceActiveFocus()
+                            passIn.wasClicked = true
+                        }
                     }
 
                     Keys.onPressed: {

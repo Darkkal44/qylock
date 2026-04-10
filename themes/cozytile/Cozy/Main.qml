@@ -131,13 +131,39 @@ Rectangle {
                     color: "white"; verticalAlignment: Text.AlignVCenter; font.pixelSize: 14 * s; font.letterSpacing: 12 * s
                     echoMode: TextInput.Password; passwordCharacter: "✦"; focus: true
                     font.weight: Font.Bold
+                    cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
+                    selectionColor: root.accent
+                    property bool wasClicked: false
                     Keys.onReturnPressed: doLogin()
+                    
+                    Rectangle {
+                        id: customCursor
+                        width: 2 * s; height: 20 * s
+                        color: root.accent
+                        anchors.verticalCenter: parent.verticalCenter
+                        x: passwordField.cursorRectangle.x
+                        visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                        SequentialAnimation {
+                            loops: Animation.Infinite; running: customCursor.visible
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
+                            NumberAnimation { target: customCursor; property: "opacity"; from: 0.05; to: 1; duration: 450 }
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            passwordField.forceActiveFocus()
+                            passwordField.wasClicked = true
+                        }
+                    }
                 }
                 
                 Text {
                     anchors.left: passwordField.left; anchors.right: passwordField.right; anchors.top: passwordField.top; anchors.bottom: passwordField.bottom
                     verticalAlignment: Text.AlignVCenter
-                    text: "Password..."; color: "white"; opacity: 0.4; font.pixelSize: 13 * s; visible: !passwordField.text && !passwordField.activeFocus
+                    text: "Password..."; color: "white"; font.pixelSize: 13 * s
+                    opacity: passwordField.text.length === 0 ? 0.4 : 0
+                    Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutSine } }
                 }
             }
 
