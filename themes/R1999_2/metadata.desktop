@@ -1,8 +1,8 @@
-[Desktop Entry]
-General=
+[SddmGreeterTheme]
 Name=R1999_2
-Comment=Reverse: 1999 Cinematic Menu Theme (Centered)
-Version=1.0
+Description=Reverse 1999 Qylock Theme
 Author=Darkkal44
 Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
 QtVersion=6
