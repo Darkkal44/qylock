@@ -56,6 +56,103 @@ error() {
 }
 
 # ─────────────────────────────────────────────────────────────────────────────
+#  Video Download Helpers
+# ─────────────────────────────────────────────────────────────────────────────
+
+detect_repo_url() {
+    local dir="$1"
+    local url
+
+    if command -v git &>/dev/null && [ -d "$dir/.git" ]; then
+        url=$(git -C "$dir" remote get-url origin 2>/dev/null || true)
+    fi
+
+    if [ -z "$url" ]; then
+        echo "https://github.com/SL-Pirate/qylock"
+        return
+    fi
+
+    # SSH -> HTTPS
+    if [[ "$url" == git@github.com:* ]]; then
+        url="${url#git@github.com:}"
+        url="${url%.git}"
+        echo "https://github.com/$url"
+    elif [[ "$url" == https://github.com/* ]]; then
+        url="${url%.git}"
+        echo "$url"
+    else
+        echo "https://github.com/SL-Pirate/qylock"
+    fi
+}
+
+ensure_videos() {
+    local theme="$1"
+    local tdir="$2"
+    local sdir="$3"
+    local manifest="$sdir/videos.conf"
+
+    # No manifest = pre-migration clone, videos are still in-tree
+    [ ! -f "$manifest" ] && return 0
+
+    local entry
+    entry=$(grep "^${theme}:" "$manifest" 2>/dev/null || true)
+    [ -z "$entry" ] && return 0
+
+    local files="${entry#*:}"
+    IFS=',' read -ra vids <<< "$files"
+
+    # Figure out which ones are missing
+    local need=()
+    for v in "${vids[@]}"; do
+        [ ! -f "$tdir/$theme/$v" ] && need+=("$v")
+    done
+    [ ${#need[@]} -eq 0 ] && return 0
+
+    # Pick a download tool
+    local dlcmd=""
+    if command -v curl &>/dev/null; then
+        dlcmd="curl"
+    elif command -v wget &>/dev/null; then
+        dlcmd="wget"
+    else
+        error "curl or wget is required to download theme videos."
+        return 1
+    fi
+
+    local base
+    base=$(detect_repo_url "$sdir")
+    local tag="theme-videos"
+    local ok=1
+
+    info "Downloading video backgrounds for '${theme}'..."
+
+    for v in "${need[@]}"; do
+        local asset="${theme}--${v}"
+        local dest="$tdir/$theme/$v"
+        substep "Fetching ${v}..."
+
+        if [ "$dlcmd" = "curl" ]; then
+            if ! curl -fSL --progress-bar -o "$dest" "$base/releases/download/$tag/$asset"; then
+                rm -f "$dest"; ok=0
+                error "Failed to download ${v}"
+            fi
+        else
+            if ! wget -q --show-progress -O "$dest" "$base/releases/download/$tag/$asset"; then
+                rm -f "$dest"; ok=0
+                error "Failed to download ${v}"
+            fi
+        fi
+    done
+
+    if [ "$ok" -eq 0 ]; then
+        error "Some videos could not be downloaded."
+        return 1
+    fi
+
+    success "Video backgrounds ready"
+}
+
+# ─────────────────────────────────────────────────────────────────────────────
 #  Core Logic
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -217,6 +314,16 @@ if [ "$FONT_COUNT" -eq 0 ]; then
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}Please put the .ttf/.otf file in:${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_ACCENT}$THEMES_DIR/$SELECTED_THEME/font/${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} ╰─ ${C_DIM}Refer to README.md for font suggestions.${C_RESET}\n"
+fi
+
+# Fetch video backgrounds from GitHub releases if they aren't bundled locally
+if ! ensure_videos "$SELECTED_THEME" "$THEMES_DIR" "$SCRIPT_DIR"; then
+    echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Continue without video backgrounds? (y/n): ${C_RESET}"
+    read -rp "" SKIP_VID
+    if [[ ! "$SKIP_VID" =~ ^[Yy]$ ]]; then
+        error "Installation aborted."
+        exit 1
+    fi
 fi
 
 # Installation Logic

@@ -1,1 +1,4 @@
 .git/
+themes/**/*.mp4
+migrate-videos.sh
+PR_DESCRIPTION.md
