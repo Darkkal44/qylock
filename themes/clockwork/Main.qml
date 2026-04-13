@@ -148,8 +148,10 @@ Rectangle {
         }
     }
 
+    // Autofocus 
+    Timer { interval: 300; running: true; onTriggered: passInput.forceActiveFocus() }
+
     Component.onCompleted: {
-        passInput.forceActiveFocus()
         fadeIn.start()
     }
     NumberAnimation {
@@ -530,7 +532,9 @@ Rectangle {
                     horizontalAlignment: TextInput.AlignRight
                     verticalAlignment: TextInput.AlignVCenter
                     focus: true
+                    property bool wasClicked: false
                     cursorVisible: false
+                    cursorDelegate: Item { width: 0; height: 0 }
                     Keys.onReturnPressed: {
                         startLoginSequence()
                     }
@@ -542,7 +546,14 @@ Rectangle {
                         font.pixelSize: 10 * s
                         font.letterSpacing: 4 * s
                         color: root.inputWaitColor
-                        visible: passInput.text.length === 0 && !passInput.wasClicked
+                        
+                        opacity: passInput.text.length === 0 ? 0.4 : 0
+                        Behavior on opacity {
+                            NumberAnimation {
+                                duration: 400
+                                easing.type: Easing.InOutSine
+                            }
+                        }
                     }
                     Rectangle {
                         id: needleCursor
@@ -552,12 +563,19 @@ Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
                         x: passInput.cursorRectangle.x
                         visible: passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
+
+                        SequentialAnimation {
+                            loops: Animation.Infinite
+                            running: needleCursor.visible
+                            NumberAnimation { target: needleCursor; property: "opacity"; from: 1; to: 0.1; duration: 450 }
+                            NumberAnimation { target: needleCursor; property: "opacity"; from: 0.1; to: 1; duration: 450 }
+                        }
                     }
                 }
                 MouseArea {
                     id: pMa_FixedFinal_Simple
                     anchors.fill: parent
-                    cursorShape: Qt.IBeamCursor
+                    cursorShape: Qt.ArrowCursor
                     onClicked: {
                         passInput.forceActiveFocus()
                         passInput.wasClicked = true
