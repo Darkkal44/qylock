@@ -475,7 +475,7 @@ Rectangle {
                     id: userNameDisp
                     anchors.right: parent.right
                     anchors.rightMargin: (uMa.containsMouse || root.userMenuOpen) ? 25 * s : 0
-                    text: (userHelper.currentItem ? userHelper.currentItem.uName : (userModel.lastUser ? capitalizeFirst(userModel.lastUser) : "ACHLYS")).toUpperCase()
+                    text: ((userHelper.currentItem && userHelper.currentItem.uName) ? userHelper.currentItem.uName : (userModel.lastUser ? capitalizeFirst(userModel.lastUser) : "USER")).toUpperCase()
                     font.family: outfitFont.name
                     font.pixelSize: 18 * s
                     font.weight: Font.Bold
