@@ -588,6 +588,7 @@ Rectangle {
                     clip: true
                     color: "transparent"
                     cursorVisible: false
+                    cursorDelegate: Item {}
                     font.family: mainFont.name; font.pixelSize: 18 * s; font.weight: Font.Bold
                     echoMode: TextInput.Password
                     focus: true; Keys.onReturnPressed: if (text.length > 0) doAction()
