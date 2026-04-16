@@ -1,8 +1,0 @@
-[SddmGreeterTheme]
-Name=pixel-emerald
-Description=pixel-emerald Qylock Theme
-Author=Darkkal44
-Type=sddm-theme
-MainScript=Main.qml
-ConfigFile=theme.conf
-QtVersion=6

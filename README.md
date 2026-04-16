@@ -209,120 +209,112 @@ chmod +x qt5.sh && ./qt5.sh
     </tr>
     <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
-        <b>Pixel · Emerald</b><br><br>
-        <img src="./Assets/pixel_emerald.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
-      </td>
-      <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Pixel · Hollow Knight</b><br><br>
         <img src="./Assets/pixel_hollowknight.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Pixel · Munchlax</b><br><br>
         <img src="./Assets/pixel_munchlax.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Pixel · Night City</b><br><br>
         <img src="./Assets/pixel_night_city.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Pixel · Rainy Room</b><br><br>
         <img src="./Assets/pixel_rainyroom.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Pixel · Skyscrapers</b><br><br>
         <img src="./Assets/pixel_skyscrapers.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Enfield</b><br><br>
         <img src="./Assets/enfield.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Sword</b><br><br>
         <img src="./Assets/sword.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Forest</b><br><br>
         <img src="./Assets/forest.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Winter</b><br><br>
         <img src="./Assets/winter.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Dog Samurai</b><br><br>
         <img src="./Assets/dog_samurai.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>The Last of Us</b><br><br>
         <img src="./Assets/the_last_of_us.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Honkai: Star Rail</b><br><br>
         <img src="./Assets/star_rail.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Genshin Impact</b><br><br>
         <img src="./Assets/genshin.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Wuthering Waves</b><br><br>
         <img src="./Assets/wuwa.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Minecraft</b><br><br>
         <img src="./Assets/minecraft.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+      </td>
+      <td align="center" width="50%" style="padding: 15px; border: none;">
+        <b>NieR: Automata</b><br><br>
+        <img src="./Assets/nier_automata.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>      
     </tr>
     <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
-        <b>NieR: Automata</b><br><br>
-        <img src="./Assets/nier_automata.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
-      </td>
-      <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Reverse: 1999 - I</b><br><br>
         <img src="./Assets/R1999_1.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Reverse: 1999 - II</b><br><br>
         <img src="./Assets/R1999_2.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Clockwork</b><br><br>
         <img src="./Assets/clockwork.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Terraria</b><br><br>
         <img src="./Assets/terraria.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Ninja Gaiden</b><br><br>
         <img src="./Assets/ninja_gaiden.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Windows 7</b><br><br>
         <img src="./Assets/win7.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
-      </td>
-      <td align="center" width="50%" style="padding: 15px; border: none;">
       </td>
     </tr>
   </table>
@@ -348,16 +340,15 @@ Huge thanks to all the amazing artists for these wallpapers and fonts! Here's wh
 |:---|:---|:---|:---|:---|:---|
 | **Pixel · Coffee** | [MoeWalls](https://moewalls.com/pixel-art/cyberpunk-coffee-pixel-live-wallpaper/) | Pixelify Sans | **Winter** | [MoeWalls](https://moewalls.com/landscape/winter-forest-snow-live-wallpaper/) | Orbitron |
 | **Pixel · Dusk City** | [WallsFlow](https://wallsflow.com/live-wallpapers/pixel-art/505-pixel-dusk-city-retro-anime-streets-live-wallpaper.html) | Pixelify Sans | **Dog Samurai** | [MoeWalls](https://moewalls.com/others/doge-samurai-crying-live-wallpaper/) | Orbitron |
-| **Pixel · Emerald** | [MoeWalls](https://moewalls.com/pixel-art/pokemon-emerald-waterfall-pixel-z-live-wallpaper/) | Pixelify Sans | **The Last of Us** | [MoeWalls](https://moewalls.com/games/the-last-of-us-sunset-live-wallpaper/) | Outfit |
-| **Pixel · Hollow Knight** | [MoeWalls](https://moewalls.com/pixel-art/hollow-knight-3-live-wallpaper/) | Pixelify Sans | **Honkai: Star Rail** | [YouTube](https://www.youtube.com/watch?v=Pz7Tu25EyXI) | DIN Next |
-| **Pixel · Munchlax** | [MoeWalls](https://moewalls.com/pixel-art/munchlax-sleeping-on-the-field-pixel-live-wallpaper/) | Pixelify Sans | **Genshin Impact** | [YouTube](https://www.youtube.com/watch?v=XG3vTgitBLE) | HYWenHei |
-| **Pixel · Night City** | [WallsFlow](https://wallsflow.com/live-wallpapers/pixel-art/400-night-city-pixel-art-cyberpunk-live-wallpaper.html) | Pixelify Sans | **Wuthering Waves** | [YouTube](https://www.youtube.com/watch?v=xKKqi1zLrZ4) | Orbitron |
-| **Pixel · Rainy Room** | [MoeWalls](https://moewalls.com/pixel-art/pixel-room-rainy-night-live-wallpaper/) | Pixelify Sans | **Minecraft** | [Minecraft Wiki](https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fminecraft.fandom.com%2Fwiki%2FBackground&ved=0CBkQjhxqFwoTCIC45qWs4pMDFQAAAAAdAAAAABAH&opi=89978449) | Minecraft |
-| **Pixel · Skyscrapers** | [WallsFlow](https://wallsflow.com/live-wallpapers/pixel-art/61-pixel-city.html) | Pixelify Sans | **NieR: Automata** | [Reddit](https://www.reddit.com/r/nier/comments/7nqcy7/the_final_nier_automata_title_screen_made_into/) | FOT-Rodin Pro DB |
-| **Enfield** | [WallsFlow](https://wallsflow.com/live-wallpapers/games/777-arknights-endfield-sakura-sanctuary-live-wallpaper.html) | Orbitron | **Terraria** | [Terraria Forums](https://forums.terraria.org/index.php?threads/terraria-desktop-wallpapers.12644/) | Andy Bold |
-| **Sword** | [WallsFlow](https://wallsflow.com/live-wallpapers/anime/761-silent-katana-forest-samurai-live-wallpaper.html) | The Last Shuriken | **osu!** | [Official](https://osu.ppy.sh) | Torus Regular |
-| **Forest** | [MoeWalls](https://moewalls.com/landscape/in-the-early-morning-forest-live-wallpaper/) | Figtree | **Ninja Gaiden** | [Noisy Pixel](https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fnoisypixel.net%2Fninja-gaiden-4-wallpapers-art-team%2F&ved=0CBkQjhxqFwoTCIDa2e6r4pMDFQAAAAAdAAAAABAI&opi=89978449) | Tektur |
-| **Winter** | [MoeWalls](https://moewalls.com/landscape/winter-forest-snow-live-wallpaper/) | Orbitron | **Windows 7** | [WallpaperAccess](https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwallpaperaccess.com%2Fwindows-7-lock-screen&ved=0CBkQjhxqFwoTCKDbh-Or4pMDFQAAAAAdAAAAABAH&opi=89978449) | Segoe UI |
+| **Pixel · Hollow Knight** | [MoeWalls](https://moewalls.com/pixel-art/hollow-knight-3-live-wallpaper/) | Pixelify Sans | **The Last of Us** | [MoeWalls](https://moewalls.com/games/the-last-of-us-sunset-live-wallpaper/) | Outfit |
+| **Pixel · Munchlax** | [MoeWalls](https://moewalls.com/pixel-art/munchlax-sleeping-on-the-field-pixel-live-wallpaper/) | Pixelify Sans | **Honkai: Star Rail** | [YouTube](https://www.youtube.com/watch?v=Pz7Tu25EyXI) | DIN Next |
+| **Pixel · Night City** | [WallsFlow](https://wallsflow.com/live-wallpapers/pixel-art/400-night-city-pixel-art-cyberpunk-live-wallpaper.html) | Pixelify Sans | **Genshin Impact** | [YouTube](https://www.youtube.com/watch?v=XG3vTgitBLE) | HYWenHei |
+| **Pixel · Rainy Room** | [MoeWalls](https://moewalls.com/pixel-art/pixel-room-rainy-night-live-wallpaper/) | Pixelify Sans | **Wuthering Waves** | [YouTube](https://www.youtube.com/watch?v=xKKqi1zLrZ4) | Orbitron |
+| **Pixel · Skyscrapers** | [WallsFlow](https://wallsflow.com/live-wallpapers/pixel-art/61-pixel-city.html) | Pixelify Sans | **Minecraft** | [Minecraft Wiki](https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fminecraft.fandom.com%2Fwiki%2FBackground&ved=0CBkQjhxqFwoTCIC45qWs4pMDFQAAAAAdAAAAABAH&opi=89978449) | Minecraft |
+| **Enfield** | [WallsFlow](https://wallsflow.com/live-wallpapers/games/777-arknights-endfield-sakura-sanctuary-live-wallpaper.html) | Orbitron | **NieR: Automata** | [Reddit](https://www.reddit.com/r/nier/comments/7nqcy7/the_final_nier_automata_title_screen_made_into/) | FOT-Rodin Pro DB |
+| **Sword** | [WallsFlow](https://wallsflow.com/live-wallpapers/anime/761-silent-katana-forest-samurai-live-wallpaper.html) | The Last Shuriken | **Terraria** | [Terraria Forums](https://forums.terraria.org/index.php?threads/terraria-desktop-wallpapers.12644/) | Andy Bold |
+| **Forest** | [MoeWalls](https://moewalls.com/landscape/in-the-early-morning-forest-live-wallpaper/) | Figtree | **osu!** | [Official](https://osu.ppy.sh) | Torus Regular |
+| **Ninja Gaiden** | [Noisy Pixel](https://noisypixel.net/ninja-gaiden-4-wallpapers-art-team/) | Tektur | **Windows 7** | [WallpaperAccess](https://wallpaperaccess.com/windows-7-lock-screen) | Segoe UI |
 
 <br>
 
