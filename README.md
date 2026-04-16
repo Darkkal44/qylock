@@ -279,42 +279,50 @@ chmod +x qt5.sh && ./qt5.sh
     </tr>
     <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
+        <b>osu!</b><br><br>
+        <img src="./Assets/osu.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+      </td>
+      <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Minecraft</b><br><br>
         <img src="./Assets/minecraft.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>NieR: Automata</b><br><br>
         <img src="./Assets/nier_automata.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>      
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Reverse: 1999 - I</b><br><br>
         <img src="./Assets/R1999_1.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Reverse: 1999 - II</b><br><br>
         <img src="./Assets/R1999_2.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Clockwork</b><br><br>
         <img src="./Assets/clockwork.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Terraria</b><br><br>
         <img src="./Assets/terraria.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
-    </tr>
-    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Ninja Gaiden</b><br><br>
         <img src="./Assets/ninja_gaiden.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
       </td>
+    </tr>
+    <tr>
       <td align="center" width="50%" style="padding: 15px; border: none;">
         <b>Windows 7</b><br><br>
         <img src="./Assets/win7.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+      </td>
+      <td align="center" width="50%" style="padding: 15px; border: none;">
       </td>
     </tr>
   </table>
