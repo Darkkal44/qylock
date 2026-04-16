@@ -1072,23 +1072,36 @@ Rectangle {
             property real destY: ey - sy
             property real ballProgress: 0
 
-            // Track
+            // Slider Track
             Rectangle {
                 id: track
-                x: 40*s; y: 40*s - height/2
-                height: 72*s; width: Math.sqrt(destX*destX + destY*destY)
+                x: 0; y: 40*s - height/2
+                height: 80*s; width: 40*s + Math.sqrt(destX*destX + destY*destY)
                 radius: height/2
-                color: Qt.rgba(0.1, 0.1, 0.1, 0.85) // Slider Track
-                border.color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.7)
-                border.width: 4*s
-                transformOrigin: Item.Left; rotation: Math.atan2(destY, destX) * 180 / Math.PI
-                opacity: (!completed && !missed) ? 0.75 : 0
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+                color: Qt.rgba(0.02, 0.02, 0.02, 0.85) // Dark Body
+                border.color: root.accentColor
+                border.width: 3.5 * s
                 
-                // Track highlight/shading
-                Rectangle { 
-                    anchors.centerIn: parent; width: parent.width - 8*s; height: parent.height - 8*s; radius: height/2
-                    color: "transparent"; border.color: Qt.rgba(1,1,1,0.2); border.width: 1.5*s 
+                opacity: (!completed && !missed) ? 0.9 : 0
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+
+                // Rotation Pivot
+                transform: Rotation {
+                    origin.x: 40*s; origin.y: 40*s
+                    angle: Math.atan2(destY, destX) * 180 / Math.PI
+                }
+
+                // Tubular Shading
+                Rectangle {
+                    anchors.fill: parent; anchors.margins: 5*s; radius: height/2
+                    color: "transparent"; border.color: Qt.rgba(1,1,1,0.08); border.width: 1.5*s
+                    gradient: Gradient {
+                        orientation: Gradient.Vertical
+                        GradientStop { position: 0.0; color: Qt.rgba(1,1,1, 0.15) }
+                        GradientStop { position: 0.4; color: "transparent" }
+                        GradientStop { position: 0.6; color: "transparent" }
+                        GradientStop { position: 1.0; color: Qt.rgba(0,0,0, 0.25) }
+                    }
                 }
             }
 
@@ -1109,7 +1122,7 @@ Rectangle {
                 anchors.fill: parent; opacity: hit ? 0 : 1
                 Behavior on opacity { NumberAnimation { duration: 100 } }
                 
-                // Inner volume
+                // Circle Fill
                 Rectangle {
                     anchors.fill: parent; radius: width / 2
                     color: Qt.rgba(root.accentColor.r, root.accentColor.g, root.accentColor.b, 0.9)
@@ -1118,13 +1131,13 @@ Rectangle {
                         GradientStop { position: 1.0; color: Qt.rgba(0,0,0, 0.2) }
                     }
                 }
-                // Hitcircle Overlay
+                // Circle Overlay
                 Rectangle {
                     anchors.fill: parent; radius: width / 2; color: "transparent"
                     border.color: "white"; border.width: 3.5*s
                     layer.enabled: true; layer.effect: DropShadow { color: "#aa000000"; radius: 6; samples: 9; spread: 0.1 }
                 }
-                // Inner tiny outline
+                // Tiny Outline
                 Rectangle { anchors.centerIn: parent; width: parent.width - 7*s; height: width; radius: width / 2; color: "transparent"; border.color: Qt.rgba(0,0,0,0.3); border.width: 1*s }
                 
                 Text { anchors.centerIn: parent; text: circleNum; color: "white"; font.family: mainFont.name; font.pixelSize: 34*s; font.weight: Font.Black; layer.enabled: true; layer.effect: DropShadow { color: "#66000000"; radius: 5; samples: 9; verticalOffset: 1.5*s } }
