@@ -33,12 +33,13 @@ Rectangle {
         id: menuItem
         property string label: ""
         property color iconColor: "#662D91"
+        property bool centered: false
         property real s: root.s
         signal activated()
 
         width: 460*s; height: 75*s
         
-        property real xOffset: menuMa.containsMouse ? 35*s : 0
+        property real xOffset: (!centered && menuMa.containsMouse) ? 35*s : 0
         x: xOffset
         Behavior on xOffset { NumberAnimation { duration: 300; easing.type: Easing.OutQuint } }
 
@@ -86,8 +87,11 @@ Rectangle {
 
         // Label Text
         Text {
-            anchors.verticalCenter: parent.verticalCenter; anchors.verticalCenterOffset: -2*s
-            anchors.left: parent.left; anchors.leftMargin: 140*s
+            anchors.centerIn: menuItem.centered ? parent : undefined
+            anchors.verticalCenter: menuItem.centered ? undefined : parent.verticalCenter
+            anchors.verticalCenterOffset: menuItem.centered ? -2*s : -2*s
+            anchors.left: menuItem.centered ? undefined : parent.left
+            anchors.leftMargin: menuItem.centered ? 0 : 140*s
             text: menuItem.label
             color: menuMa.containsMouse ? menuItem.iconColor : "white"
             font.family: mainFont.name; font.pixelSize: 42*s; font.weight: Font.Black; font.italic: true
@@ -138,6 +142,8 @@ Rectangle {
     property bool osuFailed:   false
     property int  osuCircleCount: 0
     property var  activeCircles: []
+    property bool showingDiff:   false
+    property real missPenalty:   0.35
 
     // Hit Windows
     readonly property real hitWindow300: 80
@@ -538,12 +544,49 @@ Rectangle {
                 Behavior on opacity { NumberAnimation { duration: 150 } }
                 Behavior on anchors.leftMargin { NumberAnimation { duration: 450; easing.type: Easing.OutElastic; easing.amplitude: 1.0; easing.period: 0.8 } }
 
-                OsuMenuItem { s: root.s; label: "Play"; iconColor: "#662D91"; onActivated: { if (passField.text.length > 0) doAction(); else passField.forceActiveFocus() } }
+                OsuMenuItem { s: root.s; label: "Play"; iconColor: "#662D91"; onActivated: { if (passField.text.length > 0) root.showingDiff = true; else passField.forceActiveFocus() } }
                 OsuMenuItem { s: root.s; label: "Session"; iconColor: "#4B247A"; onActivated: root.sessionIndex = (root.sessionIndex + 1) % Math.max(1, sessionModel.count) }
                 OsuMenuItem { s: root.s; label: "Reboot"; iconColor: "#34495E"; onActivated: sddm.reboot() }
                 OsuMenuItem { s: root.s; label: "Poweroff"; iconColor: "#C0392B"; onActivated: sddm.powerOff() }
             }
-        }        // Password Ribbon
+        }
+
+        // Difficulty Selector
+        Rectangle {
+            id: diffOverlay
+            anchors.fill: parent; z: 5000; color: Qt.rgba(0, 0, 0, 0.98)
+            visible: opacity > 0.01; opacity: root.showingDiff ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 300 } }
+
+            // Block Hover
+            MouseArea { anchors.fill: parent; hoverEnabled: true; onClicked: root.showingDiff = false }
+
+            Column {
+                anchors.centerIn: parent; spacing: 25*s
+                Text { anchors.horizontalCenter: parent.horizontalCenter; text: "SELECT DIFFICULTY"; color: "white"; font.family: mainFont.name; font.pixelSize: 42*s; font.weight: Font.Black; font.italic: true; opacity: 0.9 }
+                
+                OsuMenuItem { label: "Easy"; centered: true; iconColor: "#2ECC71"; onActivated: root.launchGame(0) }
+                OsuMenuItem { label: "Moderate"; centered: true; iconColor: "#F1C40F"; onActivated: root.launchGame(1) }
+                OsuMenuItem { label: "Hard"; centered: true; iconColor: "#E67E22"; onActivated: root.launchGame(2) }
+                OsuMenuItem { label: "Professional"; centered: true; iconColor: "#E74C3C"; onActivated: root.launchGame(3) }
+            }
+
+            // Warning Board
+            Rectangle {
+                anchors.bottom: parent.bottom; anchors.left: parent.left; anchors.margins: 40*s
+                width: 320*s; height: 110*s; radius: 10*s; color: "#aa111111"
+                border.color: "#E74C3C"; border.width: 2.5*s
+                
+                Column {
+                    anchors.centerIn: parent; width: parent.width - 30*s; spacing: 8*s
+                    Text { anchors.horizontalCenter: parent.horizontalCenter; text: "WARNING"; color: "#E74C3C"; font.family: mainFont.name; font.pixelSize: 18*s; font.weight: Font.Black; font.letterSpacing: 3*s }
+                    Text { width: parent.width; text: "Choose wisely, I won't be responsible if you get locked out of your system forever!! (jk)"; color: "white"; font.family: mainFont.name; font.pixelSize: 12*s; font.weight: Font.Bold; wrapMode: Text.Wrap; horizontalAlignment: Text.AlignHCenter; opacity: 0.8 }
+                }
+            }
+
+        }
+
+        // Password Ribbon
         Item {
             anchors.bottom: parent.bottom; anchors.right: parent.right
             anchors.margins: 35 * s
@@ -649,7 +692,7 @@ Rectangle {
     // Game Screen
     FocusScope {
         id: gameScreen
-        anchors.fill: parent
+        anchors.fill: parent; z: 10000
         visible: root.gameActive
         focus: root.gameActive
         opacity: root.gameActive ? 1 : 0
@@ -847,7 +890,7 @@ Rectangle {
                 }
             }
 
-            // ── osu! cursor ─────────────────────────────────────────
+            // Osu cursor
             Item {
                 id: customCursor
                 x: gameArea.mouseXPos - width  / 2
@@ -1261,7 +1304,7 @@ Rectangle {
                     var by = sliderRoot.ballY
                     var mx = gameArea.mouseXPos - bx
                     var my = gameArea.mouseYPos - by
-                    var followRadius = 200 * s // Leniency Radius
+                    var followRadius = 200 * s // Follow leniency
                     if (mx*mx + my*my > followRadius * followRadius) fail()
                 }
             }
@@ -1285,7 +1328,7 @@ Rectangle {
                 else if (delta <= root.hitWindow100) j = 100
                 else                                 j = 50
                 
-                hitSignal(j) // Head Judgment
+                hitSignal(j) // Head hit
                 return true
             }
 
@@ -1419,14 +1462,20 @@ Rectangle {
 
     SequentialAnimation {
         id: winSequence
-        PauseAnimation { duration: 500 }
+        PauseAnimation { duration: 400 }
         ScriptAction {
             script: {
+                root.gameActive = false
                 root.loginSuccess = true
                 loginTransition.start()
+                // Clear leftovers
+                for (var i = 0; i < root.activeCircles.length; i++) {
+                    if (root.activeCircles[i]) root.activeCircles[i].destroy()
+                }
+                root.activeCircles = []
             }
         }
-        PauseAnimation { duration: 600 }
+        PauseAnimation { duration: 800 }
         ScriptAction {
             script: {
                 var uname = (userHelper.currentItem && userHelper.currentItem.uLogin)
@@ -1534,7 +1583,7 @@ Rectangle {
                 var hitY = isSlider ? circle.sy : (circle.y + 40*s)
                 onCircleHit(judgment, hitX, hitY)
                 var idx = root.activeCircles.indexOf(circle)
-                if (idx >= 0 && !isSlider) root.activeCircles.splice(idx, 1) // Keep slider tracked
+                if (idx >= 0 && !isSlider) root.activeCircles.splice(idx, 1) // Track slider
             })
 
             circle.missSignal.connect(function() {
@@ -1554,10 +1603,10 @@ Rectangle {
             }
         }
         
-        return isSlider ? slideDur : 0
+        return isSlider ? (slideDur + 200) : 0
     }
 
-    // judgment: 300 / 100 / 50
+    // Hit judgments
     function onCircleHit(judgment, cx, cy) {
         root.osuHits++
         root.osuCombo++
@@ -1591,7 +1640,7 @@ Rectangle {
     function onCircleMiss(cx, cy) {
         root.osuCombo = 0
         root.osuMisses++
-        root.osuHealth = Math.max(0, root.osuHealth - 0.18)
+        root.osuHealth = Math.max(0, root.osuHealth - root.missPenalty)
         updateAccuracy()
         comboBreakAnim.restart()
 
@@ -1614,20 +1663,26 @@ Rectangle {
         id: failSequence
         ScriptAction { script: { root.osuFailed = true; circleSpawnTimer.stop() } }
         ParallelAnimation {
-            NumberAnimation { target: gameScreen; property: "opacity"; to: 0; duration: 500 }
-            NumberAnimation { target: failOverlay; property: "opacity"; to: 1; duration: 200 }
+            NumberAnimation { target: gameScreen; property: "opacity"; to: 0.1; duration: 500 }
+            NumberAnimation { target: failOverlay; property: "opacity"; to: 1; duration: 250 }
         }
-        PauseAnimation { duration: 1000 }
-        ScriptAction { script: { resetGame() } }
-        NumberAnimation { target: failOverlay; property: "opacity"; to: 0; duration: 300 }
     }
 
     Rectangle {
         id: failOverlay
-        anchors.fill: parent; color: "#aa000000"; opacity: 0; z: 10000
-        Text {
-            anchors.centerIn: parent; text: "FAILED"; color: "#ff4444"
-            font.family: mainFont.name; font.pixelSize: 80*s; font.weight: Font.Black; font.italic: true
+        anchors.fill: parent; color: Qt.rgba(0, 0, 0, 0.94); opacity: 0; z: 10000; visible: opacity > 0.01
+        
+        Column {
+            anchors.centerIn: parent; spacing: 20*s; width: parent.width * 0.8
+            Text { anchors.horizontalCenter: parent.horizontalCenter; text: "GAME OVER"; color: "#ff4444"; font.family: mainFont.name; font.pixelSize: 48*s; font.weight: Font.Black; font.italic: true }
+            Text { 
+                anchors.horizontalCenter: parent.horizontalCenter; width: parent.width * 0.6; text: "poor fella.. can't even finish this simple game.. wanna reduce difficulty?"
+                color: "white"; font.family: mainFont.name; font.pixelSize: 20*s; font.weight: Font.Bold; wrapMode: Text.Wrap; horizontalAlignment: Text.AlignHCenter; opacity: 0.8 
+            }
+            Item { width: 1; height: 30*s }
+            OsuMenuItem { anchors.horizontalCenter: parent.horizontalCenter; label: "Reduce Difficulty"; centered: true; iconColor: "#F1C40F"; onActivated: { root.randomizeTheme(); failOverlay.opacity = 0; resetGame(); root.showingDiff = true } }
+            OsuMenuItem { anchors.horizontalCenter: parent.horizontalCenter; label: "Try Again"; centered: true; iconColor: "#3498DB"; onActivated: { root.randomizeTheme(); failOverlay.opacity = 0; resetGame(); root.startGame() } }
+            OsuMenuItem { anchors.horizontalCenter: parent.horizontalCenter; label: "Back to Menu"; centered: true; iconColor: "#662D91"; onActivated: { root.randomizeTheme(); failOverlay.opacity = 0; resetGame(); root.gameActive = false } }
         }
     }
 
@@ -1683,10 +1738,26 @@ Rectangle {
 
     function doAction() {
         if (root.gameMode) {
-            startGame()
+            root.showingDiff = true
         } else {
             doLogin()
         }
+    }
+
+    function randomizeTheme() {
+        var old = root.bgIndex
+        while (root.bgIndex === old && root.bgFiles.length > 1) {
+            root.bgIndex = Math.floor(Math.random() * root.bgFiles.length)
+        }
+    }
+
+    function launchGame(level) {
+        root.showingDiff = false
+        if (level === 0) { settings.osuSpeed = 0.82; settings.osuDensity = 0.88; root.missPenalty = 0.23 }
+        if (level === 1) { settings.osuSpeed = 1.15; settings.osuDensity = 1.12; root.missPenalty = 0.35 }
+        if (level === 2) { settings.osuSpeed = 1.62; settings.osuDensity = 1.55; root.missPenalty = 0.52 }
+        if (level === 3) { settings.osuSpeed = 2.12; settings.osuDensity = 1.98; root.missPenalty = 0.65 }
+        root.startGame()
     }
 
     function doLogin() {
