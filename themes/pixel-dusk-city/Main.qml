@@ -152,8 +152,15 @@ Rectangle {
                           ? userHelper.currentItem.uName : (userModel.lastUser || "User")).toUpperCase()
                     color: root.textWhite; font.family: pfBold.name; font.pixelSize: 17 * s; font.letterSpacing: 4 * s
                     anchors.horizontalCenter: parent.horizontalCenter
-                    MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: { var c = userModel.rowCount(); if (c > 1) root.userIndex = (root.userIndex + 1) % c } }
+                    MouseArea { 
+                      anchors.fill: parent;
+                      cursorShape: Qt.PointingHandCursor;
+                      onClicked: { var c = userModel.rowCount(); if (c > 1) root.userIndex = (root.userIndex + 1) % c }
+                    }
+                    Shortcut {
+                      sequences: ["Ctrl+Alt+T"];
+                      onActivated: { var c = userModel.rowCount(); if (c > 1) root.userIndex = (root.userIndex + 1) % c } 
+                    }
                 }
 
             Item { width: 1; height: 8 * s }
