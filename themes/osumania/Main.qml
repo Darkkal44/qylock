@@ -1141,6 +1141,11 @@ Rectangle {
     }
 
     function resetGame() {
+        // Stop all game timers immediately
+        noteSpawnTimer.stop()
+        gameStartDelay.stop()
+        winCheckTimer.stop()
+
         root.gameActive=false; root.maniaFailed=false
         root.maniaHealth=1.0; root.maniaHits=0; root.maniaMisses=0
         root.mania300s=0; root.mania100s=0; root.mania50s=0
