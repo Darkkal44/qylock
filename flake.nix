@@ -167,7 +167,7 @@ fi' \
         nixosModules.default = { config, lib, pkgs, ... }:
           let
             cfg = config.programs.qylock;
-            builders = self.legacyPackages.${pkgs.system};
+            builders = self.legacyPackages.${pkgs.stdenv.hostPlatform.system};
             sddmPkg = builders.mkSddmThemes { themeOptions = cfg.themeOptions; };
             qsPkg = builders.mkQuickshell {
               defaultTheme = cfg.theme;
