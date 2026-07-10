@@ -4,9 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    flake-compat = {
+      url = "github:NixOS/flake-compat";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, flake-compat }:
     let
       # Apply per-theme variant tweaks (theme.conf edits) inside a derivation.
       # `themeOptions` shape mirrors what the bash installers prompted for.
