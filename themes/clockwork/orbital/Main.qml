@@ -5,7 +5,7 @@ import Qt.labs.folderlistmodel
 import SddmComponents 2.0
 
 Rectangle {
-    // Wayland Cursor Fix
+    // Cursor
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.ArrowCursor
@@ -19,7 +19,7 @@ Rectangle {
 
     property bool isQuickshell: typeof sddm === "undefined" || sddm.hostName === undefined
 
-    // Theme Config
+    // Config
     readonly property string themeMode: config.themeMode || "dark"
     readonly property bool enableWindup: config.enableWindup !== "false" && config.enableWindup !== false
     readonly property bool isLight: themeMode === "light"
@@ -36,7 +36,7 @@ Rectangle {
     readonly property color userItemInactive: isLight ? "#cccccc" : "#444"
     readonly property color inputWaitColor: isLight ? "#bbbbbb" : "#333333"
 
-    // UI State
+    // State
     property int sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property int userIndex: (typeof userModel !== "undefined" && userModel.lastIndex >= 0) ? userModel.lastIndex : 0
     property bool userMenuOpen: false
@@ -44,7 +44,7 @@ Rectangle {
     property real uiOpacity: 0
     readonly property real marginR: 80 * s
 
-    // Time Logic
+    // Time
     property int curH: new Date().getHours()
     property int curM: new Date().getMinutes()
     property int curS: new Date().getSeconds()
@@ -59,7 +59,7 @@ Rectangle {
         }
     }
 
-    // Animation Props
+    // Animations
     property real windupOffset: 0
     property real windupProgress: windupOffset / 150000
     property real boomScale: 1.0
@@ -90,12 +90,12 @@ Rectangle {
     readonly property real smoothSecAngle: -((localTimeMS % 60000) / 60000.0) * 360.0 - windupOffset * 10.0
     readonly property real smoothMinAngle: -((localTimeMS % 3600000) / 3600000.0) * 360.0 - windupOffset * 5.0
 
-    // Font Loading
+    // Fonts
     FolderListModel { id: fontFolder; folder: Qt.resolvedUrl("font"); nameFilters: ["*.ttf", "*.otf"] }
     FontLoader { id: outfitFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
     TextConstants { id: textConstants }
 
-    // Data Models
+    // Models
     ListView {
         id: userHelper; width: 1; height: 1; opacity: 0; currentIndex: root.userIndex
         model: typeof userModel !== "undefined" ? userModel : null
@@ -107,13 +107,13 @@ Rectangle {
         delegate: Item { property string sName: model.name || "" }
     }
 
-    // Input Focus
+    // Focus
     Timer { interval: 300; running: true; onTriggered: passInput.forceActiveFocus() }
 
     Component.onCompleted: { fadeIn.start(); keyboard.numLock = true }
     NumberAnimation { id: fadeIn; target: root; property: "uiOpacity"; to: 1; duration: 350; easing.type: Easing.OutCubic }
 
-    // Main Layout
+    // Layout
     Item {
         id: blastContainer
         anchors.fill: parent; opacity: root.uiOpacity
@@ -213,10 +213,10 @@ Rectangle {
         }
     }
 
-    // Flash Effect
+    // Flash
     Rectangle { anchors.fill: parent; color: root.blastColor; opacity: root.boomOpacity; z: 9999 }
 
-    // HUD Layer
+    // HUD
     Item {
         id: hudContainer; anchors.fill: parent; opacity: root.uiOpacity * (root.boomOpacity > 0 ? 0 : 1)
         Row {
@@ -227,29 +227,32 @@ Rectangle {
             Rectangle { width: 1 * s; height: 10 * s; color: root.pillBorder; anchors.verticalCenter: parent.verticalCenter }
             CwAction { label: "Shutdown"; onClicked: { if (typeof sddm !== "undefined") sddm.powerOff() } }
         }
+
+        Item {
+            id: uMenuContainer; z: 6000
+            anchors.bottom: loginPanel.top; anchors.bottomMargin: 15 * s; anchors.right: loginPanel.right; width: 280 * s
+            height: root.userMenuOpen ? ((typeof userModel !== "undefined" ? userModel.rowCount() : 0) * 30 * s) + 20 * s : 0; clip: true
+            Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
+            Column {
+                anchors.bottom: parent.bottom; anchors.right: parent.right; spacing: 6 * s
+                Repeater {
+                    model: typeof userModel !== "undefined" ? userModel : null
+                    delegate: Item {
+                        width: 260 * s; height: 26 * s; property bool itemHover: uItemMa.containsMouse
+                        Text {
+                            id: uItemTxt; text: (model.realName || model.name || "").toUpperCase(); font.family: outfitFont.name; font.pixelSize: 13 * s; font.letterSpacing: 2 * s; color: (root.userIndex === index || itemHover) ? root.mainText : root.userItemInactive; anchors.right: parent.right; anchors.rightMargin: itemHover ? 30 * s : 10 * s; anchors.verticalCenter: parent.verticalCenter; Behavior on anchors.rightMargin { NumberAnimation { duration: 200 } }
+                        }
+                        Text { text: "✦"; anchors.left: uItemTxt.right; anchors.leftMargin: 8 * s; anchors.verticalCenter: parent.verticalCenter; color: root.mainText; opacity: itemHover ? 1.0 : 0; font.pixelSize: 10 * s; Behavior on opacity { NumberAnimation { duration: 200 } } }
+                        MouseArea { id: uItemMa; anchors.fill: parent; hoverEnabled: true; onClicked: { root.userIndex = index; root.userMenuOpen = false } }
+                    }
+                }
+            }
+        }
+
         Column {
             id: loginPanel; anchors.right: parent.right; anchors.rightMargin: root.marginR; anchors.bottom: parent.bottom; anchors.bottomMargin: 80 * s; width: 350 * s; spacing: 8 * s
             Item {
                 width: parent.width; height: 32 * s; z: 5000
-                Item {
-                    id: uMenuContainer; anchors.bottom: userNameDisp.top; anchors.bottomMargin: 15 * s; anchors.right: parent.right; width: 280 * s
-                    height: root.userMenuOpen ? ((typeof userModel !== "undefined" ? userModel.rowCount() : 0) * 30 * s) + 20 * s : 0; clip: true
-                    Behavior on height { NumberAnimation { duration: 400; easing.type: Easing.OutExpo } }
-                    Column {
-                        anchors.bottom: parent.bottom; anchors.right: parent.right; spacing: 6 * s
-                        Repeater {
-                            model: typeof userModel !== "undefined" ? userModel : null
-                            delegate: Item {
-                                width: 260 * s; height: 26 * s; property bool itemHover: uItemMa.containsMouse
-                                Text {
-                                    id: uItemTxt; text: (model.realName || model.name || "").toUpperCase(); font.family: outfitFont.name; font.pixelSize: 13 * s; font.letterSpacing: 2 * s; color: (root.userIndex === index || itemHover) ? root.mainText : root.userItemInactive; anchors.right: parent.right; anchors.rightMargin: itemHover ? 30 * s : 10 * s; anchors.verticalCenter: parent.verticalCenter; Behavior on anchors.rightMargin { NumberAnimation { duration: 200 } }
-                                }
-                                Text { text: "✦"; anchors.left: uItemTxt.right; anchors.leftMargin: 8 * s; anchors.verticalCenter: parent.verticalCenter; color: root.mainText; opacity: itemHover ? 1.0 : 0; font.pixelSize: 10 * s; Behavior on opacity { NumberAnimation { duration: 200 } } }
-                                MouseArea { id: uItemMa; anchors.fill: parent; hoverEnabled: true; onClicked: { root.userIndex = index; root.userMenuOpen = false } }
-                            }
-                        }
-                    }
-                }
                 Text {
                     id: userNameDisp; anchors.right: parent.right; anchors.rightMargin: (uMa.containsMouse || root.userMenuOpen) ? 25 * s : 0
                     text: ((userHelper.currentItem && userHelper.currentItem.uName) ? userHelper.currentItem.uName : ((typeof userModel !== "undefined" && userModel.lastUser) ? capitalizeFirst(userModel.lastUser) : "USER")).toUpperCase()
