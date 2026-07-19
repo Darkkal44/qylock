@@ -365,6 +365,7 @@ Item {
                             anchors.fill: parent
                             anchors.leftMargin: 22 * s
                             anchors.rightMargin: 100 * s
+                            clip: true
                             verticalAlignment: TextInput.AlignVCenter
                             echoMode: TextInput.Password
                             passwordCharacter: "✦"
