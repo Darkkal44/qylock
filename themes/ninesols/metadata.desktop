@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=ninesols
+Description=Nine Sols Qylock Theme
+Author=Darkkal44
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6
