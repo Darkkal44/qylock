@@ -162,6 +162,8 @@ Rectangle {
                         x: parent.tx - width/2; y: parent.ty - height/2; width: isMajor ? 2 * s : 1 * s; height: isMajor ? 18 * s : 10 * s
                         color: isLight ? Qt.rgba(0, 0, 0, spotlight > 0 ? 1.0 : (isMajor ? 0.8 : 0.6)) : Qt.rgba(1, 1, 1, spotlight > 0 ? 1.0 : (isMajor ? 0.3 : 0.15))
                         rotation: disp * 180 / Math.PI + 90
+                        antialiasing: true
+                        transformOrigin: Item.Center
                     }
                     Text {
                         visible: isMajor; property real nRad: clockContainer.minR - 35 * s
@@ -170,6 +172,7 @@ Rectangle {
                         text: String(index).padStart(2, '0'); font.family: outfitFont.name; font.pixelSize: 22 * s; font.weight: spotlight > 0.5 ? Font.Bold : Font.Normal
                         color: isLight ? Qt.rgba(0, 0, 0, spotlight > 0 ? (0.6 + 0.4 * spotlight) : 0.6) : Qt.rgba(1, 1, 1, spotlight > 0 ? (0.4 + spotlight * 0.6) : 0.25)
                         rotation: disp * 180 / Math.PI; transformOrigin: Item.Center
+                        antialiasing: true
                     }
                 }
             }
@@ -189,6 +192,8 @@ Rectangle {
                         x: parent.tx - width/2; y: parent.ty - height/2; width: isMajor ? 1.5 * s : 1 * s; height: isMajor ? 13 * s : 8 * s
                         color: isLight ? Qt.rgba(0, 0, 0, spotlight > 0 ? 1.0 : (isMajor ? 0.8 : 0.6)) : Qt.rgba(1, 1, 1, spotlight > 0 ? 1.0 : (isMajor ? 0.3 : 0.15))
                         rotation: disp * 180 / Math.PI + 90
+                        antialiasing: true
+                        transformOrigin: Item.Center
                     }
                     Text {
                         visible: isMajor; property real nRad: clockContainer.secR - 30 * s
@@ -197,6 +202,7 @@ Rectangle {
                         text: String(index).padStart(2, '0'); font.family: outfitFont.name; font.pixelSize: 16 * s; font.weight: spotlight > 0.5 ? Font.Bold : Font.Normal
                         color: isLight ? Qt.rgba(0, 0, 0, spotlight > 0 ? (0.6 + 0.4 * spotlight) : 0.6) : Qt.rgba(1, 1, 1, spotlight > 0 ? (0.4 + spotlight * 0.6) : 0.25)
                         rotation: disp * 180 / Math.PI; transformOrigin: Item.Center
+                        antialiasing: true
                     }
                 }
             }
