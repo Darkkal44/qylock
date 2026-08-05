@@ -135,12 +135,14 @@ if [ "$THEME_NAME" == "clockwork" ]; then
     info "Clockwork — Select a clock variant..."
     echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}1 ${C_DIM}❯ ${C_RESET}Orbital"
     echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}2 ${C_DIM}❯ ${C_RESET}Tape"
-    echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice [1-2]: ${C_RESET}"
+    echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}3 ${C_DIM}❯ ${C_RESET}Neo-Brutalism"
+    echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice [1-3]: ${C_RESET}"
     read -rp "" CW_VARIANT
 
     case $CW_VARIANT in
-        1) CW_SUBDIR="orbital"   ;;
-        2) CW_SUBDIR="tape"      ;;
+        1) CW_SUBDIR="orbital"       ;;
+        2) CW_SUBDIR="tape"          ;;
+        3) CW_SUBDIR="neo-brutalism" ;;
         *) CW_SUBDIR="orbital"; substep "Invalid choice, defaulting to Orbital." ;;
     esac
 
@@ -161,6 +163,15 @@ if [ "$THEME_NAME" == "clockwork" ]; then
             sed -i "s/^themeMode=.*/themeMode=dark/" "$THEMES_DIR/$THEME_NAME/theme.conf"
         fi
 
+        echo -ne "${C_MAIN}${C_BOLD} │  ${C_YELLOW}Enable windup animation? (y/n): ${C_RESET}"
+        read -rp "" WIND_S
+        if [[ "$WIND_S" =~ ^[Nn]$ ]]; then
+            sed -i "s/^enableWindup=.*/enableWindup=false/" "$THEMES_DIR/$THEME_NAME/theme.conf"
+        else
+            sed -i "s/^enableWindup=.*/enableWindup=true/" "$THEMES_DIR/$THEME_NAME/theme.conf"
+        fi
+    elif [ "$CW_SUBDIR" == "neo-brutalism" ]; then
+        info "Customizing Clockwork / $CW_SUBDIR..."
         echo -ne "${C_MAIN}${C_BOLD} │  ${C_YELLOW}Enable windup animation? (y/n): ${C_RESET}"
         read -rp "" WIND_S
         if [[ "$WIND_S" =~ ^[Nn]$ ]]; then

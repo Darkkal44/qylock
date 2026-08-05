@@ -205,12 +205,14 @@ if [ "$SELECTED_THEME" == "clockwork" ]; then
     info "Clockwork — Select a clock variant..."
     echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}1 ${C_DIM}❯ ${C_RESET}Orbital"
     echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}2 ${C_DIM}❯ ${C_RESET}Tape"
-    echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice [1-2]: ${C_RESET}"
+    echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}3 ${C_DIM}❯ ${C_RESET}Neo-Brutalism"
+    echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice [1-3]: ${C_RESET}"
     read -rp "" CW_VARIANT
 
     case $CW_VARIANT in
-        1) CW_SUBDIR="orbital"   ;;
-        2) CW_SUBDIR="tape"      ;;
+        1) CW_SUBDIR="orbital"       ;;
+        2) CW_SUBDIR="tape"          ;;
+        3) CW_SUBDIR="neo-brutalism" ;;
         *) CW_SUBDIR="orbital"; substep "Invalid choice, defaulting to Orbital." ;;
     esac
 
@@ -245,8 +247,20 @@ if [ "$SELECTED_THEME" == "clockwork" ]; then
             sed -i "s/^enableWindup=.*/enableWindup=true/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
             substep "Windup animation enabled."
         fi
+    elif [ "$CW_SUBDIR" == "neo-brutalism" ]; then
+        info "Customizing Clockwork / $CW_SUBDIR..."
+        substep "Enable windup animation on login? (y/n):"
+        echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice: ${C_RESET}"
+        read -rp "" WIND_S
+        if [[ "$WIND_S" =~ ^[Nn]$ ]]; then
+            sed -i "s/^enableWindup=.*/enableWindup=false/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
+            substep "Windup animation disabled."
+        else
+            sed -i "s/^enableWindup=.*/enableWindup=true/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
+            substep "Windup animation enabled."
+        fi
     else
-        # Tape variant defaults
+        # Tape Defaults
         substep "Applying default Tape configuration..."
         sed -i "s/^themeMode=.*/themeMode=dark/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
     fi
@@ -291,7 +305,6 @@ if [ -z "$SELECTED_THEME" ]; then
     exit 0
 fi
 
-# If no INSTALL_NAME override (clockwork sub-themes), use SELECTED_THEME as-is
 INSTALL_NAME="${INSTALL_NAME:-$SELECTED_THEME}"
 
 substep "Selected: ${C_ACCENT}${SELECTED_THEME}${C_RESET}"
@@ -327,11 +340,9 @@ if [ ! -d "$SDDM_CONF_DIR" ]; then
     sudo mkdir -p "$SDDM_CONF_DIR"
 fi
 
-
 if [ ! -f "$SDDM_CONF" ]; then
     echo -e "[Theme]\nCurrent=$INSTALL_NAME" | sudo tee "$SDDM_CONF" > /dev/null
 else
-    # Set Current
     if grep -q "^Current=" "$SDDM_CONF"; then
         sudo sed -i "s|^Current=.*|Current=$INSTALL_NAME|" "$SDDM_CONF"
     else
