@@ -4,9 +4,13 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    flake-compat = {
+      url = "github:NixOS/flake-compat";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, flake-compat }:
     let
       # Apply per-theme variant tweaks (theme.conf edits) inside a derivation.
       # `themeOptions` shape mirrors what the bash installers prompted for.
@@ -163,7 +167,7 @@ fi' \
         nixosModules.default = { config, lib, pkgs, ... }:
           let
             cfg = config.programs.qylock;
-            builders = self.legacyPackages.${pkgs.system};
+            builders = self.legacyPackages.${pkgs.stdenv.hostPlatform.system};
             sddmPkg = builders.mkSddmThemes { themeOptions = cfg.themeOptions; };
             qsPkg = builders.mkQuickshell {
               defaultTheme = cfg.theme;
