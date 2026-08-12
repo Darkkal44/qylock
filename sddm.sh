@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Strict mode
+set -euo pipefail
+
 # Script Dir
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" &> /dev/null && pwd)"
 THEMES_DIR="$SCRIPT_DIR/themes"
@@ -122,7 +125,7 @@ if [ "$SELECTED_THEME" == "terraria" ]; then
     echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}3 ${C_DIM}❯ ${C_RESET}Manual selection"
     echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice: ${C_RESET}"
     read -rp "" SUB_OPT
-    
+
     case $SUB_OPT in
         1)
             sed -i "s/^background_mode=.*/background_mode=time/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
@@ -166,7 +169,7 @@ if [ "$SELECTED_THEME" == "Genshin" ]; then
     echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}3 ${C_DIM}❯ ${C_RESET}Manual selection"
     echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice: ${C_RESET}"
     read -rp "" SUB_OPT
-    
+
     case $SUB_OPT in
         1)
             sed -i "s/^background_mode=.*/background_mode=time/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
