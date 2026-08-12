@@ -31,8 +31,8 @@ fi
 echo "Locking with Quickshell using theme: $QS_THEME"
 echo "Theme path: $QS_THEME_PATH"
 
-# Kill active lockers
+# Process cleanup
 killall -9 hyprlock swaylock wlogout 2>/dev/null || true
 
-# Execute lock screen
-quickshell -p "$DIR/lock_shell.qml"
+# Execute lock
+exec quickshell -p "$DIR/lock_shell.qml"
