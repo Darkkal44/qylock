@@ -1,8 +1,0 @@
-[SddmGreeterTheme]
-Name=distro-cachyos
-Description=distro-cachyos Qylock Theme
-Author=PoweredUP
-Type=sddm-theme
-MainScript=Main.qml
-ConfigFile=theme.conf
-QtVersion=6
