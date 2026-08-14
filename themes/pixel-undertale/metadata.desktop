@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=pixel-undertale
+Description=pixel-undertale Qylock Theme
+Author=Metax7
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6
