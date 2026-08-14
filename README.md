@@ -285,6 +285,16 @@ If you encounter library errors at the login screen:
 <img src="./Assets/pixel_night_city.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
 </td>
 <td align="center" width="50%" style="padding: 15px; border: none;">
+<b>Pixel · Replaced (Arrival)</b><br><br>
+<img src="./Assets/pixel_replaced_arrival.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+</td>
+</tr>
+<tr>
+<td align="center" width="50%" style="padding: 15px; border: none;">
+<b>Pixel · Replaced (To Sunrise)</b><br><br>
+<img src="./Assets/pixel_replaced_sunrise.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
+</td>
+<td align="center" width="50%" style="padding: 15px; border: none;">
 <b>Pixel · Rainy Room</b><br><br>
 <img src="./Assets/pixel_rainyroom.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
 </td>
