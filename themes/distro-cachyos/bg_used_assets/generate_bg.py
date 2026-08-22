@@ -10,12 +10,6 @@
 # so you might need to tweak some things until it works for you
 
 
-
-from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageChops
-import numpy as np
-import imageio
-import random
-
 # ===== SETTINGS =====
 WIDTH, HEIGHT = 3440, 1440
 FPS = 170
@@ -55,6 +49,61 @@ NUM_TRANSITIONS_RANGE = (2, 8) # the amount of transitions every char
 
 
 
+import sys
+import os
+import importlib.util
+import shutil
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageEnhance, ImageChops
+import numpy as np
+import imageio
+import random
+
+# Basic sanity checks (fail early with clear messages)
+
+def _check_deps():
+    required = {'PIL': 'Pillow', 'numpy': 'numpy', 'imageio': 'imageio imageio-ffmpeg'}
+    for mod, pkg in required.items():
+        if importlib.util.find_spec(mod) is None:
+            sys.exit(f"Missing Python module '{mod}'. Install with: pip install {pkg}")
+
+    # Check for ffmpeg (system or bundled with imageio-ffmpeg)
+    has_system_ffmpeg = shutil.which('ffmpeg') is not None
+    has_bundled_ffmpeg = False
+    try:
+        import imageio_ffmpeg
+        has_bundled_ffmpeg = bool(imageio_ffmpeg.get_ffmpeg_exe())
+    except ImportError:
+        pass
+
+    if not has_system_ffmpeg and not has_bundled_ffmpeg:
+        sys.exit("FFmpeg not found. Install ffmpeg or imageio-ffmpeg.")
+
+def _check_files():
+    if not os.path.isfile(ASCII_FILE):
+        sys.exit(f"ASCII art file not found: {ASCII_FILE}")
+    if not os.path.isfile(FONT_PATH):
+        sys.exit(f"Font file not found: {FONT_PATH}")
+    outdir = os.path.dirname(OUTPUT_FILE) or '.'
+    if not os.access(outdir, os.W_OK):
+        sys.exit(f"Output directory not writable: {outdir}")
+
+def _check_config():
+    if WIDTH <= 0 or HEIGHT <= 0 or FPS <= 0 or DURATION <= 0:
+        sys.exit("WIDTH, HEIGHT, FPS, DURATION must be positive.")
+    if not (0 <= POS_X_RATIO <= 1 and 0 <= POS_Y_RATIO <= 1):
+        sys.exit("POS_X_RATIO and POS_Y_RATIO must be between 0 and 1.")
+    if BLUR_RADIUS < 0 or GLOW_STRENGTH <= 0:
+        sys.exit("BLUR_RADIUS must be >=0 and GLOW_STRENGTH > 0.")
+    if FONT_SIZE <= 0 or LINE_SPACING <= 0 or NOISE_ZOOM <= 0:
+        sys.exit("FONT_SIZE, LINE_SPACING, NOISE_ZOOM must be positive.")
+    if MIN_STATE_DURATION <= 0 or MAX_STATE_DURATION <= 0 or MIN_FADE_DURATION <= 0 or MAX_FADE_DURATION <= 0:
+        sys.exit("Animation durations must be positive.")
+    if NUM_TRANSITIONS_RANGE[0] < 2:
+        sys.exit("NUM_TRANSITIONS_RANGE[0] must be at least 2.")
+
+_check_deps()
+_check_config()
+_check_files()
 
 # ===== ASCII Loading =====
 with open(ASCII_FILE, 'r', encoding='utf-8') as f:
