@@ -313,7 +313,7 @@ INSTALL_NAME="${INSTALL_NAME:-$SELECTED_THEME}"
 substep "Selected: ${C_ACCENT}${SELECTED_THEME}${C_RESET}"
 
 # Font Check
-FONT_COUNT=$(ls -1 "$THEMES_DIR/$SELECTED_THEME/font" 2>/dev/null | grep -E "\.(ttf|otf)$" | wc -l)
+FONT_COUNT=$(ls -1 "$THEMES_DIR/$SELECTED_THEME/font" 2>/dev/null | grep -E "\.(ttf|otf)$" | wc -l || true)
 if [ "$FONT_COUNT" -eq 0 ]; then
     echo -e "${C_YELLOW}${C_BOLD} ╭─   MISSING FONT DETECTED${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}This theme looks better with its specific font!${C_RESET}"

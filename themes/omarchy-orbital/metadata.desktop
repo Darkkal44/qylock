@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=omarchy-orbital
+Description=Orbital Clock — SDDM port of Omarchy's Orbital Lock screen (dumidulkdev/omarchy-orbital-lock)
+Author=Darkkal44 / Dumidu
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6
