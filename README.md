@@ -445,6 +445,8 @@ If you encounter library errors at the login screen:
 <img src="./Assets/win7.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
 </td>
 <td align="center" width="50%" style="padding: 15px; border: none;">
+<b>Omarchy · Orbital</b><br><br>
+<img src="./Assets/omarchy_orbital.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
 </td>
 </tr>
 </table>
