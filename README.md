@@ -173,6 +173,28 @@ Add the input and import the module in your `flake.nix`:
 }
 ```
 
+> [!IMPORTANT]
+> To display **Quickshell-based wallpapers** on NixOS, make sure the following
+> GStreamer packages are installed system-wide. Without these, background videos
+> will fail to render.
+
+```nix
+{ config, pkgs, ... }: {
+  environment.systemPackages = with pkgs; [
+    gst_all_1.gstreamer
+    gst_all_1.gst-plugins-base
+    gst_all_1.gst-plugins-good
+    gst_all_1.gst-plugins-bad
+    gst_all_1.gst-plugins-ugly
+  ];
+}
+```
+
+> [!NOTE]
+> `qt6.qtmultimedia` is not required here — the `qylock-lock` wrapper already
+> wires the QML import path. It is only needed if you invoke `quickshell`
+> directly.
+
 For the Quickshell lockscreen, bind your WM keybind to `qylock-lock` (instead of `~/.local/share/quickshell-lockscreen/lock.sh`). Pass a theme name as `$1` to override on the fly: `qylock-lock clockwork/tape`.
 
 #### 📦 OUTPUTS
