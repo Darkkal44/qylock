@@ -25,7 +25,20 @@ Rectangle {
     property int userIndex: (typeof userModel !== "undefined" && userModel.lastIndex >= 0) ? userModel.lastIndex : 0
     property real ui: 0
     property string displayUserName: ""
+    property int focusedElement: 0 // 0: Password, 1: Session, 2: Restart, 3: Shutdown
 
+    function activateFocused() {
+        if (root.focusedElement === 0) {
+            doLogin()
+        } else if (root.focusedElement === 1) {
+            if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                sToggleAnim.start()
+        } else if (root.focusedElement === 2) {
+            if (typeof sddm !== "undefined") sddm.reboot()
+        } else if (root.focusedElement === 3) {
+            if (typeof sddm !== "undefined") sddm.powerOff()
+        }
+    }
     // Colors
     readonly property color sakuraPink:    "#d4849e"
     readonly property color sakuraLight:   "#f0c4d4"
@@ -316,8 +329,8 @@ Rectangle {
             Rectangle {
                 anchors.fill: parent
                 radius: 24 * s
-                color: Qt.rgba(1, 1, 1, passwordField.activeFocus ? 0.10 : 0.06)
-                border.color: passwordField.activeFocus
+                color: Qt.rgba(1, 1, 1, (root.focusedElement === 0 && passwordField.activeFocus) ? 0.10 : 0.06)
+                border.color: (root.focusedElement === 0 && passwordField.activeFocus)
                               ? Qt.rgba(0.84, 0.52, 0.62, 0.6)
                               : Qt.rgba(1, 1, 1, 0.10)
                 border.width: 1 * s
@@ -332,7 +345,7 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 6 * s; height: 6 * s; radius: 3 * s
                 color: root.sakuraPink
-                opacity: passwordField.activeFocus ? 1.0 : 0.2
+                opacity: (root.focusedElement === 0 && passwordField.activeFocus) ? 1.0 : 0.2
                 Behavior on opacity { NumberAnimation { duration: 300 } }
             }
 
@@ -350,8 +363,56 @@ Rectangle {
                 cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
                 selectionColor: root.sakuraPink
                 property bool wasClicked: false
-                Keys.onReturnPressed: doLogin()
-                Keys.onEnterPressed:  doLogin()
+                Keys.onTabPressed: (event) => {
+                    root.focusedElement = (root.focusedElement + 1) % 4
+                    event.accepted = true
+                }
+                Keys.onBacktabPressed: (event) => {
+                    root.focusedElement = (root.focusedElement - 1 + 4) % 4
+                    event.accepted = true
+                }
+                Keys.onEscapePressed: (event) => {
+                    root.focusedElement = 0
+                    passwordField.text = ""
+                    errorMessage.text = ""
+                    event.accepted = true
+                }
+                Keys.onReturnPressed: (event) => {
+                    root.activateFocused()
+                    event.accepted = true
+                }
+                Keys.onEnterPressed: (event) => {
+                    root.activateFocused()
+                    event.accepted = true
+                }
+                Keys.onSpacePressed: (event) => {
+                    if (root.focusedElement !== 0) {
+                        root.activateFocused()
+                        event.accepted = true
+                    }
+                }
+                Keys.onUpPressed: (event) => {
+                    if (root.focusedElement === 1) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            sToggleAnim.start()
+                        event.accepted = true
+                    }
+                }
+                Keys.onDownPressed: (event) => {
+                    if (root.focusedElement === 1) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            sToggleAnim.start()
+                        event.accepted = true
+                    }
+                }
+                Keys.onPressed: (event) => {
+                    if (root.focusedElement !== 0 && event.text && event.text.length > 0 &&
+                        event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backtab &&
+                        event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter &&
+                        event.key !== Qt.Key_Space && event.key !== Qt.Key_Escape) {
+                        root.focusedElement = 0
+                    }
+                }
                 onTextEdited: errorMessage.text = ""
                 
                 Row {
@@ -375,7 +436,7 @@ Rectangle {
                         color: root.sakuraPink
                         font: passwordField.font
                         verticalAlignment: Text.AlignVCenter
-                        visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                        visible: root.focusedElement === 0 && passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
                         
                         layer.enabled: true
                         layer.effect: DropShadow { color: root.sakuraPink; radius: 8; samples: 16 }
@@ -506,8 +567,8 @@ Rectangle {
                 id: sessionSwitchRow
                 spacing: 8 * s
                 
-                opacity: sMa.containsMouse ? 1.0 : 0.85
-                scale: sMa.containsMouse ? 1.05 : 1.0
+                opacity: (root.focusedElement === 1 || sMa.containsMouse) ? 1.0 : 0.85
+                scale: (root.focusedElement === 1 || sMa.containsMouse) ? 1.08 : 1.0
                 Behavior on opacity { NumberAnimation { duration: 200 } }
                 Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
                 transform: Translate { id: sTrans; x: 0 }
@@ -521,7 +582,8 @@ Rectangle {
                     id: sessionLabel
                     text: (typeof sessionModel !== "undefined" && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0)
                           ? sessionHelper.currentItem.sName : "Session"
-                    color: "white"; opacity: 0.6
+                    color: (root.focusedElement === 1 || sMa.containsMouse) ? root.sakuraPink : "white"
+                    opacity: (root.focusedElement === 1 || sMa.containsMouse) ? 1.0 : 0.6
                     font.family: orbitron.name; font.pixelSize: 11 * s; font.letterSpacing: 1 * s
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -565,12 +627,14 @@ Rectangle {
                 ]
                 delegate: Text {
                     property var d: modelData
+                    property bool isFocused: root.focusedElement === (index + 2)
                     text: d.label
-                    color: "white"; opacity: 0.4
+                    color: (isFocused || pm.containsMouse) ? root.sakuraPink : "white"
+                    opacity: (isFocused || pm.containsMouse) ? 1.0 : 0.4
                     font.family: orbitron.name; font.pixelSize: 11 * s; font.letterSpacing: 1 * s
 
                     Behavior on opacity { NumberAnimation { duration: 150 } }
-                    scale: pm.containsMouse ? 1.1 : 1.0
+                    scale: (isFocused || pm.containsMouse) ? 1.15 : 1.0
                     Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
 
                     MouseArea {
