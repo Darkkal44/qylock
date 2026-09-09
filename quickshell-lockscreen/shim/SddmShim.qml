@@ -164,8 +164,19 @@ Item {
         signal loginSucceeded()
 
         function login(user, password, sessionIndex) {
+            // Ignore empty password attempts (e.g. waking screen with Enter)
+            if (!password || password.length === 0) {
+                return;
+            }
+
+            // If a previous PAM transaction is still active, abort it first to prevent deadlock
+            if (pam.active) {
+                pam.abort();
+            }
+
             pam.user = user;
             pam.pendingPassword = password;
+            pamTimeoutTimer.restart();
             pam.start();
         }
 
@@ -173,25 +184,49 @@ Item {
         function powerOff() { Quickshell.execDetached(["bash", "-c", "if [ -d /run/systemd/system ]; then systemctl poweroff; else loginctl poweroff; fi"]); }
     }
 
+    Timer {
+        id: pamTimeoutTimer
+        interval: 10000 // 10s maximum timeout
+        repeat: false
+        onTriggered: {
+            if (pam.active) {
+                console.warn("PAM authentication timed out, aborting context.");
+                pam.abort();
+                shim.sddm.loginFailed();
+            }
+        }
+    }
+
     PamContext {
         id: pam
         property string pendingPassword: ""
 
         onResponseRequiredChanged: {
-            if (responseRequired && pendingPassword !== "") {
-                respond(pendingPassword);
-                pendingPassword = "";
+            if (responseRequired) {
+                if (pendingPassword !== "") {
+                    respond(pendingPassword);
+                    pendingPassword = "";
+                } else {
+                    // Always respond or abort so PAM never deadlocks waiting for input
+                    respond("");
+                }
             }
         }
 
         onCompleted: (result) => {
+            pamTimeoutTimer.stop();
             if (result === PamResult.Success) {
                 shim.sddm.loginSucceeded();
                 Quickshell.execDetached(["loginctl", "unlock-session"]);
-                // Notify success handlers
             } else {
                 shim.sddm.loginFailed();
             }
+        }
+
+        onError: (err) => {
+            pamTimeoutTimer.stop();
+            console.warn("PAM error:", err);
+            shim.sddm.loginFailed();
         }
     }
 

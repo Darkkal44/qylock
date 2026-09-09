@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Prevent multiple lockscreen instances from fighting over session lock
+if pgrep -f "quickshell.*lock_shell\.qml" >/dev/null 2>&1; then
+    exit 0
+fi
+
 # Current directory
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
