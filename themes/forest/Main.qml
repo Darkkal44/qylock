@@ -32,9 +32,23 @@ Item {
     property bool sessionPopupOpen: false
     property bool userPopupOpen: false
     property bool loginError: false
+    property int focusedElement: 0 // 0: Password, 1: Session, 2: Reboot, 3: Power, 4: User
     onUserPopupOpenChanged: if (userPopupOpen) sessionPopupOpen = false
     onSessionPopupOpenChanged: if (sessionPopupOpen) userPopupOpen = false
 
+    function activateFocused() {
+        if (root.focusedElement === 0) {
+            root.login()
+        } else if (root.focusedElement === 1) {
+            root.sessionPopupOpen = !root.sessionPopupOpen
+        } else if (root.focusedElement === 2) {
+            if (typeof sddm !== "undefined") sddm.reboot()
+        } else if (root.focusedElement === 3) {
+            if (typeof sddm !== "undefined") sddm.powerOff()
+        } else if (root.focusedElement === 4) {
+            root.userPopupOpen = !root.userPopupOpen
+        }
+    }
     // Fonts
     FolderListModel { id: fontFolder; folder: Qt.resolvedUrl("font"); nameFilters: ["*.ttf", "*.otf"] }
     FontLoader { id: mainFont; source: fontFolder.count > 0 ? "font/" + fontFolder.get(0, "fileName") : "" }
@@ -189,8 +203,8 @@ Item {
             
             LiquidGlass { 
                 glassRadius: 22 * s 
-                blurBrightness: root.userPopupOpen ? -0.25 : (userMouse.containsMouse ? -0.05 : -0.10)
-                topRimColor: (userMouse.containsMouse || root.userPopupOpen) ? "#ffffffff" : "#ccffffff"
+                blurBrightness: root.userPopupOpen ? -0.25 : ((userMouse.containsMouse || root.focusedElement === 4) ? -0.05 : -0.10)
+                topRimColor: (userMouse.containsMouse || root.focusedElement === 4 || root.userPopupOpen) ? root.accentColor : "#ccffffff"
             }
 
             property real morphRatio: root.userPopupOpen ? 1.0 : 0.0; Behavior on morphRatio { NumberAnimation { duration: 500; easing.type: Easing.OutQuart } }
@@ -226,6 +240,7 @@ Item {
                 }
                 Text { text: "ESCAPE"; font.family: mainFont.name; font.pixelSize: 9 * s; color: "white"; anchors.horizontalCenter: parent.horizontalCenter; font.letterSpacing: 3 * s; opacity: 0.4; MouseArea { anchors.fill: parent; onClicked: root.userPopupOpen = false; cursorShape: Qt.PointingHandCursor } }
             }
+            scale: (root.focusedElement === 4 || userMouse.containsMouse) ? 1.02 : 1.0
             MouseArea { id: userMouse; anchors.fill: parent; cursorShape: Qt.PointingHandCursor; hoverEnabled: true; visible: !root.userPopupOpen; onClicked: root.userPopupOpen = true; onPressed: userMorpher.scale = 0.98; onReleased: userMorpher.scale = 1.0 }
             Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
         }
@@ -234,21 +249,133 @@ Item {
         Item {
             id: passwordCard; width: parent.width; height: 75 * s; y: 95 * s
             opacity: (root.sessionPopupOpen || root.userPopupOpen) ? 0.0 : 1.0
-            layer.enabled: true; layer.effect: DropShadow { transparentBorder: true; color: passInput.activeFocus ? "#33d3eaad" : "#35000000"; radius: 30*s; verticalOffset: 8 * s }
+            layer.enabled: true; layer.effect: DropShadow { transparentBorder: true; color: (root.focusedElement === 0 && passInput.activeFocus) ? "#33d3eaad" : "#35000000"; radius: 30*s; verticalOffset: 8 * s }
             Behavior on opacity { NumberAnimation { duration: 400 } }
             LiquidGlass {
                 glassRadius: 22 * s
-                blurBrightness: passInput.activeFocus ? -0.05 : -0.10
-                topRimColor: passInput.activeFocus ? root.accentColor : "#ccffffff"
-                borderWidth: passInput.activeFocus ? 1.5 * s : 1.0 * s
+                blurBrightness: (root.focusedElement === 0 && passInput.activeFocus) ? -0.05 : -0.10
+                topRimColor: (root.focusedElement === 0 && passInput.activeFocus) ? root.accentColor : "#ccffffff"
+                borderWidth: (root.focusedElement === 0 && passInput.activeFocus) ? 1.5 * s : 1.0 * s
             }
             TextInput {
                 id: passInput; anchors.fill: parent; anchors.leftMargin: 25 * s; anchors.rightMargin: 25 * s
                 anchors.verticalCenterOffset: 2 * s
                 verticalAlignment: TextInput.AlignVCenter; echoMode: TextInput.Password; passwordCharacter: "●"
                 font.family: mainFont.name; font.pixelSize: 22 * s; color: root.accentColor; clip: true; focus: true; selectionColor: "white"
-                font.letterSpacing: 4 * s; onAccepted: root.login()
+                font.letterSpacing: 4 * s
+                onAccepted: root.login()
                 onTextEdited: errText.text = ""
+                Keys.onTabPressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount()
+                    } else if (root.userPopupOpen) {
+                        if (typeof userModel !== "undefined" && userModel.count > 0)
+                            root.userIndex = (root.userIndex + 1) % userModel.count
+                    } else {
+                        root.focusedElement = (root.focusedElement + 1) % 5
+                    }
+                    event.accepted = true
+                }
+                Keys.onBacktabPressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            root.sessionIndex = (root.sessionIndex - 1 + sessionModel.rowCount()) % sessionModel.rowCount()
+                    } else if (root.userPopupOpen) {
+                        if (typeof userModel !== "undefined" && userModel.count > 0)
+                            root.userIndex = (root.userIndex - 1 + userModel.count) % userModel.count
+                    } else {
+                        root.focusedElement = (root.focusedElement - 1 + 5) % 5
+                    }
+                    event.accepted = true
+                }
+                Keys.onEscapePressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        root.sessionPopupOpen = false
+                    } else if (root.userPopupOpen) {
+                        root.userPopupOpen = false
+                    } else {
+                        root.focusedElement = 0
+                        passInput.text = ""
+                        errText.text = ""
+                    }
+                    event.accepted = true
+                }
+                Keys.onReturnPressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        root.sessionPopupOpen = false
+                    } else if (root.userPopupOpen) {
+                        root.userPopupOpen = false
+                    } else {
+                        root.activateFocused()
+                    }
+                    event.accepted = true
+                }
+                Keys.onEnterPressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        root.sessionPopupOpen = false
+                    } else if (root.userPopupOpen) {
+                        root.userPopupOpen = false
+                    } else {
+                        root.activateFocused()
+                    }
+                    event.accepted = true
+                }
+                Keys.onSpacePressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        root.sessionPopupOpen = false
+                        event.accepted = true
+                    } else if (root.userPopupOpen) {
+                        root.userPopupOpen = false
+                        event.accepted = true
+                    } else if (root.focusedElement !== 0) {
+                        root.activateFocused()
+                        event.accepted = true
+                    }
+                }
+                Keys.onDownPressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount()
+                        event.accepted = true
+                    } else if (root.userPopupOpen) {
+                        if (typeof userModel !== "undefined" && userModel.count > 0)
+                            root.userIndex = (root.userIndex + 1) % userModel.count
+                        event.accepted = true
+                    } else if (root.focusedElement === 1) {
+                        root.sessionPopupOpen = true
+                        event.accepted = true
+                    } else if (root.focusedElement === 4) {
+                        root.userPopupOpen = true
+                        event.accepted = true
+                    }
+                }
+                Keys.onUpPressed: (event) => {
+                    if (root.sessionPopupOpen) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            root.sessionIndex = (root.sessionIndex - 1 + sessionModel.rowCount()) % sessionModel.rowCount()
+                        event.accepted = true
+                    } else if (root.userPopupOpen) {
+                        if (typeof userModel !== "undefined" && userModel.count > 0)
+                            root.userIndex = (root.userIndex - 1 + userModel.count) % userModel.count
+                        event.accepted = true
+                    } else if (root.focusedElement === 1) {
+                        root.sessionPopupOpen = true
+                        event.accepted = true
+                    } else if (root.focusedElement === 4) {
+                        root.userPopupOpen = true
+                        event.accepted = true
+                    }
+                }
+                Keys.onPressed: (event) => {
+                    if (root.focusedElement !== 0 && !root.sessionPopupOpen && !root.userPopupOpen &&
+                        event.text && event.text.length > 0 &&
+                        event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backtab &&
+                        event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter &&
+                        event.key !== Qt.Key_Space && event.key !== Qt.Key_Escape) {
+                        root.focusedElement = 0
+                    }
+                }
                 property bool wasClicked: false
                 onActiveFocusChanged: if (!activeFocus && text.length === 0) wasClicked = false
                 cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
@@ -273,7 +400,7 @@ Item {
                     color: root.accentColor
                     anchors.verticalCenter: parent.verticalCenter
                     x: passInput.cursorRectangle.x - width/2 + 2 * s
-                    visible: passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
+                    visible: root.focusedElement === 0 && passInput.focus && (passInput.text.length > 0 || passInput.wasClicked)
                     SequentialAnimation {
                         loops: Animation.Infinite; running: customCursor.visible
                         NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.05; duration: 450 }
@@ -316,7 +443,11 @@ Item {
             Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutQuart } }
             layer.enabled: true; layer.effect: DropShadow { transparentBorder: true; color: "#35000000"; radius: root.sessionPopupOpen ? 45*s : 30*s; verticalOffset: 10 * s }
             
-            LiquidGlass { glassRadius: 22 * s; blurBrightness: root.sessionPopupOpen ? -0.25 : (sessMouse.containsMouse ? -0.05 : -0.10); topRimColor: (sessMouse.containsMouse || root.sessionPopupOpen) ? "#ffffffff" : "#ccffffff" }
+            LiquidGlass {
+                glassRadius: 22 * s
+                blurBrightness: root.sessionPopupOpen ? -0.25 : ((sessMouse.containsMouse || root.focusedElement === 1) ? -0.05 : -0.10)
+                topRimColor: (sessMouse.containsMouse || root.focusedElement === 1 || root.sessionPopupOpen) ? root.accentColor : "#ccffffff"
+            }
 
             property real morphRatio: root.sessionPopupOpen ? 1.0 : 0.0; Behavior on morphRatio { NumberAnimation { duration: 500; easing.type: Easing.OutQuart } }
 
@@ -340,6 +471,7 @@ Item {
                 }
                 Text { text: "ESCAPE"; font.family: mainFont.name; font.pixelSize: 9 * s; color: "white"; anchors.horizontalCenter: parent.horizontalCenter; font.letterSpacing: 4 * s; opacity: 0.4; MouseArea { anchors.fill: parent; onClicked: root.sessionPopupOpen = false; cursorShape: Qt.PointingHandCursor } }
             }
+            scale: (root.focusedElement === 1 || sessMouse.containsMouse) ? 1.02 : 1.0
             MouseArea { id: sessMouse; anchors.fill: parent; hoverEnabled: true; visible: !root.sessionPopupOpen; onClicked: root.sessionPopupOpen = true; cursorShape: Qt.PointingHandCursor; onPressed: sessionMorpher.scale = 0.98; onReleased: sessionMorpher.scale = 1.0 }
             Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
         }
@@ -349,16 +481,22 @@ Item {
             width: parent.width; height: 50 * s; y: 285 * s; spacing: 20 * s
             opacity: (root.sessionPopupOpen || root.userPopupOpen) ? 0.0 : 1.0
             Behavior on opacity { NumberAnimation { duration: 400 } }
-            Item { id: rebootBtn; x:0; y:0; width: (parent.width / 2) - 10 * s; height: 50 * s; layer.enabled: true; layer.effect: DropShadow { transparentBorder: true; color: "#35000000"; radius: 25*s; verticalOffset: 8 * s }
-                LiquidGlass { glassRadius: 18 * s; blurBrightness: restMouse.containsMouse ? 0.20 : 0.10; glassTint: "#30101a10"; topRimColor: "#ccffffff" }
-                Text { anchors.centerIn: parent; text: "REBOOT"; font.family: mainFont.name; font.pixelSize: 15 * s; font.weight: Font.DemiBold; color: "white"; opacity: restMouse.containsMouse ? 1.0 : 0.8 }
-                MouseArea { id: restMouse; anchors.fill: parent; hoverEnabled: true; onClicked: { if (typeof sddm !== "undefined") sddm.reboot() } cursorShape: Qt.PointingHandCursor; onPressed: rebootBtn.scale = 0.98; onReleased: rebootBtn.scale = 1.0 }
+            Item { id: rebootBtn; x:0; y:0; width: (parent.width / 2) - 10 * s; height: 50 * s; layer.enabled: true
+                property bool isFocused: root.focusedElement === 2
+                layer.effect: DropShadow { transparentBorder: true; color: rebootBtn.isFocused ? "#40d3eaad" : "#35000000"; radius: rebootBtn.isFocused ? 30*s : 25*s; verticalOffset: 8 * s }
+                scale: restMouse.pressed ? 0.98 : ((isFocused || restMouse.containsMouse) ? 1.04 : 1.0)
+                LiquidGlass { glassRadius: 18 * s; blurBrightness: (restMouse.containsMouse || rebootBtn.isFocused) ? 0.20 : 0.10; glassTint: "#30101a10"; topRimColor: rebootBtn.isFocused ? root.accentColor : "#ccffffff" }
+                Text { anchors.centerIn: parent; text: "REBOOT"; font.family: mainFont.name; font.pixelSize: 15 * s; font.weight: Font.DemiBold; color: "white"; opacity: (restMouse.containsMouse || rebootBtn.isFocused) ? 1.0 : 0.75 }
+                MouseArea { id: restMouse; anchors.fill: parent; hoverEnabled: true; onClicked: { if (typeof sddm !== "undefined") sddm.reboot() } cursorShape: Qt.PointingHandCursor }
                 Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
             }
-            Item { id: powerBtn; x:0; y:0; width: (parent.width / 2) - 10 * s; height: 50 * s; layer.enabled: true; layer.effect: DropShadow { transparentBorder: true; color: "#35000000"; radius: 25*s; verticalOffset: 8 * s }
-                LiquidGlass { glassRadius: 18 * s; blurBrightness: shutMouse.containsMouse ? 0.20 : 0.10; glassTint: "#30101a10"; topRimColor: "#ccffffff" }
-                Text { anchors.centerIn: parent; text: "POWER"; font.family: mainFont.name; font.pixelSize: 15 * s; font.weight: Font.DemiBold; color: "white"; opacity: shutMouse.containsMouse ? 1.0 : 0.8 }
-                MouseArea { id: shutMouse; anchors.fill: parent; hoverEnabled: true; onClicked: { if (typeof sddm !== "undefined") sddm.powerOff() } cursorShape: Qt.PointingHandCursor; onPressed: powerBtn.scale = 0.98; onReleased: powerBtn.scale = 1.0 }
+            Item { id: powerBtn; x:0; y:0; width: (parent.width / 2) - 10 * s; height: 50 * s; layer.enabled: true
+                property bool isFocused: root.focusedElement === 3
+                layer.effect: DropShadow { transparentBorder: true; color: powerBtn.isFocused ? "#40d3eaad" : "#35000000"; radius: powerBtn.isFocused ? 30*s : 25*s; verticalOffset: 8 * s }
+                scale: shutMouse.pressed ? 0.98 : ((isFocused || shutMouse.containsMouse) ? 1.04 : 1.0)
+                LiquidGlass { glassRadius: 18 * s; blurBrightness: (shutMouse.containsMouse || powerBtn.isFocused) ? 0.20 : 0.10; glassTint: "#30101a10"; topRimColor: powerBtn.isFocused ? root.accentColor : "#ccffffff" }
+                Text { anchors.centerIn: parent; text: "POWER"; font.family: mainFont.name; font.pixelSize: 15 * s; font.weight: Font.DemiBold; color: "white"; opacity: (shutMouse.containsMouse || powerBtn.isFocused) ? 1.0 : 0.75 }
+                MouseArea { id: shutMouse; anchors.fill: parent; hoverEnabled: true; onClicked: { if (typeof sddm !== "undefined") sddm.powerOff() } cursorShape: Qt.PointingHandCursor }
                 Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
             }
         }
