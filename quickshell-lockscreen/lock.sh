@@ -28,6 +28,15 @@ else
     export QS_THEME_PATH="$DIR/themes_link/$QS_THEME"
 fi
 
+# Fingerprint unlock (fprintd): "auto" or "off"
+FPRINT_FILE="$HOME/.config/qylock/fingerprint"
+if [ -z "$QS_FINGERPRINT" ] && [ -f "$FPRINT_FILE" ]; then
+    QS_FINGERPRINT=$(cat "$FPRINT_FILE")
+fi
+export QS_FINGERPRINT="${QS_FINGERPRINT:-auto}"
+export QS_FINGERPRINT_TRIES="${QS_FINGERPRINT_TRIES:-3}"
+export QS_FINGERPRINT_HINT="${QS_FINGERPRINT_HINT:-1}"
+
 echo "Locking with Quickshell using theme: $QS_THEME"
 echo "Theme path: $QS_THEME_PATH"
 
