@@ -230,6 +230,27 @@ substep "Configuration saved to ~/.config/qylock/theme"
 sed -i "s|export QS_THEME=.*$|export QS_THEME=\"\${1:-$THEME_NAME}\"|" "$TARGET_DIR/lock.sh"
 success "Theme '$THEME_NAME' set as lockscreen default!"
 
+# Fingerprint
+if command -v fprintd-list &> /dev/null; then
+    info "Fingerprint unlock (fprintd)..."
+    if fprintd-list "$USER" 2>/dev/null | grep -q '#[0-9]*:'; then
+        substep "Enrolled fingerprints found for $USER"
+        echo -ne "${C_MAIN}${C_BOLD} │  ${C_YELLOW}Enable fingerprint unlock on the lockscreen? (y/n): ${C_RESET}"
+        read -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            echo "off" > "$HOME/.config/qylock/fingerprint"
+            success "Fingerprint unlock disabled (edit ~/.config/qylock/fingerprint to change)"
+        else
+            echo "auto" > "$HOME/.config/qylock/fingerprint"
+            success "Fingerprint unlock enabled. Touch the sensor while the lockscreen is up!"
+        fi
+    else
+        substep "No fingerprints enrolled for $USER. Run ${C_YELLOW}fprintd-enroll${C_RESET} and it will just work."
+        echo ""
+    fi
+fi
+
 # Shortcuts Info
 info "Keyboard Shortcut Instructions"
 substep "To use this lockscreen natively, bind a shortcut (e.g., Mod + L) in your Window Manager's configuration."

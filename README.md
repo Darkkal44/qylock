@@ -122,6 +122,28 @@ Point your Window Manager keybind (e.g., in Hyprland, Qtile, Sway, or i3) direct
 
 <br>
 
+#### 🫆 FINGERPRINT UNLOCK
+
+If `fprintd` is installed and you have enrolled fingerprints, the lockscreen listens on the fingerprint reader while the password prompt is up. Touch the sensor to unlock, or type your password like before. Nothing to configure, it is detected on every lock.
+
+```sh
+sudo pacman -S fprintd   # or your distro's package
+fprintd-enroll           # enroll a finger, then lock to try it
+```
+
+`quickshell.sh` asks whether to enable it. To change your mind later, write `auto` or `off` to `~/.config/qylock/fingerprint`.
+
+| Variable | Default | What it does |
+|--:|:---|:---|
+| `QS_FINGERPRINT` | `auto` | `off` disables fingerprint unlock (overrides the config file) |
+| `QS_FINGERPRINT_TRIES` | `3` | Failed matches before the reader gives up and only the password works |
+| `QS_FINGERPRINT_HINT` | `1` | `0` hides the small status pill at the bottom of the screen |
+
+> [!NOTE]
+> Fingerprint runs on its own PAM stack (`quickshell-lockscreen/pam.d/fprint`) alongside the password stack, so both work at the same time. This needs `libpam` 1.4 or newer. On NixOS, PAM modules must be referenced by absolute path, so point that file at `${pkgs.fprintd}/lib/security/pam_fprintd.so`.
+
+<br>
+
 <p align="center">━━━━━━━ ❖ ━━━━━━━</p>
 
 <a id="nixos-setup"></a>
