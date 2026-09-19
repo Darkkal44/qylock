@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+LOCK="$HOME/.local/share/quickshell-lockscreen/lock.sh"
+DIR="$(dirname "$LOCK")"
+
+if [ -d "$DIR/../themes" ]; then
+    THEMES_DIR="$DIR/../themes"
+else
+    THEMES_DIR="$DIR/themes_link"
+fi
+
+THEME=$(find "$THEMES_DIR" -mindepth 1 -maxdepth 1 -type d -printf "%f\n" | shuf -n 1)
+
+if [ -z "$THEME" ]; then
+    echo "Error: no Qylock themes found in $THEMES_DIR"
+    exit 1
+fi
+
+"$LOCK" "$THEME"
