@@ -55,7 +55,19 @@ header
 info "Checking dependencies..."
 
 if ! command -v sddm &> /dev/null; then
-    error "SDDM is not installed. Install it with: pacman -S sddm"
+    if command -v pacman &> /dev/null; then
+        INSTALL_CMD="sudo pacman -S sddm"
+    elif command -v dnf &> /dev/null; then
+        INSTALL_CMD="sudo dnf install sddm"
+    elif command -v apt &> /dev/null; then
+        INSTALL_CMD="sudo apt install sddm"
+    elif command -v zypper &> /dev/null; then
+        INSTALL_CMD="sudo zypper install sddm"
+    else
+        INSTALL_CMD="your distribution's package manager"
+    fi
+
+    error "SDDM is not installed. Install it with: $INSTALL_CMD"
     exit 1
 fi
 substep "SDDM found"
