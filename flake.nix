@@ -23,6 +23,7 @@
           clockworkTape = (opt "clockwork").tape or { };
           osu = opt "osu";
           osumania = opt "osumania";
+          girlCoffee = opt "girl-coffee";
           sed = file: pat: ''
             if [ -f "${file}" ]; then sed -i "${pat}" "${file}"; fi
           '';
@@ -54,6 +55,9 @@
           ${nixpkgs.lib.optionalString (osumania ? gameMode)
             (sed "themes/osumania/theme.conf"
               "s/^gameMode=.*/gameMode=${osumania.gameMode}/")}
+          ${nixpkgs.lib.optionalString (girlCoffee ? themeMode)
+            (sed "themes/girl-coffee/theme.conf"
+              "s/^themeMode=.*/themeMode=${girlCoffee.themeMode}/")}
         '';
     in flake-utils.lib.eachDefaultSystem (system:
       let
