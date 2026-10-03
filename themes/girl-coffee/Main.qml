@@ -19,16 +19,20 @@ Rectangle {
     property int sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property int userIndex: userModel.lastIndex >= 0 ? userModel.lastIndex : 0
     property real ui: 0
-    // Palette
+    // Palette (themeMode=light|dark in theme.conf)
+    readonly property bool isDark: (config.themeMode || "light") === "dark"
     readonly property color cPink: "#da9ead"
-    readonly property color cPinkLt: "#f0cad5"
+    readonly property color cPinkLt: isDark ? "#e8b8c5" : "#f0cad5"
     readonly property color cPinkDim: "#c17d91"
     readonly property color cTealMd: "#6ea6a1"
-    readonly property color cCream: "#fdfaf6"
-    readonly property color cCreamy: "#f2ece4"
-    readonly property color cInk: "#324746"
+    readonly property color cCream: isDark ? "#1f2a29" : "#fdfaf6"
+    readonly property color cCreamy: isDark ? "#2f3d3c" : "#f2ece4"
+    readonly property color cInk: isDark ? "#f2ece4" : "#324746"
     readonly property color cMuted: "#8fa8a6"
-    readonly property color cField: "#f8f4ef"
+    readonly property color cField: isDark ? "#263332" : "#f8f4ef"
+    readonly property color cBorder: isDark ? "#14ffffff" : "#18000000"
+    readonly property color cError: isDark ? "#e07a86" : "#c15f6b"
+    readonly property color cBtnText: isDark ? "#1f2a29" : cInk
 
     function doLogin() {
         var u = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : (typeof userModel !== "undefined" ? userModel.lastUser : "");
@@ -39,7 +43,7 @@ Rectangle {
 
     width: Screen.width
     height: Screen.height
-    color: "#6eb3ac"
+    color: isDark ? "#1b2423" : "#6eb3ac"
     Component.onCompleted: { fadeAnim.start(); keyboard.numLock = true }
 
     FolderListModel {
@@ -113,6 +117,13 @@ Rectangle {
         smooth: true
     }
 
+    // Dim the artwork behind the dark card
+    Rectangle {
+        anchors.fill: parent
+        color: "#000000"
+        opacity: root.isDark ? 0.35 : 0
+    }
+
     // Card
     Item {
         id: card
@@ -151,7 +162,7 @@ Rectangle {
                 anchors.fill: parent
                 radius: parent.radius
                 color: "transparent"
-                border.color: "#18000000"
+                border.color: root.cBorder
                 border.width: 1
             }
 
@@ -471,7 +482,7 @@ Rectangle {
                 visible: false
                 anchors.left: parent.left
                 anchors.leftMargin: 4 * s
-                color: "#c15f6b"
+                color: root.cError
                 font.family: pf.name
                 font.pixelSize: 11 * s
                 font.letterSpacing: 1 * s
@@ -563,7 +574,7 @@ Rectangle {
                 Text {
                     anchors.centerIn: parent
                     text: "LOGIN"
-                    color: loginBtn.hovered ? "#ffffff" : root.cInk
+                    color: loginBtn.hovered ? "#ffffff" : root.cBtnText
                     opacity: loginBtn.hovered ? 1 : 0.8
                     font.family: pf.name
                     font.pixelSize: 14 * s
