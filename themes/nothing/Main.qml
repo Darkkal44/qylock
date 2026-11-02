@@ -18,9 +18,39 @@ Rectangle {
     }
 
     readonly property real s: Screen.height / 768
-    property bool isQuickshell: typeof sddm === "undefined" || sddm.hostName === undefined
+    property bool isQuickshell: typeof sddm === "undefined"
     property int sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property int userIndex: (typeof userModel !== "undefined" && userModel.lastIndex >= 0) ? userModel.lastIndex : 0
+
+    function getUserLogin() {
+        if (userHelper.currentItem && userHelper.currentItem.uLogin) {
+            return userHelper.currentItem.uLogin;
+        }
+        if (typeof userModel !== "undefined" && userModel) {
+            if (typeof userModel.data === "function" && typeof userModel.index === "function") {
+                var dataName = userModel.data(userModel.index(root.userIndex, 0), Qt.UserRole + 1);
+                if (dataName) return dataName;
+            }
+            if (userModel.lastUser) return userModel.lastUser;
+        }
+        return "";
+    }
+
+    function getUserDisplayName() {
+        if (userHelper.currentItem && userHelper.currentItem.uName) {
+            return userHelper.currentItem.uName;
+        }
+        if (typeof userModel !== "undefined" && userModel) {
+            if (typeof userModel.data === "function" && typeof userModel.index === "function") {
+                var realName = userModel.data(userModel.index(root.userIndex, 0), Qt.UserRole + 2);
+                if (realName) return realName;
+                var dataName = userModel.data(userModel.index(root.userIndex, 0), Qt.UserRole + 1);
+                if (dataName) return dataName;
+            }
+            if (userModel.lastUser) return userModel.lastUser;
+        }
+        return "USER";
+    }
     
     // UI States
     property real ui1: 0
@@ -257,7 +287,7 @@ Rectangle {
                         
                         Text {
                             id: userNameText
-                            text: ((userHelper.currentItem && userHelper.currentItem.uName) ? userHelper.currentItem.uName : (userModel.lastUser || "USER")).toUpperCase()
+                            text: root.getUserDisplayName().toUpperCase()
                             font.family: pfDot.source !== "" ? pfDot.name : root.sansFont
                             font.pixelSize: 16 * s
                             font.letterSpacing: 1.5 * s
@@ -281,7 +311,7 @@ Rectangle {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (!root.isQuickshell && typeof userModel !== "undefined" && userModel.rowCount() > 0) {
+                            if (typeof userModel !== "undefined" && userModel && userModel.rowCount() > 0) {
                                 root.userIndex = (root.userIndex + 1) % userModel.rowCount();
                             }
                         }
@@ -360,8 +390,8 @@ Rectangle {
                         }
                         
                         onAccepted: {
-                            if (!root.isQuickshell && pwd.text !== "") {
-                                let currentUser = userHelper.currentItem ? userHelper.currentItem.uLogin : userModel.lastUser;
+                            if (typeof sddm !== "undefined" && sddm && pwd.text !== "") {
+                                let currentUser = root.getUserLogin();
                                 sddm.login(currentUser, pwd.text, root.sessionIndex);
                             }
                         }
@@ -409,7 +439,13 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: pwd.accepted()
+                        onClicked: {
+                            if (pwd.text === "") {
+                                pwd.forceActiveFocus();
+                            } else {
+                                pwd.accepted();
+                            }
+                        }
                     }
                 }
             }
@@ -467,7 +503,7 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: if (!root.isQuickshell) sddm.powerOff();
+                        onClicked: if (typeof sddm !== "undefined" && sddm && sddm.powerOff) sddm.powerOff();
                     }
                 }
                 
@@ -515,7 +551,7 @@ Rectangle {
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
                         onClicked: {
-                            if (!root.isQuickshell && typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0) {
+                            if (typeof sessionModel !== "undefined" && sessionModel && sessionModel.rowCount() > 0) {
                                 root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount();
                             }
                         }
@@ -561,7 +597,7 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: if (!root.isQuickshell) sddm.reboot();
+                        onClicked: if (typeof sddm !== "undefined" && sddm && sddm.reboot) sddm.reboot();
                     }
                 }
 
@@ -602,7 +638,7 @@ Rectangle {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: if (!root.isQuickshell) sddm.suspend();
+                        onClicked: if (typeof sddm !== "undefined" && sddm && sddm.suspend) sddm.suspend();
                     }
                 }
             }
