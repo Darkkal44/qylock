@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=pixel-replaced-arrival
+Description=pixel-replaced-arrival Qylock Theme
+Author=saibaneko feat. Darkkal44
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6
