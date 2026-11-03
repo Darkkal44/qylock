@@ -164,6 +164,7 @@ Add the input and import the module in your `flake.nix`:
               Genshin.backgroundMode = "time";
               clockwork.orbital = { themeMode = "dark"; enableWindup = true; };
               osu.gameMode = "menu";                         # menu | game
+              girl-coffee.themeMode = "dark";                # light | dark
             };
           };
         })
