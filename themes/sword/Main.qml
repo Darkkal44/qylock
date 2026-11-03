@@ -23,7 +23,23 @@ Rectangle {
     property int sessionIndex: (typeof sessionModel !== "undefined" && sessionModel.lastIndex >= 0) ? sessionModel.lastIndex : 0
     property int userIndex: (typeof userModel !== "undefined" && userModel.lastIndex >= 0) ? userModel.lastIndex : 0
     property real ui: 0
+    property int focusedElement: 0 // 0: Password, 1: Session, 2: Restart, 3: Shutdown, 4: User
 
+    function activateFocused() {
+        if (root.focusedElement === 0) {
+            doLogin()
+        } else if (root.focusedElement === 1) {
+            if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                sToggleAnim.start()
+        } else if (root.focusedElement === 2) {
+            if (typeof sddm !== "undefined") sddm.reboot()
+        } else if (root.focusedElement === 3) {
+            if (typeof sddm !== "undefined") sddm.powerOff()
+        } else if (root.focusedElement === 4) {
+            if (typeof userModel !== "undefined" && userModel.rowCount() > 0)
+                uToggleAnim.start()
+        }
+    }
     TextConstants { id: textConstants }
 
     FolderListModel {
@@ -99,9 +115,13 @@ Rectangle {
 
         Text {
             id: userDisplay; anchors.right: parent.right
+            property bool isFocused: root.focusedElement === 4
             text: (userHelper.currentItem && userHelper.currentItem.uName) ? userHelper.currentItem.uName : (typeof userModel !== "undefined" ? (userModel.lastUser || "User") : "User")
-            color: "white"; font.family: shurikenFont.name; font.pixelSize: 22 * s; font.letterSpacing: 2 * s
-            scale: uMa.containsMouse ? 1.05 : 1.0; Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
+            color: (isFocused || uMa.containsMouse) ? "#80b0d8" : "white"
+            font.family: shurikenFont.name; font.pixelSize: 22 * s; font.letterSpacing: 2 * s
+            scale: (isFocused || uMa.containsMouse) ? 1.05 : 1.0
+            Behavior on color { ColorAnimation { duration: 200 } }
+            Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutBack } }
             transform: Translate { id: uTrans; x: 0 }
             MouseArea {
                 id: uMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
@@ -122,12 +142,69 @@ Rectangle {
                 id: passwordField; anchors.left: parent.left; anchors.right: arrowHint.left; anchors.rightMargin: 12 * s; anchors.verticalCenter: parent.verticalCenter
                 color: "transparent"; font.family: shurikenFont.name; font.pixelSize: 14 * s; echoMode: TextInput.NoEcho; focus: true; clip: true; cursorVisible: false; cursorDelegate: Item { width: 0; height: 0 }
                 selectionColor: "#6090b8"; property bool wasClicked: false; onTextEdited: errorMessage.text = ""
-                Keys.onReturnPressed: doLogin(); Keys.onEnterPressed: doLogin()
+                Keys.onTabPressed: (event) => {
+                    root.focusedElement = (root.focusedElement + 1) % 5
+                    event.accepted = true
+                }
+                Keys.onBacktabPressed: (event) => {
+                    root.focusedElement = (root.focusedElement - 1 + 5) % 5
+                    event.accepted = true
+                }
+                Keys.onEscapePressed: (event) => {
+                    root.focusedElement = 0
+                    passwordField.text = ""
+                    errorMessage.text = ""
+                    event.accepted = true
+                }
+                Keys.onReturnPressed: (event) => {
+                    root.activateFocused()
+                    event.accepted = true
+                }
+                Keys.onEnterPressed: (event) => {
+                    root.activateFocused()
+                    event.accepted = true
+                }
+                Keys.onSpacePressed: (event) => {
+                    if (root.focusedElement !== 0) {
+                        root.activateFocused()
+                        event.accepted = true
+                    }
+                }
+                Keys.onUpPressed: (event) => {
+                    if (root.focusedElement === 1) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            sToggleAnim.start()
+                        event.accepted = true
+                    } else if (root.focusedElement === 4) {
+                        if (typeof userModel !== "undefined" && userModel.rowCount() > 0)
+                            uToggleAnim.start()
+                        event.accepted = true
+                    }
+                }
+                Keys.onDownPressed: (event) => {
+                    if (root.focusedElement === 1) {
+                        if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0)
+                            sToggleAnim.start()
+                        event.accepted = true
+                    } else if (root.focusedElement === 4) {
+                        if (typeof userModel !== "undefined" && userModel.rowCount() > 0)
+                            uToggleAnim.start()
+                        event.accepted = true
+                    }
+                }
+                Keys.onPressed: (event) => {
+                    if (root.focusedElement !== 0 && event.text && event.text.length > 0 &&
+                        event.key !== Qt.Key_Tab && event.key !== Qt.Key_Backtab &&
+                        event.key !== Qt.Key_Return && event.key !== Qt.Key_Enter &&
+                        event.key !== Qt.Key_Space && event.key !== Qt.Key_Escape) {
+                        root.focusedElement = 0
+                    }
+                }
                 Row {
                     anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; spacing: 8 * s
                     Repeater { model: passwordField.text.length; delegate: Text { text: "✦"; color: "white"; font: passwordField.font; verticalAlignment: Text.AlignVCenter } }
                     Text {
-                        id: customCursor; text: "✦"; color: "white"; font: passwordField.font; verticalAlignment: Text.AlignVCenter; visible: passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
+                        id: customCursor; text: "✦"; color: "white"; font: passwordField.font; verticalAlignment: Text.AlignVCenter; visible: root.focusedElement === 0 && passwordField.focus && (passwordField.text.length > 0 || passwordField.wasClicked)
                         layer.enabled: true; layer.effect: DropShadow { color: "white"; radius: 8; samples: 16 }
                         SequentialAnimation { loops: Animation.Infinite; running: customCursor.visible; NumberAnimation { target: customCursor; property: "opacity"; from: 1; to: 0.2; duration: 600; easing.type: Easing.InOutSine } NumberAnimation { target: customCursor; property: "opacity"; from: 0.2; to: 1; duration: 600; easing.type: Easing.InOutSine } }
                     }
@@ -147,7 +224,7 @@ Rectangle {
             }
         }
 
-        Rectangle { width: parent.width; height: 1 * s; color: passwordField.activeFocus ? "#80b0d8" : "#28607888"; Behavior on color { ColorAnimation { duration: 300 } } }
+        Rectangle { width: parent.width; height: 1 * s; color: (root.focusedElement === 0 && passwordField.activeFocus) ? "#80b0d8" : "#28607888"; Behavior on color { ColorAnimation { duration: 300 } } }
 
         Item { width: 1 * s; height: 10 * s }
 
@@ -163,34 +240,65 @@ Rectangle {
 
         Item {
             width: sessionSwitchRow.implicitWidth; height: sessionSwitchRow.implicitHeight; anchors.left: parent.left; anchors.verticalCenter: parent.verticalCenter; visible: !root.isQuickshell
+            property bool isFocused: root.focusedElement === 1
             Row {
-                id: sessionSwitchRow; spacing: 10 * s; opacity: sMa.containsMouse ? 1.0 : 0.85; scale: sMa.containsMouse ? 1.05 : 1.0
+                id: sessionSwitchRow; spacing: 10 * s
+                opacity: (parent.isFocused || sMa.containsMouse) ? 1.0 : 0.85
+                scale: (parent.isFocused || sMa.containsMouse) ? 1.08 : 1.0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
                 transform: Translate { id: sTrans; x: 0 }
-                Text { text: "◈"; color: "#405070"; font.pixelSize: 10 * s; anchors.verticalCenter: parent.verticalCenter }
+                Text {
+                    text: "◈"
+                    color: (parent.parent.isFocused || sMa.containsMouse) ? "#80b0d8" : "#405070"
+                    font.pixelSize: 10 * s
+                    anchors.verticalCenter: parent.verticalCenter
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                }
                 Text {
                     id: sessionLabel; text: (typeof sessionModel !== "undefined" && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionHelper.currentItem.sName : "Session"
-                    color: "white"; opacity: 0.6; font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s; anchors.verticalCenter: parent.verticalCenter
+                    color: (parent.parent.isFocused || sMa.containsMouse) ? "#80b0d8" : "white"
+                    opacity: (parent.parent.isFocused || sMa.containsMouse) ? 1.0 : 0.6
+                    font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s; anchors.verticalCenter: parent.verticalCenter
+                    Behavior on color { ColorAnimation { duration: 200 } }
+                    Behavior on opacity { NumberAnimation { duration: 200 } }
                 }
             }
             MouseArea { id: sMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { if (typeof sessionModel !== "undefined" && sessionModel.rowCount() > 0) sToggleAnim.start() } }
             SequentialAnimation {
                 id: sToggleAnim; ParallelAnimation { NumberAnimation { target: sessionLabel; property: "opacity"; to: 0; duration: 120 } NumberAnimation { target: sTrans; property: "x"; to: 10 * s; duration: 120 } }
                 ScriptAction { script: root.sessionIndex = (root.sessionIndex + 1) % sessionModel.rowCount() }
-                ParallelAnimation { NumberAnimation { target: sessionLabel; property: "opacity"; to: 0.6; duration: 180 } NumberAnimation { target: sTrans; property: "x"; to: 0; duration: 180 } }
+                ParallelAnimation { NumberAnimation { target: sessionLabel; property: "opacity"; to: (root.focusedElement === 1 || sMa.containsMouse) ? 1.0 : 0.6; duration: 180 } NumberAnimation { target: sTrans; property: "x"; to: 0; duration: 180 } }
             }
         }
 
         Row {
             anchors.right: parent.right; anchors.verticalCenter: parent.verticalCenter; spacing: 28 * s
             Text {
-                text: "Restart"; color: "white"; opacity: 0.4; font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s
-                scale: rMa.containsMouse ? 1.1 : 1.0; Behavior on opacity { NumberAnimation { duration: 150 } }
-                MouseArea { id: rMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onEntered: parent.opacity = 0.9; onExited: parent.opacity = 0.4; onClicked: { if (typeof sddm !== "undefined") sddm.reboot() } }
+                id: restartBtn
+                property bool isFocused: root.focusedElement === 2
+                text: "Restart"
+                color: (isFocused || rMa.containsMouse) ? "#80b0d8" : "white"
+                opacity: (isFocused || rMa.containsMouse) ? 1.0 : 0.4
+                font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s
+                scale: (isFocused || rMa.containsMouse) ? 1.15 : 1.0
+                Behavior on color { ColorAnimation { duration: 200 } }
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+                MouseArea { id: rMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { if (typeof sddm !== "undefined") sddm.reboot() } }
             }
             Text {
-                text: "Shut Down"; color: "white"; opacity: 0.4; font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s
-                scale: pMa.containsMouse ? 1.1 : 1.0; Behavior on opacity { NumberAnimation { duration: 150 } }
-                MouseArea { id: pMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onEntered: parent.opacity = 0.9; onExited: parent.opacity = 0.4; onClicked: { if (typeof sddm !== "undefined") sddm.powerOff() } }
+                id: shutdownBtn
+                property bool isFocused: root.focusedElement === 3
+                text: "Shut Down"
+                color: (isFocused || pMa.containsMouse) ? "#80b0d8" : "white"
+                opacity: (isFocused || pMa.containsMouse) ? 1.0 : 0.4
+                font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s
+                scale: (isFocused || pMa.containsMouse) ? 1.15 : 1.0
+                Behavior on color { ColorAnimation { duration: 200 } }
+                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutBack } }
+                MouseArea { id: pMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { if (typeof sddm !== "undefined") sddm.powerOff() } }
             }
         }
     }
