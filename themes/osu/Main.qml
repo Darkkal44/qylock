@@ -1694,6 +1694,26 @@ Rectangle {
     }
 
     function resetGame() {
+        // Stop all game timers immediately
+        circleSpawnTimer.stop()
+        gameStartDelay.stop()
+        winCheckTimer.stop()
+
+        // Destroy all existing game objects (circles/sliders)
+        for (var i = 0; i < root.activeCircles.length; i++) {
+            if (root.activeCircles[i]) {
+                // Disconnect signals to prevent them from firing during destruction
+                try { root.activeCircles[i].hitSignal.disconnect(null) } catch(e) {}
+                try { root.activeCircles[i].missSignal.disconnect(null) } catch(e) {}
+                if (typeof root.activeCircles[i].sliderCompleted !== "undefined") {
+                    try { root.activeCircles[i].sliderCompleted.disconnect(null) } catch(e) {}
+                }
+                root.activeCircles[i].destroy()
+            }
+        }
+        root.activeCircles = []
+
+        // Reset all states
         root.gameActive = false
         root.osuFailed = false
         root.osuHealth = 1.0
@@ -1707,7 +1727,7 @@ Rectangle {
         root.osuScore = 0
         root.osuAccuracy = 100.0
         root.osuCircleCount = 0
-        root.activeCircles = []
+        root.patternStep = 0
     }
 
     // Accuracy Check
