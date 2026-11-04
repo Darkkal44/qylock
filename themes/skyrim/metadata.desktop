@@ -1,0 +1,8 @@
+[SddmGreeterTheme]
+Name=skyrim
+Description=Skyrim Qylock Theme
+Author=david-sds
+Type=sddm-theme
+MainScript=Main.qml
+ConfigFile=theme.conf
+QtVersion=6

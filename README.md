@@ -470,7 +470,13 @@ If you encounter library errors at the login screen:
 <b>Material You Dark</b><br><br>
 <img src="./Assets/material-you-dark.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
 </td>
+</tr>
+<tr>
+<td align="center" width="50%" style="padding: 15px; border: none;">
+<b>Skyrim</b><br><br>
+<img src="./Assets/skyrim.gif" width="100%" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);"/>
 </td>
+<td align="center" width="50%" style="padding: 15px; border: none;"></td>
 </tr>
 </table>
 </div>
@@ -509,6 +515,7 @@ Huge thanks to all the amazing artists for these wallpapers and fonts! Here's wh
 | **NieR: Automata** | [Reddit](https://www.reddit.com/r/nier/comments/7nqcy7/the_final_nier_automata_title_screen_made_into/) | FOT-Rodin Pro DB | **Reverse: 1999** | [Taptap](https://www.taptap.com/topic/21175628) | Outfit |
 | **Clockwork** | [WallsFlow](https://wallsflow.com/live-wallpapers/abstract/321-clock-mechanism-live-wallpaper.html) | Orbitron | **Terraria** | [Terraria Forums](https://forums.terraria.org/index.php?threads/terraria-desktop-wallpapers.12644/) | Andy Bold |
 | **Ninja Gaiden** | [Noisy Pixel](https://noisypixel.net/ninja-gaiden-4-wallpapers-art-team/) | Tektur | **Windows 7** | [WallpaperAccess](https://wallpaperaccess.com/windows-7-lock-screen) | Segoe UI |
+| **Skyrim** | [The Elder Scrolls V: Skyrim](https://elderscrolls.bethesda.net/en/skyrim) | Futura Condensed Light | - | - | - |
 
 <br>
 
