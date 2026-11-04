@@ -75,6 +75,7 @@ Some themes rely on fonts that cannot be bundled here (copyright issues). Downlo
 > These themes are made and tested only on arch linux, but the script will work in most of the distro's out there, so all you gotta do is get the dependencies right as its different for all the distros.
 
 ```sh
+git clone --depth 1 https://github.com/Darkkal44/qylock.git && cd qylock
 chmod +x sddm.sh && ./sddm.sh
 ```
 
@@ -106,6 +107,7 @@ Start by installing these dependencies using the package manager of your distro.
 #### 🚀 INSTALLATION
 
 ```sh
+git clone --depth 1 https://github.com/Darkkal44/qylock.git && cd qylock
 chmod +x quickshell.sh && ./quickshell.sh
 ```
 
