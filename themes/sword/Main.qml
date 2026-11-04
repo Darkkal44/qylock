@@ -50,9 +50,15 @@ Rectangle {
     }
 
     // Animation
-    Component.onCompleted: { fadeAnim.start(); keyboard.numLock = true }
+    Component.onCompleted: { fadeAnim.start(); if (typeof keyboard !== "undefined") keyboard.numLock = true }
 
     Timer { interval: 300; running: true; onTriggered: passwordField.forceActiveFocus() }
+
+    Keys.onPressed: (event) => {
+        if (!passwordField.activeFocus) {
+            passwordField.forceActiveFocus();
+        }
+    }
 
     NumberAnimation { id: fadeAnim; target: root; property: "ui"; from: 0; to: 1; duration: 1400; easing.type: Easing.OutCubic }
 
@@ -168,7 +174,7 @@ Rectangle {
                 transform: Translate { id: sTrans; x: 0 }
                 Text { text: "◈"; color: "#405070"; font.pixelSize: 10 * s; anchors.verticalCenter: parent.verticalCenter }
                 Text {
-                    id: sessionLabel; text: (typeof sessionModel !== "undefined" && sessionModel.count > root.sessionIndex && root.sessionIndex >= 0) ? sessionHelper.currentItem.sName : "Session"
+                    id: sessionLabel; text: (typeof sessionModel !== "undefined" && sessionHelper.currentItem && sessionHelper.currentItem.sName) ? sessionHelper.currentItem.sName : "Session"
                     color: "white"; opacity: 0.6; font.family: shurikenFont.name; font.pixelSize: 12 * s; font.letterSpacing: 1 * s; anchors.verticalCenter: parent.verticalCenter
                 }
             }
@@ -197,6 +203,10 @@ Rectangle {
 
     // Action
     function doLogin() {
+        if (!passwordField.text || passwordField.text.length === 0) {
+            passwordField.forceActiveFocus();
+            return;
+        }
         var uname = (userHelper.currentItem && userHelper.currentItem.uLogin) ? userHelper.currentItem.uLogin : (typeof userModel !== "undefined" ? userModel.lastUser : "")
         if (typeof sddm !== "undefined") sddm.login(uname, passwordField.text, root.sessionIndex)
     }
