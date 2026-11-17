@@ -244,7 +244,7 @@ if [ "$SELECTED_THEME" == "clockwork" ]; then
     case $CW_VARIANT in
         1) CW_SUBDIR="orbital"       ;;
         2) CW_SUBDIR="tape"          ;;
-        3) CW_SUBDIR="neo-brutalism" ;;
+        3) CW_SUBDIR="neo-orbital" ;;
         *) CW_SUBDIR="orbital"; substep "Invalid choice, defaulting to Orbital." ;;
     esac
 
@@ -279,7 +279,7 @@ if [ "$SELECTED_THEME" == "clockwork" ]; then
             sed -i "s/^enableWindup=.*/enableWindup=true/" "$THEMES_DIR/$SELECTED_THEME/theme.conf"
             substep "Windup animation enabled."
         fi
-    elif [ "$CW_SUBDIR" == "neo-brutalism" ]; then
+    elif [ "$CW_SUBDIR" == "neo-orbital" ]; then
         info "Customizing Clockwork / $CW_SUBDIR..."
         substep "Enable windup animation on login? (y/n):"
         echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice: ${C_RESET}"
