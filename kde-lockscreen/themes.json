@@ -1,0 +1,370 @@
+{
+  "nier-automata": {
+    "name": "NieR: Automata",
+    "passwordId": "pwInput",
+    "messageTarget": "errText.text",
+    "nativeHooks": true,
+    "userSwitchAction": "userList.currentIndex = index"
+  },
+  "material-you": {
+    "name": "Material You",
+    "passwordId": "pwd",
+    "messageTarget": "root.errorMessage",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "material-you-dark": {
+    "name": "Material You Dark",
+    "passwordId": "pwd",
+    "messageTarget": "root.errorMessage",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "nothing": {
+    "name": "Nothing",
+    "passwordId": "pwd",
+    "messageTarget": "root.errorMessage",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "clockwork/orbital": {
+    "name": "Clockwork / Orbital",
+    "passwordId": "passInput",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.userMenuOpen = !root.userMenuOpen"
+  },
+  "clockwork/tape": {
+    "name": "Clockwork / Tape",
+    "passwordId": "passInput",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "clockwork/neo-orbital": {
+    "name": "Clockwork / Neo Orbital",
+    "passwordId": "passInput",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "minecraft": {
+    "name": "Minecraft",
+    "passwordId": "passInput",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "windows_7": {
+    "name": "Windows 7",
+    "passwordId": "inputFocus",
+    "messageTarget": "errorMsg.text",
+    "messageOpacity": "errorMsg",
+    "userSwitchAction": "root.currentUserIndex ="
+  },
+  "pixel-coffee": {
+    "name": "Pixel / Coffee",
+    "passwordId": "pwd",
+    "messageTarget": "err.text",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "pixel-sakura": {
+    "name": "Pixel / Sakura",
+    "passwordId": "pwdInput",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "enfield": {
+    "name": "Enfield",
+    "passwordId": "passwordField",
+    "messageTarget": "errorMessage.text",
+    "userSwitchAction": "uToggleAnim.start()"
+  },
+  "pixel-waterfall": {
+    "name": "Pixel / Waterfall",
+    "passwordId": "pwd",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.userIndex ="
+  },
+  "Genshin": {
+    "name": "Genshin",
+    "passwordId": "passIn",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errText.text",
+    "passwordFocus": "root.loginFormVisible = true;"
+  },
+  "R1999_1": {
+    "name": "Reverse: 1999 / Variant 1",
+    "passwordId": "passInput",
+    "userSwitchAction": "root.userMenuOpen = !root.userMenuOpen",
+    "messageTarget": "errText.text"
+  },
+  "dog-samurai": {
+    "name": "Dog Samurai",
+    "passwordId": "passInput",
+    "userSwitchAction": "root.userMenuOpen = !root.userMenuOpen",
+    "inlineStatus": true
+  },
+  "field": {
+    "name": "Field",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMsg.text"
+  },
+  "forest": {
+    "name": "Forest",
+    "passwordId": "passInput",
+    "userSwitchAction": "root.userPopupOpen = true",
+    "messageTarget": "errText.text"
+  },
+  "girl-coffee": {
+    "name": "Girl Coffee",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errText.text"
+  },
+  "girl-pillow": {
+    "name": "Girl Pillow",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMsg.text"
+  },
+  "last-of-us": {
+    "name": "The Last of Us",
+    "passwordId": "passInput",
+    "userSwitchAction": "root.userMenuOpen = !root.userMenuOpen",
+    "messageTarget": "errText.text"
+  },
+  "man-bicycle": {
+    "name": "Man Bicycle",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMsg.text"
+  },
+  "ninesols": {
+    "name": "Nine Sols",
+    "passwordId": "pwd",
+    "userSwitchAction": "nextUser()",
+    "messageTarget": "err.text",
+    "replacements": [
+      [
+        "function nextUser() {",
+        "function nextUser() { sddm.switchUser(); return;"
+      ]
+    ]
+  },
+  "ninja_gaiden": {
+    "name": "Ninja Gaiden",
+    "passwordId": "pwInput",
+    "userSwitchAction": "handleSelection(index)",
+    "messageTarget": "errText.text",
+    "userSwitchCondition": "index === 0",
+    "passwordFocus": "menuList.currentIndex = 1;",
+    "replacements": [
+      [
+        "function handleSelection(index) {",
+        "function handleSelection(index) { if (index === 0) { sddm.switchUser(); return; }"
+      ]
+    ]
+  },
+  "osu": {
+    "name": "osu!",
+    "passwordId": "passField",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMsg.text",
+    "configOverrides": {
+      "gameMode": "menu"
+    },
+    "replacements": [
+      [
+        "from: -intensity; to: intensity",
+        "from: -gameShake.intensity; to: gameShake.intensity"
+      ],
+      [
+        "from: intensity; to: -intensity",
+        "from: gameShake.intensity; to: -gameShake.intensity"
+      ],
+      [
+        "source: (userHelper.currentItem && userHelper.currentItem.uLogin) \n                                ? Qt.resolvedUrl(\"avatars/\" + userHelper.currentItem.uLogin + \".png\") \n                                : Qt.resolvedUrl(\"pfp.png\")",
+        "source: userHelper.currentItem && userHelper.currentItem.uSystemIcon ? userHelper.currentItem.uSystemIcon : \"avatars/darkkal.png\""
+      ],
+      [
+        "if (status === Image.Error && source != Qt.resolvedUrl(\"pfp.png\")) {\n                                source = Qt.resolvedUrl(\"pfp.png\")\n                            }",
+        "if (status === Image.Error && source != Qt.resolvedUrl(\"avatars/darkkal.png\")) {\n                                source = Qt.resolvedUrl(\"avatars/darkkal.png\")\n                            }"
+      ]
+    ]
+  },
+  "osumania": {
+    "name": "osu!mania",
+    "passwordId": "passField",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMsg.text",
+    "configOverrides": {
+      "gameMode": "menu"
+    },
+    "replacements": [
+      [
+        "import Qt.labs.settings 1.0",
+        "import QtCore"
+      ],
+      [
+        "property var diffs: [",
+        "id: kdeChallengeLevels\n                    property var diffs: ["
+      ],
+      [
+        "Repeater {\n                        model: 4\n                        Item {",
+        "Repeater {\n                        model: 4\n                        Item {\n                            id: kdeChallenge\n                            readonly property var challenge: kdeChallengeLevels.diffs[index]\n                            readonly property color challengeColor: challenge.col"
+      ],
+      [
+        "                                color: Qt.rgba(parent.parent.diffs[index].col.r, parent.parent.diffs[index].col.g, parent.parent.diffs[index].col.b, diffMa.containsMouse?0.15:0.05)",
+        "                                color: Qt.rgba(kdeChallenge.challengeColor.r, kdeChallenge.challengeColor.g, kdeChallenge.challengeColor.b, diffMa.containsMouse?0.15:0.05)"
+      ],
+      [
+        "                                border.color: diffMa.containsMouse ? parent.parent.diffs[index].col : \"#33ffffff\"; border.width:2*s",
+        "                                border.color: diffMa.containsMouse ? kdeChallenge.challenge.col : \"#33ffffff\"; border.width:2*s"
+      ],
+      [
+        "                                        text:parent.parent.parent.parent.diffs[index].name",
+        "                                        text:kdeChallenge.challenge.name"
+      ],
+      [
+        "                                        color:parent.parent.parent.parent.diffs[index].col",
+        "                                        color:kdeChallenge.challenge.col"
+      ],
+      [
+        "                                            model: parent.parent.parent.parent.parent.diffs[index].stars",
+        "                                            model: kdeChallenge.challenge.stars"
+      ],
+      [
+        "                                            Text { text:\"\u2605\"; color:parent.parent.parent.parent.parent.parent.diffs[index].col; font.pixelSize:14*s }",
+        "                                            Text { text:\"\u2605\"; color:kdeChallenge.challenge.col; font.pixelSize:14*s }"
+      ],
+      [
+        "                                        text:parent.parent.parent.parent.diffs[index].desc",
+        "                                        text:kdeChallenge.challenge.desc"
+      ],
+      [
+        "id: fontFolder; folder:",
+        "id: fontFolder; showDirs: false; folder:"
+      ],
+      [
+        "source: (userHelper.currentItem && userHelper.currentItem.uLogin) ? \"avatars/\" + userHelper.currentItem.uLogin + \".png\" : \"avatars/pfp.png\"",
+        "source: userHelper.currentItem ? userHelper.currentItem.uSystemIcon : \"avatars/pfp.png\""
+      ]
+    ]
+  },
+  "pixel-cyberpunk": {
+    "name": "Pixel / Cyberpunk",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errText.text"
+  },
+  "pixel-dusk-city": {
+    "name": "Pixel / Dusk City",
+    "passwordId": "passwordField",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMessage.text",
+    "replacements": [
+      [
+        "onTextEdited: err.text = \"\"",
+        "onTextEdited: errorMessage.text = \"\""
+      ]
+    ]
+  },
+  "pixel-emerald": {
+    "name": "Pixel / Emerald",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "err.text"
+  },
+  "pixel-hollowknight": {
+    "name": "Pixel / Hollow Knight",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "err.text"
+  },
+  "pixel-munchlax": {
+    "name": "Pixel / Munchlax",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "err.text"
+  },
+  "pixel-night-city": {
+    "name": "Pixel / Night City",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "err.text"
+  },
+  "pixel-rainyroom": {
+    "name": "Pixel / Rainy Room",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "err.text"
+  },
+  "pixel-skyscrapers": {
+    "name": "Pixel / Skyscrapers",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "err.text"
+  },
+  "skyrim": {
+    "name": "Skyrim",
+    "passwordId": "passInput",
+    "userSwitchAction": "root.activate(row.rowIndex)",
+    "inlineStatus": true,
+    "sddmImport": false,
+    "userSwitchCondition": "row.rowIndex === root.selUser",
+    "replacements": [
+      [
+        "function cycleUser() {",
+        "function cycleUser() { sddm.switchUser(); return;"
+      ],
+      [
+        "import QtQuick\n",
+        "import QtQuick\nimport QtQuick.Window\n"
+      ]
+    ]
+  },
+  "star-rail": {
+    "name": "Honkai: Star Rail",
+    "passwordId": "passIn",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errText.text"
+  },
+  "sword": {
+    "name": "Sword",
+    "passwordId": "passwordField",
+    "userSwitchAction": "uToggleAnim.start()",
+    "messageTarget": "errorMessage.text"
+  },
+  "terraria": {
+    "name": "Terraria",
+    "passwordId": "passwordInput",
+    "userSwitchAction": "userList.currentIndex = index",
+    "inlineStatus": true
+  },
+  "winter": {
+    "name": "Winter",
+    "passwordId": "passInput",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errText.text"
+  },
+  "women-umbrella": {
+    "name": "Women Umbrella",
+    "passwordId": "pwd",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errorMsg.text"
+  },
+  "wuwa": {
+    "name": "Wuthering Waves",
+    "passwordId": "passIn",
+    "userSwitchAction": "root.userIndex =",
+    "messageTarget": "errText.text"
+  },
+  "R1999_2": {
+    "name": "Reverse: 1999 / Variant 2",
+    "passwordId": "passInput",
+    "messageTarget": "errText.text",
+    "userSwitchAction": "root.toggleUser()",
+    "passwordFocus": "root.interactionMode = true;",
+    "replacements": [
+      [
+        "function toggleUser() {",
+        "function toggleUser() { sddm.switchUser(); return;"
+      ]
+    ]
+  }
+}
