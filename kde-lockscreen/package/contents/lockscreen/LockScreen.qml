@@ -59,8 +59,17 @@ Item {
         signal loginSucceeded()
         function login(user, password, sessionIndex) { authBridge.login(user, password, sessionIndex); }
         function switchUser() { return userSwitch.switchUser(); }
-        function reboot() { if (sessionManagement.canReboot) sessionManagement.requestReboot(); }
-        function powerOff() { if (sessionManagement.canShutdown) sessionManagement.requestShutdown(); }
+        // The default confirmation prompt (ksmserver-logout-greeter) opens behind the
+        // lock screen and is never visible, so these buttons would appear dead.
+        // The theme's own button is the intent; skip KDE's extra confirmation.
+        function reboot() {
+            if (sessionManagement.canReboot)
+                sessionManagement.requestReboot(SessionManagement.ConfirmationMode.Skip);
+        }
+        function powerOff() {
+            if (sessionManagement.canShutdown)
+                sessionManagement.requestShutdown(SessionManagement.ConfirmationMode.Skip);
+        }
         function suspend() {
             authBridge.reset();
             if (sessionManagement.canSuspend) sessionManagement.suspend();
