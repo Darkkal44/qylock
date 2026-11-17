@@ -9,6 +9,24 @@ THEMES_DIR="$SCRIPT_DIR/themes"
 SYSTEM_THEMES_DIR="/usr/share/sddm/themes"
 SDDM_CONF_DIR="/etc/sddm.conf.d"
 SDDM_CONF="$SDDM_CONF_DIR/theme.conf"
+source "$SCRIPT_DIR/scripts/themes.sh"
+
+REQUESTED_THEME=""
+QT_CHOICE=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --theme)
+            [[ $# -ge 2 ]] || { echo 'Missing value for --theme' >&2; exit 2; }
+            REQUESTED_THEME="$2"
+            if ! qylock_theme_exists "$THEMES_DIR" "$REQUESTED_THEME"; then
+                echo "Unknown theme: $REQUESTED_THEME" >&2
+                exit 2
+            fi
+            shift 2 ;;
+        --qt5) QT_CHOICE=2; shift ;;
+        *) echo "Unknown option: $1 (use --theme NAME and optionally --qt5)" >&2; exit 2 ;;
+    esac
+done
 
 # Reset Colors
 trap 'echo -ne "\033[0m"' EXIT
@@ -49,7 +67,7 @@ error() {
 }
 
 # Core Logic
-header
+if [[ -z "$REQUESTED_THEME" ]]; then header; fi
 
 # Deps Check
 info "Checking dependencies..."
@@ -67,6 +85,7 @@ fi
 success "Dependencies verified"
 
 # Version Selection
+if [[ -z "$QT_CHOICE" && -z "$REQUESTED_THEME" ]]; then
 info "Select SDDM Backend Version"
 substep "Modern SDDM versions run on Qt6, but some stable distros still use Qt5."
 substep "If you encounter 'import' errors, re-run this script and select Qt5."
@@ -74,6 +93,8 @@ echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}1 ${C_DIM}❯ ${C_RESET}Qt6 (Modern 
 echo -e "${C_MAIN}${C_BOLD} │  ${C_ACCENT}2 ${C_DIM}❯ ${C_RESET}Qt5 (Legacy / Stable Distros)"
 echo -ne "${C_MAIN}${C_BOLD} ╰─ ${C_YELLOW}Choice [1/2]: ${C_RESET}"
 read -rp "" QT_CHOICE
+fi
+QT_CHOICE="${QT_CHOICE:-1}"
 
 if [ "$QT_CHOICE" == "2" ]; then
     info "Preparing Qt5 legacy environment..."
@@ -96,6 +117,14 @@ if [ ! -d "$THEMES_DIR" ]; then
 fi
 
 # Selection Logic
+if [[ -n "$REQUESTED_THEME" ]]; then
+    SELECTED_THEME="$REQUESTED_THEME"
+    INSTALL_NAME="${SELECTED_THEME##*/}"
+    if ! qylock_theme_exists "$THEMES_DIR" "$SELECTED_THEME"; then
+        error "Theme is unavailable for this Qt version: $SELECTED_THEME"
+        exit 2
+    fi
+else
 info "Selecting a theme..."
 
 if ! command -v fzf &> /dev/null; then
@@ -307,14 +336,14 @@ if [ -z "$SELECTED_THEME" ]; then
     error "No theme selected. Exiting."
     exit 0
 fi
+fi # Interactive theme selection and customization.
 
 INSTALL_NAME="${INSTALL_NAME:-$SELECTED_THEME}"
 
 substep "Selected: ${C_ACCENT}${SELECTED_THEME}${C_RESET}"
 
 # Font Check
-FONT_COUNT=$(ls -1 "$THEMES_DIR/$SELECTED_THEME/font" 2>/dev/null | grep -E "\.(ttf|otf)$" | wc -l)
-if [ "$FONT_COUNT" -eq 0 ]; then
+if ! qylock_has_fonts "$THEMES_DIR/$SELECTED_THEME"; then
     echo -e "${C_YELLOW}${C_BOLD} ╭─   MISSING FONT DETECTED${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}This theme looks better with its specific font!${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}Please put the .ttf/.otf file in:${C_RESET}"

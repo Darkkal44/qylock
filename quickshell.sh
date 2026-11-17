@@ -4,6 +4,22 @@ set -e
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TARGET_DIR="$HOME/.local/share/quickshell-lockscreen"
+THEMES_DIR="$DIR/themes"
+source "$DIR/scripts/themes.sh"
+REQUESTED_THEME=""
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --theme)
+            [[ $# -ge 2 ]] || { echo 'Missing value for --theme' >&2; exit 2; }
+            REQUESTED_THEME="$2"
+            if ! qylock_theme_exists "$THEMES_DIR" "$REQUESTED_THEME"; then
+                echo "Unknown theme: $REQUESTED_THEME" >&2
+                exit 2
+            fi
+            shift 2 ;;
+        *) echo "Unknown option: $1 (use --theme NAME)" >&2; exit 2 ;;
+    esac
+done
 
 # Reset Colors
 trap 'echo -ne "\033[0m"' EXIT
@@ -44,7 +60,7 @@ error() {
 }
 
 # Core Logic
-header
+if [[ -z "$REQUESTED_THEME" ]]; then header; fi
 
 # Deps Check
 info "Checking dependencies..."
@@ -60,6 +76,7 @@ success "Dependencies verified"
 info "Initializing Installation..."
 substep "Target directory: $TARGET_DIR"
 
+if [[ -z "$REQUESTED_THEME" ]]; then
 echo -ne "${C_MAIN}${C_BOLD} │  ${C_YELLOW}Do you want to proceed? (y/n): ${C_RESET}"
 read -n 1 -r
 echo
@@ -67,8 +84,10 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     error "Installation aborted."
     exit 1
 fi
+fi
 
 # Deploy Base
+mkdir -p "$(dirname "$TARGET_DIR")"
 rm -rf "$TARGET_DIR"
 cp -r "$DIR/quickshell-lockscreen" "$TARGET_DIR"
 substep "Copied wrapper successfully"
@@ -80,6 +99,9 @@ chmod +x "$TARGET_DIR/lock.sh"
 success "Permissions applied"
 
 # Theme Select
+if [[ -n "$REQUESTED_THEME" ]]; then
+    THEME_NAME="$REQUESTED_THEME"
+else
 info "Selecting Default Lockscreen Theme..."
 
 THEMES_DIR="$DIR/themes"
@@ -211,10 +233,10 @@ if [ "$THEME_NAME" == "osumania" ]; then
         sed -i "s/^gameMode=.*/gameMode=game/" "$THEMES_DIR/$THEME_NAME/theme.conf"
     fi
 fi
+fi # Interactive theme selection and customization.
 
 # Font Check
-FONT_COUNT=$(ls -1 "$THEMES_DIR/$THEME_NAME/font" 2>/dev/null | grep -E "\.(ttf|otf)$" | wc -l)
-if [ "$FONT_COUNT" -eq 0 ]; then
+if ! qylock_has_fonts "$THEMES_DIR/$THEME_NAME"; then
     echo -e "${C_YELLOW}${C_BOLD} ╭─   MISSING FONT DETECTED${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}This theme looks better with its specific font!${C_RESET}"
     echo -e "${C_YELLOW}${C_BOLD} │${C_RESET}  ${C_DIM}Please put the .ttf/.otf file in:${C_RESET}"
@@ -225,6 +247,7 @@ fi
 # Save Choice
 mkdir -p "$HOME/.config/qylock"
 echo "$THEME_NAME" > "$HOME/.config/qylock/theme"
+printf '%s\n' '{"owner":"qylock","profileOverride":true}' > "$TARGET_DIR/.qylock-profile.json"
 substep "Configuration saved to ~/.config/qylock/theme"
 
 sed -i "s|export QS_THEME=.*$|export QS_THEME=\"\${1:-$THEME_NAME}\"|" "$TARGET_DIR/lock.sh"
