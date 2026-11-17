@@ -8,7 +8,7 @@
 
 <div align="center">
 <pre>
-<a href="#sddm-setup">ꜱᴅᴅᴍ</a>  •  <a href="#quickshell-setup">ǫᴜɪᴄᴋsʜᴇʟʟ</a>  •  <a href="#nixos-setup">ɴɪxᴏs</a>  •  <a href="#faq">ꜰᴀǫ</a>  •  <a href="#gallery">ɢᴀʟʟᴇʀʏ</a>  •  <a href="#acknowledgements">ᴀᴄᴋɴᴏᴡʟᴇᴅɢᴇᴍᴇɴᴛꜱ</a>  •  <a href="#credits">ᴄʀᴇᴅɪᴛꜱ</a>
+<a href="#automatic-setup">Setup</a>  •  <a href="#sddm-setup">ꜱᴅᴅᴍ</a>  •  <a href="#quickshell-setup">ǫᴜɪᴄᴋsʜᴇʟʟ</a>  •  <a href="#kde-setup">KDE</a>  •  <a href="#nixos-setup">ɴɪxᴏs</a>  •  <a href="#faq">ꜰᴀǫ</a>  •  <a href="#gallery">ɢᴀʟʟᴇʀʏ</a>  •  <a href="#acknowledgements">ᴀᴄᴋɴᴏᴡʟᴇᴅɢᴇᴍᴇɴᴛꜱ</a>  •  <a href="#credits">ᴄʀᴇᴅɪᴛꜱ</a>
 </pre>
 </div>
 
@@ -27,6 +27,95 @@
 > Have a problem? Please check the [FAQ](#faq) before opening a new issue. Most common setup errors are already documented there!
 
 <br>
+
+<br>
+<p align="center">━━━━━━━ ❖ ━━━━━━━</p>
+
+<a id="automatic-setup"></a>
+
+### One installer for your setup
+
+Install the dependencies listed in the backend sections below, then run:
+
+```sh
+./install.sh
+```
+
+The installer detects the login manager and desktop session separately. Accept
+the suggested components or choose each one manually; `none` skips a component.
+**Choose your theme once** and the installer applies it to every selected
+component **system-wide**, using `sudo` for login and lock installation. Existing
+Qylock profiles are synchronized automatically; new profiles inherit the shared
+lock package. No per-user setup or synchronization option is required.
+Clockwork variants appear directly in the same picker. Installation
+uses the theme's current `theme.conf` settings without reopening backend menus.
+If you want different themes later, use the optional `--separate-themes` setting;
+both choices are collected in the same setup before either installation starts.
+
+| Detected setup | Suggested login theme | Suggested session lock |
+|:---|:---|:---|
+| SDDM + KDE Plasma | SDDM | Native KDE |
+| SDDM + Hyprland or Sway on Wayland | SDDM | Quickshell |
+| Other login manager + KDE Plasma | Skip login theme | Native KDE |
+| Other login manager + Hyprland or Sway on Wayland | Skip login theme | Quickshell |
+| GNOME, other desktops, or unknown session | SDDM if detected | Keep current locker |
+
+Detection uses the configured display-manager service (or
+`/etc/X11/default-display-manager`) and the current desktop session environment.
+An installed binary alone does not select a backend. For other Wayland
+compositors, choose Quickshell manually only if they support
+[`ext-session-lock-v1`](https://quickshell.org/docs/v0.2.1/types/Quickshell.Wayland/WlSessionLock/).
+Quickshell selection is rejected on Plasma, known unsupported desktops, and X11.
+There are no Qylock ports for GDM, GNOME's lock screen, hyprlock, or swaylock.
+
+```sh
+./install.sh --detect                       # Read-only detection report
+./install.sh --dry-run                      # Show which installers would run
+./install.sh --theme material-you           # One theme for login and lock
+./install.sh --separate-themes              # Optional independent theme choices
+./install.sh --login sddm --lock kde         # Install both components
+./install.sh --login none --lock quickshell # Install only the session lock
+./install.sh --login sddm --lock none        # Install only the login theme
+./install.sh --qt5                          # Legacy Qt5 SDDM; lock backend stays native
+```
+
+Run setup as your normal desktop user in a terminal; the installer requests
+`sudo` when needed. The shared installer checks required backend commands and KDE
+compatibility before starting either setup script. It does not install packages,
+change display managers, or change lock shortcuts. If a later installer fails,
+earlier completed installations remain in place and are reported. The original
+`sddm.sh`, `quickshell.sh`, and `kde.sh` entry points also remain available.
+KDE's shared package lives under `/usr/local/share/plasma/shells/`; Quickshell's
+shared package lives under `/usr/local/share/qylock/` and provides `qylock-lock`.
+Existing Quickshell bindings to `~/.local/share/quickshell-lockscreen/lock.sh`
+forward to the shared package after migration. New Quickshell profiles still need
+their window manager's lock shortcut bound to `qylock-lock`.
+
+Old Qylock profile installations are backed up under
+`$XDG_STATE_HOME/qylock/system-sync/` (normally `~/.local/state/qylock/system-sync/`).
+Migration runs as each account, without editing home directories as root.
+An XDG autostart helper handles profiles that were unavailable during setup and
+custom XDG directories at the next login. Unrelated custom lockers and explicit
+profile overrides are preserved and reported. Authentication remains specific to
+the account whose session is locked.
+
+The standalone KDE and Quickshell installers are advanced, per-profile overrides;
+running them after system setup marks that profile as independent. The SDDM and
+Quickshell scripts accept `--theme NAME` to install a selected theme
+without their interactive menus; running them without options keeps their theme
+customization prompts. Edit `theme.conf` before shared installation to customize
+its settings for both components.
+
+To remove a shared lock theme and restore previous profile installs:
+
+```sh
+sudo python3 scripts/system-lock.py uninstall --backend kde
+# Or: sudo python3 scripts/system-lock.py uninstall --backend quickshell
+```
+
+Unavailable profiles recover at their next login. The small profile-sync helper
+remains installed for this recovery. SDDM's login theme is managed separately.
+For NixOS, use the [declarative setup](#nixos-setup).
 
 <br>
 <p align="center">━━━━━━━ ❖ ━━━━━━━</p>
@@ -123,6 +212,29 @@ Point your Window Manager keybind (e.g., in Hyprland, Qtile, Sway, or i3) direct
 <br>
 
 <p align="center">━━━━━━━ ❖ ━━━━━━━</p>
+
+<a id="kde-setup"></a>
+
+#### KDE PLASMA LOCK SCREEN (EXPERIMENTAL)
+
+A native KScreenLocker backend supports **all 42 theme variants** on Plasma 6.8,
+including NieR, Material You, Clockwork, Minecraft, Windows 7, and pixel themes.
+It reuses the themes with KDE's authentication and requires no Quickshell.
+Click the theme's username selector to switch accounts through KDE. Press F10
+for additional lock controls.
+
+```sh
+./kde.sh                                      # Interactive setup menu
+./kde.sh themes                               # List supported themes
+./kde.sh preview --theme material-you          # Preview without locking
+./kde.sh install --theme clockwork/tape        # Activate a theme
+./kde.sh lock                                 # Lock through KDE
+./kde.sh doctor                               # Check lock settings and shortcuts
+./kde.sh uninstall                            # Restore the system lock screen
+```
+
+See [KDE setup and limitations](kde-lockscreen/README.md) for dependencies,
+packaging details, validation, and registering additional themes.
 
 <a id="nixos-setup"></a>
 <br>
@@ -267,7 +379,9 @@ If you encounter library errors at the login screen:
 
 #### ❄️ Quickshell not working on KDE Plasma?
 > [!NOTE]
-> This is a known limitation of KWin. You can still use the SDDM portion of the themes for your login screen, but the Quickshell lockscreen itself is a no-go on Plasma because it lacks support for the `ext-session-lock-v1` protocol.
+> The Quickshell backend requires a compatible session-lock protocol. For Plasma,
+> use the experimental [native KDE backend](kde-lockscreen/README.md), which runs
+> inside KScreenLocker. Run `./kde.sh themes` to list the available Plasma 6.8 ports.
 
 <br>
 
