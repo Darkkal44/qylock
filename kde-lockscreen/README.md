@@ -13,6 +13,14 @@ KScreenLocker still authenticates the owner of each locked session.
 The `kde.sh install` commands below are advanced **per-profile overrides**. A
 profile explicitly installed this way stays independent of the shared default.
 
+## Screenshots
+
+Captured from the real KScreenLocker greeter (`./kde.sh preview`) on Plasma 6.8.
+
+| Material You | Pixel / Hollow Knight |
+|---|---|
+| ![Material You on the KDE lock screen](../Assets/kde-lockscreen/material-you.png) | ![Pixel Hollow Knight on the KDE lock screen](../Assets/kde-lockscreen/pixel-hollowknight.png) |
+
 ## Use
 
 Install `python3`, Plasma 6 with `kscreenlocker`, Qt 6 Quick Controls, Qt 6
