@@ -29,6 +29,7 @@ TestCase {
     }
     AuthenticationBridge { id: bridge; backend: backend }
     AuthenticationBridge { id: secondScreen; backend: backend; active: bridge.active }
+    Component { id: lateScreen; AuthenticationBridge { } }
     SignalSpy { id: authenticated; target: bridge; signalName: "authenticated" }
     SignalSpy { id: secondAuthenticated; target: secondScreen; signalName: "authenticated" }
     SignalSpy { id: cleared; target: bridge; signalName: "clearRequested" }
@@ -49,8 +50,8 @@ TestCase {
         backend.lastResponse = "";
         backend.authenticator = 0;
         bridge.reset();
-        bridge.awaitingPrompt = false;
-        secondScreen.awaitingPrompt = false;
+        AuthenticationState.awaitingPrompt = false;
+        AuthenticationState.promptLabel = "";
         authenticated.clear(); cleared.clear(); failed.clear();
         secondAuthenticated.clear();
         bridge.active = true;
@@ -149,5 +150,15 @@ TestCase {
         backend.prompt = "One-time code:";
         compare(bridge.promptLabel, "One-time code:");
         verify(bridge.canSubmit);
+    }
+    function test_view_created_after_prompt_can_submit() {
+        // Resume from sleep re-creates outputs; KDE does not repeat the prompt.
+        prompt();
+        const view = createTemporaryObject(lateScreen, test, { backend: backend, active: true });
+        verify(view.canSubmit);
+        compare(view.promptLabel, "Password:");
+        view.login("", "secret", 0);
+        compare(backend.responses, 1);
+        verify(!bridge.canSubmit);
     }
 }

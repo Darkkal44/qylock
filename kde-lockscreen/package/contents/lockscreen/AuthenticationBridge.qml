@@ -6,9 +6,11 @@ Item {
     id: bridge
     required property var backend
     property bool active: false
-    property bool awaitingPrompt: false
+    // Shared by every monitor view: a view created after the prompt arrived
+    // (outputs are re-created on resume from sleep) must not stay disabled.
+    readonly property bool awaitingPrompt: Shared.AuthenticationState.awaitingPrompt
     property string message: ""
-    property string promptLabel: qsTr("Password")
+    readonly property string promptLabel: Shared.AuthenticationState.promptLabel || qsTr("Password")
     property bool capsLockOn: false
     readonly property string statusText: {
         const parts = [];
@@ -29,7 +31,7 @@ Item {
     function login(user, password, sessionIndex) {
         if (!canSubmit) return;
         Shared.AuthenticationState.responsePending = true;
-        awaitingPrompt = false;
+        Shared.AuthenticationState.awaitingPrompt = false;
         message = qsTr("Checking credentials…");
         clearRequested();
         backend.respond(password);
@@ -63,31 +65,31 @@ Item {
         target: bridge.backend
         function onPromptForSecretChanged() {
             Shared.AuthenticationState.responsePending = false;
-            bridge.promptLabel = bridge.backend.promptForSecret || qsTr("Password");
+            Shared.AuthenticationState.promptLabel = bridge.backend.promptForSecret || qsTr("Password");
             bridge.message = bridge.promptLabel;
             bridge.clearRequested();
-            bridge.awaitingPrompt = true;
+            Shared.AuthenticationState.awaitingPrompt = true;
         }
         function onPromptChanged() {
             Shared.AuthenticationState.responsePending = false;
-            bridge.promptLabel = bridge.backend.prompt || qsTr("Response");
+            Shared.AuthenticationState.promptLabel = bridge.backend.prompt || qsTr("Response");
             bridge.message = bridge.promptLabel;
             bridge.clearRequested();
-            bridge.awaitingPrompt = true;
+            Shared.AuthenticationState.awaitingPrompt = true;
         }
         function onInfoMessageChanged() { bridge.message = bridge.backend.infoMessage; }
         function onErrorMessageChanged() { bridge.message = bridge.backend.errorMessage; }
         function onFailed(kind) {
             // Background fingerprint failures must not reset a password attempt.
             if (kind !== 0) return;
-            bridge.awaitingPrompt = false;
+            Shared.AuthenticationState.awaitingPrompt = false;
             bridge.reset();
             bridge.message = qsTr("Unlocking failed. Please try again.");
             bridge.loginFailed();
             if (bridge.active) bridge.backend.startAuthenticating();
         }
         function onAuthenticatorChanged() {
-            bridge.awaitingPrompt = false;
+            Shared.AuthenticationState.awaitingPrompt = false;
             bridge.reset();
             bridge.message = "";
             if (bridge.active) bridge.backend.startAuthenticating();
@@ -95,7 +97,7 @@ Item {
         function onSucceeded() {
             // An event alone is insufficient: KDE must report an unlocked state.
             if (!bridge.backend.unlocked) return;
-            bridge.awaitingPrompt = false;
+            Shared.AuthenticationState.awaitingPrompt = false;
             bridge.reset();
             if (Shared.AuthenticationState.successHandled) return;
             Shared.AuthenticationState.successHandled = true;
