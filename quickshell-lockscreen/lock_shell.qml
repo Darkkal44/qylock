@@ -98,6 +98,10 @@ ShellRoot {
                             anchors.fill: parent
                             sourceComponent: themeComponent
                         }
+
+                        FingerprintHint {
+                            fingerprint: sddmShim.fingerprint
+                        }
                     }
                 }
             }
@@ -129,6 +133,10 @@ ShellRoot {
                     Loader {
                         anchors.fill: parent
                         sourceComponent: themeComponent
+                    }
+
+                    FingerprintHint {
+                        fingerprint: sddmShim.fingerprint
                     }
                 }
             }

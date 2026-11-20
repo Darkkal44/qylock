@@ -9,6 +9,7 @@ Item {
     property string themePath: ""
     property var config: ({})
     property bool configReady: false
+    property alias fingerprint: fingerprint
 
     function loadConfig(path) {
         if (!path) {
@@ -195,6 +196,26 @@ Item {
         }
     }
 
+    FingerprintAuth {
+        id: fingerprint
+        user: internalUserModel.lastUser
+
+        onSucceeded: {
+            shim.sddm.loginSucceeded();
+            Quickshell.execDetached(["loginctl", "unlock-session"]);
+        }
+    }
+
+    Connections {
+        target: shim.sddm
+        function onLoginSucceeded() {
+            fingerprint.abort();
+        }
+    }
+
     onThemePathChanged: loadConfig(themePath)
-    Component.onCompleted: sessionEnumerator.running = true
+    Component.onCompleted: {
+        sessionEnumerator.running = true;
+        fingerprint.check();
+    }
 }
